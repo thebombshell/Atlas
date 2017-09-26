@@ -7,7 +7,7 @@
 #include "game.hpp"
 #include "player_ship.hpp"
 
-using namespace wireframe_tds;
+using namespace atlas;
 
 game::Bullet::~Bullet(
 	) {

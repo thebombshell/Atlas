@@ -8,7 +8,7 @@
 
 #include "wireframe_tds.hpp"
 
-namespace wireframe_tds {
+namespace atlas {
 
 	namespace collisions {
 

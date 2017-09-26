@@ -16,7 +16,7 @@
 #include <set>
 #include <string>
 
-namespace wireframe_tds {
+namespace atlas {
 
 	// game constants
 
@@ -36,20 +36,50 @@ namespace wireframe_tds {
 		~Game(
 			);
 
+		// calls the renderable game actor function on all applicable actors
+
+		void prepareActorsForRendering(
+			);
+
+		// updates the vertex buffer given the current state of the Game class
+
+		void updateVertexBuffer(
+			);
+
+		// given the current state of Game, sets up the view matrix and sends it to the shader
+
+		void setupViewMatrix(
+			);
+
+		// given the current state of Game, sets up the projection matrix and sends it to the shader
+
+		void setupProjectionMatrix(
+			);
+
 		// per display function
 
 		void onDisplay(
 			);
 
-		// per loop function
+		// adds the contents of addqueue to actors, updating states in the process
 
-		void onLoop(
+		void processAddQueue(
+			);
+
+		// removes the contents of removequeue from actors, deleting them in the process
+
+		void processRemoveQueue(
 			);
 
 		// process collidable actor helper function
 
 		void processCollidable(
 			IGameCollidable* t_actor
+			);
+
+		// per loop function
+
+		void onLoop(
 			);
 
 		// queues elements to draw lines

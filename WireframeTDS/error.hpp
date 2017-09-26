@@ -10,7 +10,7 @@
 
 #include <string>
 
-namespace wireframe_tds {
+namespace atlas {
 
 	// error constants
 

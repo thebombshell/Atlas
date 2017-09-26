@@ -10,7 +10,7 @@
 #include <map>
 #include <string>
 
-namespace wireframe_tds {
+namespace atlas {
 
 	const char WTDS_INPUT_KEY_UP{ 0 };
 	const char WTDS_INPUT_KEY_DOWN{ 1 };

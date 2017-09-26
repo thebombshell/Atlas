@@ -8,7 +8,7 @@
 #include <freeglut.h>
 #include <assert.h>
 
-using namespace wireframe_tds;
+using namespace atlas;
 
 // static window state check function
 

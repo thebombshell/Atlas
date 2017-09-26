@@ -10,7 +10,7 @@
 #include "forward_declaration.hpp"
 #include "collisions.hpp"
 
-namespace wireframe_tds {
+namespace atlas {
 
 	const int WTDS_ACTOR_DISABLED{ 0 };
 	const int WTDS_ACTOR_ENABLED{ 1 };

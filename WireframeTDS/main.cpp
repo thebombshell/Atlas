@@ -10,7 +10,7 @@
 #include "player_ship.hpp"
 #include "small_stage.hpp"
 
-using namespace wireframe_tds;
+using namespace atlas;
 
 int main(
 	int argc,

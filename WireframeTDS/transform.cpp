@@ -7,7 +7,7 @@
 #include <gtx\matrix_transform_2d.hpp>
 #include <gtx\rotate_vector.hpp>
 
-using namespace wireframe_tds;
+using namespace atlas;
 
 Transform::Transform(
 	) {

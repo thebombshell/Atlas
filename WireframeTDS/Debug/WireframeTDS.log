@@ -1,9 +1,15 @@
-﻿  bullet.cpp
-  Generating Code...
-  Compiling...
-  small_stage.cpp
-  player_ship.cpp
+﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (WireframeTDS.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Skipping... (no relevant changes detected)
+  utils.cpp
   main.cpp
+  error.cpp
   game.cpp
-  Generating Code...
-  WireframeTDS.vcxproj -> C:\Users\Bombshell\documents\visual studio 2015\Projects\WireframeTDS\Debug\WireframeTDS.exe
+  window.cpp
+  transform.cpp
+  small_stage.cpp
+  render_helper.cpp
+  player_ship.cpp
+  input_manager.cpp
+  collisions.cpp
+  bullet.cpp
+  WireframeTDS.vcxproj -> C:\Users\Bombshell\documents\visual studio 2015\Projects\WireframeTDS\Debug\Atlas.exe

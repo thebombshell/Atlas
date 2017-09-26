@@ -10,7 +10,7 @@
 #define GLM_FORCE_CXX03
 #include <glm.hpp>
 
-namespace wireframe_tds {
+namespace atlas {
 
 	class Transform {
 	private:

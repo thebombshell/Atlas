@@ -25,7 +25,7 @@
 #include <wglew.h>
 #include <freeglut.h>
 
-using namespace wireframe_tds;
+using namespace atlas;
 
 Game::Game(
 	) {
@@ -40,59 +40,65 @@ Game::~Game(
 	m_vertexBufferData = nullptr;
 }
 
-// display callback function
+// calls the renderable game actor function on all applicable actors
 
-void Game::onDisplay(
+void Game::prepareActorsForRendering(
 	) {
-
-	// assert game is running
-
-	assert( Game::getGameState() == WTDS_GAME_IS_RUNNING );
-
-	// clear the context
-
-	glClear( GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
-	m_drawElementCount = 0;
 
 	// render all renderable actors
 
 	for ( auto iter = m_actors.begin(); iter != m_actors.end(); ++iter ) {
 
 		IGameRenderable* actor = dynamic_cast<IGameRenderable*>((*iter));
-		if ( actor != nullptr && actor->getState() == WTDS_ACTOR_ENABLED)
+		if ( actor != nullptr && actor->getState() == WTDS_ACTOR_ENABLED )
 			actor->onRender( m_timeDelta );
 	}
+}
 
-	// if nothing is to be drawn, skip drawing
+// updates the vertex buffer given the current state of the Game class
 
-	if ( m_drawElementCount <= 0 ) {
+void Game::updateVertexBuffer(
+	) {
 
-		glutSwapBuffers();
-		return;
-	}
-
-	// fill vertex buffer
+	// fill buffer with new vertex data
 
 	RenderHelper::fillBuffer(
-		m_bufferIds[0],
-		m_vertexBufferData,
-		sizeof( float ) * 6 * m_drawElementCount,
-		GL_DYNAMIC_DRAW );
+		m_bufferIds[0]
+		, m_vertexBufferData
+		, sizeof( float ) * 6 * m_drawElementCount
+		, GL_DYNAMIC_DRAW );
+}
 
-	// set up binds
+// given the current state of Game, sets up the view matrix and sends it to the shader
 
-	glUseProgram( m_programId );
-	glBindVertexArray( m_vertexArrayObjects[0] );
+void Game::setupViewMatrix(
+	) {
 
-	// create and use view matrix
+	// set up essential variables
 
 	glm::vec3 eye{ 0.0f, 0.0f, 0.0f };
 	glm::vec3 look{ 0.0f, 0.0f, 1.0f };
 	glm::vec3 up{ 0.0f, 1.0f, 0.0f };
+	
+	// create view matrix
+
 	glm::mat4 viewMatrix{ glm::lookAt( eye, look, up ) };
 	float* view{ glm::value_ptr( viewMatrix ) };
+
+	// upload to shader
+
 	glUniformMatrix4fv(
-		glGetUniformLocation( m_programId, "uniformView" ), 1, GL_FALSE, view );
+		glGetUniformLocation( m_programId, "uniformView" )
+		, 1
+		, GL_FALSE
+		, view );
+}
+
+// given the current state of Game, sets up the projection matrix and sends it to the shader
+
+void Game::setupProjectionMatrix(
+	) {
+
 
 	// create and use projection matrix
 
@@ -115,13 +121,78 @@ void Game::onDisplay(
 	glm::mat4 projectionMatrix{ glm::ortho(
 		halfViewWidth, -halfViewWidth, -halfViewHeight, halfViewHeight, 0.1f, 1.0f ) };
 	float* projection{ glm::value_ptr( projectionMatrix ) };
-	glUniformMatrix4fv( 
+	glUniformMatrix4fv(
 		glGetUniformLocation( m_programId, "uniformProjection" ), 1, GL_FALSE, projection );
+}
+
+// display callback function
+
+void Game::onDisplay(
+	) {
+
+	// assert game is running
+
+	assert( Game::getGameState() == WTDS_GAME_IS_RUNNING );
+
+	// clear the frame and reset draw count
+
+	glClear( GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
+	m_drawElementCount = 0;
+
+	prepareActorsForRendering();
+
+	// if nothing is to be drawn, skip drawing
+
+	if ( m_drawElementCount <= 0 ) {
+
+		glutSwapBuffers();
+		return;
+	}
+
+	updateVertexBuffer();
+
+	// set up binds
+
+	glUseProgram( m_programId );
+	glBindVertexArray( m_vertexArrayObjects[0] );
+
+	setupViewMatrix();
+	setupProjectionMatrix();
+
+	// draw lines
+
 	glDrawArrays( GL_LINES, 0, m_drawElementCount );
 
 	// finish and swap buffers
 
 	glutSwapBuffers();
+}
+
+void Game::processAddQueue(
+	) {
+
+	// add all members of add queue and cleanup
+
+	for ( auto iter = m_addQueue.begin(); iter != m_addQueue.end(); ++iter ) {
+
+		IGameActor* actor = *iter;
+		actor->setState( WTDS_ACTOR_ENABLED );
+		m_actors.insert( actor );
+	}
+	m_addQueue.clear();
+}
+
+void Game::processRemoveQueue(
+	) {
+
+	// remove all members of remove queue and cleanup
+
+	for ( auto iter = m_removeQueue.begin(); iter != m_removeQueue.end(); ++iter ) {
+
+		m_actors.erase( *iter );
+		delete (*iter);
+	}
+	m_removeQueue.clear();
 }
 
 // process collidable actor helper function
@@ -130,14 +201,21 @@ void Game::processCollidable(
 	IGameCollidable* t_actor
 	) {
 
-	const collisions::ICollider* colliderA = t_actor->getCollider();
+	// for each other collidable
 
 	for ( auto iter = m_actors.begin(); iter != m_actors.end(); ++iter ) {
 
-		IGameCollidable* actor = dynamic_cast<IGameCollidable*>( *iter );
-		if ( actor != nullptr && actor != t_actor  && actor->getState() == WTDS_ACTOR_ENABLED ) {
+		IGameCollidable* actor = dynamic_cast<IGameCollidable*>(*iter);
 
+		// if actor is collidable and is valid
+
+		if ( actor != t_actor  && actor != nullptr && actor->getState() == WTDS_ACTOR_ENABLED ) {
+
+			const collisions::ICollider* colliderA = t_actor->getCollider();
 			const collisions::ICollider* colliderB = actor->getCollider();
+
+			// compare colliders and process the results if collision is found
+
 			glm::vec3 result = collisions::findMinimumSeparatingAxis( *colliderA, *colliderB );
 			if ( collisions::getAxisState( result ) == collisions::WTDS_COLLISION_FOUND ) {
 
@@ -163,15 +241,7 @@ void Game::onLoop(
 	m_timeDelta = static_cast<float>(currentFrameTime - m_previousFrameTime) / 1000.0f;
 	m_previousFrameTime = currentFrameTime;
 
-	// add all members of add queue and cleanup
-
-	for ( auto iter = m_addQueue.begin(); iter != m_addQueue.end(); ++iter ) {
-
-		IGameActor* actor = *iter;
-		actor->setState( WTDS_ACTOR_ENABLED );
-		m_actors.insert( actor );
-	}
-	m_addQueue.clear();
+	processAddQueue();
 
 	// update all updatable actors
 
@@ -182,14 +252,7 @@ void Game::onLoop(
 			actor->onUpdate( m_timeDelta );
 	}
 
-	// remove all members of remove queue and cleanup
-
-	for ( auto iter = m_removeQueue.begin(); iter != m_removeQueue.end(); ++iter ) {
-
-		m_actors.erase( *iter );
-		delete *iter;
-	}
-	m_removeQueue.clear();
+	processRemoveQueue();
 
 	// test collide all collidable actors
 
@@ -381,7 +444,7 @@ int Game::initialize(
 	// load vertex shader
 
 	std::string vertexShader;
-	isError = wireframe_tds::getFileAsString(
+	isError = atlas::getFileAsString(
 		"shaders/color_line_vs_120.glsl", vertexShader );
 
 	if ( isError ) {
@@ -392,7 +455,7 @@ int Game::initialize(
 	// load fragment shader
 
 	std::string fragmentShader;
-	isError = wireframe_tds::getFileAsString(
+	isError = atlas::getFileAsString(
 		"shaders/color_line_fs_120.glsl", fragmentShader );
 
 	if ( isError ) {

@@ -5,7 +5,7 @@
 
 #include "collisions.hpp"
 
-using namespace wireframe_tds;
+using namespace atlas;
 
 glm::vec2 collisions::Circle::findBounds(
 	const glm::vec2 t_axis

@@ -12,7 +12,7 @@
 #include "transform.hpp"
 #include <string>
 
-namespace wireframe_tds {
+namespace atlas {
 
 	namespace game {
 

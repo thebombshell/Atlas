@@ -9,7 +9,7 @@
 #include "wireframe_tds.hpp"
 #include <vector>
 
-namespace wireframe_tds {
+namespace atlas {
 
 	class RenderHelper {
 	private:

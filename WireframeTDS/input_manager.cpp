@@ -7,7 +7,7 @@
 
 #include <chrono>
 
-using namespace wireframe_tds;
+using namespace atlas;
 
 InputManager::InputManager(
 	) {

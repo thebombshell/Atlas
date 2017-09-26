@@ -16,7 +16,7 @@
 #include <limits>
 #include <vector>
 
-namespace wireframe_tds {
+namespace atlas {
 
 	namespace collisions {
 		

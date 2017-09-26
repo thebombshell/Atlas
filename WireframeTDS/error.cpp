@@ -5,7 +5,7 @@
 
 #include "error.hpp"
 
-std::string wireframe_tds::getErrorMessage(
+std::string atlas::getErrorMessage(
 	const int t_error
 	) {
 

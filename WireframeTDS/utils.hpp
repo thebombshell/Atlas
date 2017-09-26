@@ -9,7 +9,7 @@
 #include "wireframe_tds.hpp"
 #include <string>
 
-namespace wireframe_tds {
+namespace atlas {
 
 
 	void showMessage(

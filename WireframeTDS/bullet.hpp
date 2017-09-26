@@ -10,7 +10,7 @@
 #include "game_actor.hpp"
 #include "transform.hpp"
 
-namespace wireframe_tds {
+namespace atlas {
 
 	namespace game {
 

@@ -12,7 +12,7 @@
 const float pi = 3.14159265358979323846f;
 const float pi2 = pi * 2;
 
-using namespace wireframe_tds;
+using namespace atlas;
 
 game::PlayerShip::PlayerShip(
 	const int& t_index

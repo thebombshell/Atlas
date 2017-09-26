@@ -11,7 +11,7 @@
 #include <Windows.h>
 #include <cstdlib>
 
-void wireframe_tds::showMessage(
+void atlas::showMessage(
 	const std::string t_message
 	) {
 
@@ -34,7 +34,7 @@ void WIREFRAME_TDS::showMessage(
 
 #endif
 
-const int wireframe_tds::getFileAsString(
+const int atlas::getFileAsString(
 	std::string t_path,
 	std::string& t_outContents
 	) {

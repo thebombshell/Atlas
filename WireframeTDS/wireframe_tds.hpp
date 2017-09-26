@@ -10,7 +10,7 @@
 
 // Namespace containing all classes written for the project.
 
-namespace wireframe_tds {
+namespace atlas {
 
 }
 

@@ -14,7 +14,7 @@
 #include <wglew.h>
 //#include <freeglut.h>
 
-using namespace wireframe_tds;
+using namespace atlas;
 
 #ifdef NDEBUG
 

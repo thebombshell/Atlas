@@ -9,7 +9,7 @@
 #include "wireframe_tds.hpp"
 #include "game_actor.hpp"
 
-namespace wireframe_tds {
+namespace atlas {
 
 	namespace game {
 
