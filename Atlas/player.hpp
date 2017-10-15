@@ -85,7 +85,7 @@ namespace atlas {
 
 	public:
 
-		Player( pantheon::Actor::Key, pantheon::Actor&, const PlayerInfo& t_info );
+		Player( pantheon::ConstructComponentPermit&, pantheon::Actor&, const PlayerInfo& t_info );
 
 		~Player();
 

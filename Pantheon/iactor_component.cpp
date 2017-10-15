@@ -41,7 +41,9 @@ IUpdatable::~IUpdatable() {
 	Updatables::remove( this );
 }
 
-void IUpdatable::call( Game::Key, float t_delta ) {
+void IUpdatable::call( CallUpdatablesPermit& t_permit, float t_delta ) {
+
+	t_permit.use();
 
 	Updatables::forEach( [&t_delta]( IUpdatable* const t_updatable ) {
 		if ( t_updatable->isActive() ) {
@@ -63,7 +65,9 @@ IRenderable::~IRenderable() {
 	Renderables::remove( this );
 }
 
-void IRenderable::call( Game::Key ) {
+void IRenderable::call( CallRenderablesPermit& t_permit ) {
+
+	t_permit.use();
 
 	Renderables::forEach( []( IRenderable* const t_renderable ) {
 		if ( t_renderable->isActive() ) {

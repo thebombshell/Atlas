@@ -9,8 +9,7 @@
 #include <AL\alc.h>
 #include <AL\alure.h>
 #include <map>
-#include <mutex>
-#include <thread>
+#include <vector>
 
 using namespace pantheon;
 
@@ -20,18 +19,23 @@ class Audio::AudioImpl {
 
 	AudioImpl() {
 
+		
 		bool isSuccess = alureInitDevice( NULL, NULL );
 		assert( isSuccess && "Audio device could not be initialized." );
-		alGenSources( 4, m_sources );
-		for ( int i = 0; i < 4; ++i ) {
-			alSourcef( m_sources[i], AL_GAIN, 1.0f );
-			alSourcef( m_sources[i], AL_PITCH, 1.0f );
-			alSource3f( m_sources[1], AL_POSITION, 0.0f, 0.0f, -1.0f );
-			alSource3f( m_sources[1], AL_VELOCITY, 0.0f, 0.0f, 0.0f );
-		}
+
 	}
 
 	~AudioImpl() {
+
+		while ( m_sources.size() > 0 ) {
+
+			deleteSource( m_sources[0] );
+		}
+
+		while ( m_sounds.size() > 0 ) {
+
+			unloadSound( m_sounds.begin()->first );
+		}
 
 		bool isSuccess = alureShutdownDevice();
 		assert( isSuccess && "Audio device could not be finalized." );
@@ -82,32 +86,26 @@ class Audio::AudioImpl {
 		return m_sounds.find( t_name ) != m_sounds.end();
 	}
 
-	void playSound( std::string t_name ) {
+	Source* const createSource( std::string t_soundName ) {
 
-		assert( hasSound( t_name ) && "Sound does not exist." );
+		assert( hasSound( t_soundName ) && "Sound does not exist." );
+		unsigned int buffer = m_sounds.find( t_soundName )->second;
+		Source* source = new Source( { }, buffer );
+		m_sources.push_back( source );
+		return source;
+	}
 
-		std::lock_guard<std::mutex> sourceGuard{ m_sourceMutex };
+	void deleteSource( Source* const t_source ) {
 
-		ALuint buffer = m_sounds.find( t_name )->second;
-
-		for ( int i = 0; i < 4; ++i ) {
-
-			int sourceState = 0;
-			alGetSourcei( m_sources[i], AL_SOURCE_STATE, &sourceState );
-			if ( sourceState != AL_PLAYING ) {
-
-				alSourcei( m_sources[i], AL_BUFFER, buffer );
-				alSourcePlay( m_sources[i] );
-				break;
-			}
-		}
+		auto iter = std::find( m_sources.begin(), m_sources.end(), t_source );
+		assert( iter != m_sources.end() && "Source does not exist." );
+		delete *iter;
+		m_sources.erase( iter );
 	}
 
 	ALCdevice* m_device{ nullptr };
-	ALuint m_sources[4]{ 0, 0, 0, 0 };
-	std::mutex m_sourceMutex;
-	bool m_sourcesInUse[4]{ false, false, false, false };
 	std::map<std::string, ALuint> m_sounds;
+	std::vector<Source*> m_sources;
 };
 
 Audio::Audio() {
@@ -140,7 +138,81 @@ bool Audio::hasSound( std::string t_name ) {
 	return m_audio->hasSound( t_name );
 }
 
-void Audio::playSound( std::string t_name ) {
+Source* const Audio::createSource( std::string t_soundName ) {
 
-	m_audio->playSound( t_name );
+	return m_audio->createSource( t_soundName );
+}
+
+void Audio::deleteSource( Source* const t_source ) {
+
+	m_audio->deleteSource( t_source );
+}
+
+Source::Source( ConstructSourcePermit, unsigned int t_buffer ) : m_buffer{ t_buffer } {
+
+	alGenSources( 1, &m_id );
+	alSourcef( m_id, AL_GAIN, 1.0f );
+	alSourcef( m_id, AL_PITCH, 1.0f );
+	alSource3f( m_id, AL_POSITION, 0.0f, 0.0f, -1.0f );
+	alSource3f( m_id, AL_VELOCITY, 0.0f, 0.0f, 0.0f );
+	alSourcei( m_id, AL_BUFFER, m_buffer );
+
+}
+
+Source::~Source() {
+
+	alSourceStop( m_id );
+	alDeleteSources( 1, &m_id );
+}
+
+void Source::play() {
+
+	alSourcePlay( m_id );
+}
+
+void Source::replay() {
+
+	alSourceRewind( m_id );
+	alSourcePlay( m_id );
+}
+
+void Source::setLooping() {
+
+	alSourcei( m_id, AL_LOOPING, AL_TRUE );
+}
+
+void Source::setSingle() {
+
+	alSourcei( m_id, AL_LOOPING, AL_FALSE );
+}
+
+void Source::pause() {
+
+	alSourcePause( m_id );
+}
+
+void Source::stop() {
+
+	alSourceStop( m_id );
+}
+
+bool Source::isPlaying() const {
+
+	int state;
+	alGetSourcei( state, AL_SOURCE_STATE, &state );
+	return state == AL_PLAYING;
+}
+
+bool Source::isPaused() const {
+
+	int state;
+	alGetSourcei( state, AL_SOURCE_STATE, &state );
+	return state == AL_PAUSED;
+}
+
+bool Source::isStopped() const {
+
+	int state;
+	alGetSourcei( state, AL_SOURCE_STATE, &state );
+	return state == AL_STOPPED || state == AL_INITIAL;
 }

@@ -16,9 +16,13 @@ namespace pantheon {
 	const int PANTHEON_OK{ 0 };
 	const int PANTHEON_ERROR{ 1 };
 
-	class Game;
 	class Actor;
+	class Audio;
 	class IActorComponent;
+	class Game;
+	class Input;
+	class Scene;
+	class Source;
 }
 
 #ifdef PANTHEON_EXPORTS

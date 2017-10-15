@@ -8,7 +8,7 @@
 
 #include "pantheon.hpp"
 
-#include "attourney.hpp"
+#include "permission.hpp"
 #include "transform.hpp"
 
 #include <algorithm>
@@ -19,6 +19,11 @@ namespace pantheon {
 
 	typedef std::pair<const std::type_index, IActorComponent*> ActorComponentPair;
 	typedef std::map<std::type_index, IActorComponent*>::iterator ActorComponentIterator;
+
+	// permissions
+
+	class P_ConstructComponent;
+	typedef Permission<Actor, P_ConstructComponent> ConstructComponentPermit;
 
 	struct IActorEventMessage {
 
@@ -70,12 +75,14 @@ namespace pantheon {
 		template<typename T>
 		void createComponent() {
 
-			addComponent( typeid(T), new T( Key(), *this ) );
+			ConstructComponentPermit permit;
+			addComponent( typeid(T), new T( permit, *this ) );
 		}
 		template<typename T, typename P>
 		void createComponent( P t_properties ) {
 
-			addComponent( typeid(T), new T( Key(), *this, t_properties ) );
+			ConstructComponentPermit permit;
+			addComponent( typeid(T), new T( permit, *this, t_properties ) );
 		}
 
 		template<typename T>
@@ -141,8 +148,6 @@ namespace pantheon {
 
 			return m_transform;
 		}
-
-		typedef Attourney<Actor> Key;
 	};
 }
 

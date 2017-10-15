@@ -8,9 +8,14 @@
 
 #include "pantheon.hpp"
 
+#include "permission.hpp"
+
 #include <string>
 
 namespace pantheon {
+
+	class P_ConstructSource;
+	typedef Permission<Audio, P_ConstructSource> ConstructSourcePermit;
 
 	class PANTHEON_API Audio {
 
@@ -35,14 +40,49 @@ namespace pantheon {
 
 		bool hasSound( std::string t_name );
 
-		// play sound of name
+		// creates and returns a source object for a given sound
 
-		void playSound( std::string t_name );
+		Source* const createSource( std::string t_soundName );
+
+		// deletes a source object
+
+		void deleteSource( Source* const t_source );
 
 	private:
 
 		class AudioImpl;
 		AudioImpl* m_audio;
+	};
+
+	class PANTHEON_API Source {
+
+	public:
+
+		Source( ConstructSourcePermit, unsigned int t_buffer );
+		~Source();
+
+		void play();
+
+		void replay();
+
+		void setLooping();
+
+		void setSingle();
+
+		void pause();
+
+		void stop();
+
+		bool isPlaying() const;
+
+		bool isPaused() const;
+
+		bool isStopped() const;
+
+	private:
+
+		unsigned int m_id;
+		unsigned int const m_buffer;
 	};
 }
 

@@ -25,8 +25,9 @@ namespace pantheon {
 		Actor& m_owner;
 	public:
 
-		IActorComponent( Actor::Key, Actor& t_owner ) : m_owner{ t_owner } {
+		IActorComponent( ConstructComponentPermit& t_permit, Actor& t_owner ) : m_owner{ t_owner } {
 
+			t_permit.use();
 		}
 
 		virtual ~IActorComponent() = 0 {
@@ -43,7 +44,7 @@ namespace pantheon {
 		Actor& getOwner();
 	};
 
-	class PANTHEON_API  IUpdatable : public virtual IActorComponent {
+	class PANTHEON_API IUpdatable : public virtual IActorComponent {
 
 	public:
 
@@ -53,7 +54,7 @@ namespace pantheon {
 
 		virtual void update( float t_delta ) = 0;
 
-		static void call( Game::Key, float t_delta );
+		static void call( CallUpdatablesPermit&, float t_delta );
 	};
 
 	class PANTHEON_API  IRenderable : public virtual IActorComponent {
@@ -66,7 +67,7 @@ namespace pantheon {
 
 		virtual void render() = 0;
 
-		static void call( Game::Key );
+		static void call( CallRenderablesPermit& );
 	};
 }
 

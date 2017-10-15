@@ -157,7 +157,7 @@
     <ClInclude Include="gl_helpers.hpp" />
     <ClInclude Include="helpers.hpp" />
     <ClInclude Include="input.hpp" />
-    <ClInclude Include="attourney.hpp" />
+    <ClInclude Include="permission.hpp" />
     <ClInclude Include="line_renderer.hpp" />
     <ClInclude Include="no_silly_warnings.hpp" />
     <ClInclude Include="pantheon.hpp" />

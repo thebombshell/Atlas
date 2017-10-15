@@ -18,8 +18,8 @@ namespace atlas {
 		float m_angularVelocity{ 0.0f };
 
 	public:
-		ShipMoveComponent( pantheon::Actor::Key t_key, pantheon::Actor& t_owner )
-			: IActorComponent{ t_key, t_owner } {
+		ShipMoveComponent( pantheon::ConstructComponentPermit& t_permit, pantheon::Actor& t_owner )
+			: IActorComponent{ t_permit, t_owner } {
 
 		}
 

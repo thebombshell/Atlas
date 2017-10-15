@@ -9,13 +9,16 @@
 
 using namespace pantheon;
 
-Collision2DComponent::Collision2DComponent( Actor::Key t_key, Actor& t_owner ) : IActorComponent( t_key, t_owner ) {
+Collision2DComponent::Collision2DComponent
+	( ConstructComponentPermit& t_permit, Actor& t_owner )
+	: IActorComponent( t_permit, t_owner ) {
 
 	Collision2DManager* const collision
 		= dynamic_cast<Collision2DManager*>(&Game::GetCollisionManager());
 	assert( collision != nullptr
 		&& "Collision2DComponent requires a Collision2D manager." );
-	collision->registerComponent( { }, this );
+	Collision2DRegistryPermit registryPermit;
+	collision->registerComponent( registryPermit, this );
 }
 
 Collision2DComponent::~Collision2DComponent() {
@@ -24,7 +27,8 @@ Collision2DComponent::~Collision2DComponent() {
 		= dynamic_cast<Collision2DManager*>(&Game::GetCollisionManager());
 	assert( collision != nullptr 
 		&& "Collision2DComponent requires a Collision2D manager." );
-	collision->unregisterComponent( { }, this );
+	Collision2DRegistryPermit registryPermit;
+	collision->unregisterComponent( registryPermit, this );
 }
 
 void pantheon::Collision2DComponent::addCollider( ICollider2D * const t_collider ) {
@@ -148,14 +152,18 @@ void Collision2DManager::simulate() {
 	m_collision->simulate();
 }
 
-void Collision2DManager::registerComponent( Collision2DComponent::Key
+void Collision2DManager::registerComponent( Collision2DRegistryPermit& t_permit
 	, Collision2DComponent* const t_component ) {
+
+	t_permit.use();
 
 	m_collision->registerComponent( t_component );
 }
 
-void Collision2DManager::unregisterComponent( Collision2DComponent::Key
+void Collision2DManager::unregisterComponent( Collision2DRegistryPermit& t_permit
 	, Collision2DComponent* const t_component ) {
+
+	t_permit.use();
 
 	m_collision->unregisterComponent( t_component );
 }

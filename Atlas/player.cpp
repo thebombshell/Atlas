@@ -24,8 +24,8 @@ using namespace pantheon;
 
 const float PI2 = float( M_PI ) * 2;
 
-Player::Player( Actor::Key t_key, Actor& t_owner, const PlayerInfo& t_info )
-	: IActorComponent( t_key, t_owner ), m_index{ t_info.index }
+Player::Player( pantheon::ConstructComponentPermit& t_permit, Actor& t_owner, const PlayerInfo& t_info )
+	: IActorComponent( t_permit, t_owner ), m_index{ t_info.index }
 	, m_input{ PlayerInputProfile::fromIndex( t_info.index ) }
 	, m_colliders{ { t_owner.getTransform() }, { t_owner.getTransform() } } {
 

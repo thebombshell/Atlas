@@ -160,7 +160,8 @@ class Game::GameImpl {
 
 			m_scene->update();
 
-			IUpdatable::call( { }, timeDelta );
+			CallUpdatablesPermit updatePermit;
+			IUpdatable::call( updatePermit, timeDelta );
 
 			m_collision->simulate();
 
@@ -170,7 +171,8 @@ class Game::GameImpl {
 
 				m_renderer->beforeActorsDraw();
 
-				IRenderable::call( { } );
+				CallRenderablesPermit renderPermit;
+				IRenderable::call( renderPermit );
 
 				m_renderer->afterActorsDraw();
 

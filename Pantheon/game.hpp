@@ -8,12 +8,23 @@
 
 #include "pantheon.hpp"
 
-#include "attourney.hpp"
+#include "permission.hpp"
 #include "audio.hpp"
 #include "input.hpp"
 #include "scene.hpp"
 
 namespace pantheon {
+
+	// permissions
+
+	class P_ConstructRenderer;
+	class P_ConstructCollision;
+	class P_CallUpdatables;
+	class P_CallRenderables;
+	typedef Permission<Game, P_ConstructRenderer> ConstructRendererPermit;
+	typedef Permission<Game, P_ConstructCollision> ConstructCollisionPermit;
+	typedef Permission<Game, P_CallUpdatables> CallUpdatablesPermit;
+	typedef Permission<Game, P_CallRenderables> CallRenderablesPermit;
 
 	// interface for a renderer
 
@@ -146,7 +157,6 @@ namespace pantheon {
 			return getInstance().getScene();
 		}
 
-		typedef Attourney<Game> Key;
 	};
 }
 

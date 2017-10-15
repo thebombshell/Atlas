@@ -36,7 +36,7 @@ namespace atlas {
 
 	public:
 
-		Bullet( pantheon::Actor::Key, pantheon::Actor&, const BulletInfo& t_message );
+		Bullet( pantheon::ConstructComponentPermit&, pantheon::Actor&, const BulletInfo& t_message );
 		~Bullet();
 
 		void update( float ) override;

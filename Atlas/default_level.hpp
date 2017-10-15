@@ -17,7 +17,7 @@ namespace atlas {
 		pantheon::Transform m_transform{ };
 	public:
 
-		DefaultLevel( pantheon::Actor::Key, pantheon::Actor& );
+		DefaultLevel( pantheon::ConstructComponentPermit&, pantheon::Actor& );
 		~DefaultLevel();
 
 		void update( float t_delta ) override;

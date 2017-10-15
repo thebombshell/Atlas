@@ -10,8 +10,8 @@
 using namespace pantheon;
 using namespace atlas;
 
-DefaultLevel::DefaultLevel( pantheon::Actor::Key t_key, pantheon::Actor& t_owner ) 
-	: IActorComponent( t_key, t_owner ) {
+DefaultLevel::DefaultLevel( pantheon::ConstructComponentPermit& t_permit, pantheon::Actor& t_owner )
+	: IActorComponent( t_permit, t_owner ) {
 
 }
 

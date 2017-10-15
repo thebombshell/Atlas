@@ -13,8 +13,8 @@
 using namespace atlas;
 using namespace pantheon;
 
-Bullet::Bullet( pantheon::Actor::Key t_key, pantheon::Actor& t_owner
-	, const BulletInfo& t_info ) : IActorComponent( t_key, t_owner )
+Bullet::Bullet( ConstructComponentPermit& t_permit, pantheon::Actor& t_owner
+	, const BulletInfo& t_info ) : IActorComponent( t_permit, t_owner )
 	, m_firer{ t_info.firer }, m_velocity{ t_info.velocity } 
 	, m_collider{ t_owner.getTransform(), 1.0f } {
 
