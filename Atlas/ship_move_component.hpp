@@ -41,6 +41,11 @@ namespace atlas {
 			transform.position += glm::vec3( m_velocity, 0.0f ) * t_delta;
 		}
 
+		glm::vec2 getVelocity() {
+
+			return m_velocity;
+		}
+
 		void reset() {
 
 			m_velocity = { 0.0f, 0.0f };

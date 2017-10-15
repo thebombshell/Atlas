@@ -33,6 +33,7 @@ namespace atlas {
 
 		~ShootComponent() {
 
+			pantheon::Game::GetAudio().deleteSource( m_source );
 		}
 
 		void update( float t_delta ) {
@@ -51,7 +52,7 @@ namespace atlas {
 				glm::vec3 up = transform.findUp();
 				pantheon::Game::GetScene().createPrefab<Bullet>(
 					BulletInfo( owner
-						, transform.position + up * 5.0f
+						, transform.position + up * transform.scale * 5.0f
 						, transform.findUp() * 160.0f ) );
 				m_shootTimer = cooldown;
 				m_source->play();

@@ -6,6 +6,7 @@
 #include "player.hpp"
 
 #include "bullet.hpp"
+#include "explode_component.hpp"
 #include "ship_move_component.hpp"
 #include "shoot_component.hpp"
 #include "line_text_helpers.hpp"
@@ -174,6 +175,10 @@ bool Player::kill() {
 
 		m_respawnTimer = 5.0f;
 		Actor& owner = getOwner();
+		ExplodeInfo info = ExplodeInfo( owner.getTransform().position
+			, owner.getComponent<ShipMoveComponent>().getVelocity()
+			, owner.getTransform().scale[0] );
+		Game::GetScene().createPrefab<ExplodeComponent>( info );
 		owner.getTransform().reset();
 		float offset = (PI2 / 8) * m_index;
 		owner.getTransform().position = { cos( offset ) * 50.0f, sin( offset ) * 50.0f, 0.0f };
