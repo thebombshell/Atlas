@@ -9,6 +9,7 @@
 #include "pantheon.hpp"
 
 #include "attourney.hpp"
+#include "audio.hpp"
 #include "input.hpp"
 #include "scene.hpp"
 
@@ -109,10 +110,10 @@ namespace pantheon {
 
 		// get management objects
 
-		IGameCollision& Game::getCollisionManager();
-		static IGameCollision& Game::GetCollisionManager() {
+		Audio& getAudio() const;
+		static Audio& GetAudio() {
 
-			return getInstance().getCollisionManager();
+			return getInstance().getAudio();
 		}
 
 		const Input& getInput() const;
@@ -120,6 +121,7 @@ namespace pantheon {
 
 			return getInstance().getInput();
 		}
+
 
 		IGameRenderer& getRenderer();
 		static IGameRenderer& GetRenderer() {
@@ -130,6 +132,12 @@ namespace pantheon {
 		static T* const GetRendererAs() {
 
 			return dynamic_cast<T* const>(&getInstance().getRenderer());
+		}
+
+		IGameCollision& Game::getCollisionManager();
+		static IGameCollision& Game::GetCollisionManager() {
+
+			return getInstance().getCollisionManager();
 		}
 
 		Scene& getScene();

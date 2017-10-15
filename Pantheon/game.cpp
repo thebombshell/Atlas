@@ -84,6 +84,7 @@ class Game::GameImpl {
 
 		m_input = new Input();
 		m_scene = new Scene();
+		m_audio = new Audio();
 
 		m_gameState = GAME_STATE_INITIALIZED;
 
@@ -102,6 +103,7 @@ class Game::GameImpl {
 
 			delete m_input;
 			delete m_scene;
+			delete m_audio;
 
 			// shutdown sdl
 
@@ -327,6 +329,7 @@ class Game::GameImpl {
 	SDL_Thread* m_renderThread{ nullptr };
 	Input* m_input{ nullptr };
 	Scene* m_scene{ nullptr };
+	Audio* m_audio{ nullptr };
 	void( *m_gameStartFunc )( ) { nullptr };
 	IGameRenderer*(*m_rendererCreateFunc)() { nullptr };
 	IGameRenderer* m_renderer{ nullptr };
@@ -387,4 +390,9 @@ IGameRenderer& Game::getRenderer() {
 Scene& Game::getScene() {
 
 	return *m_game->m_scene;
+}
+
+Audio& Game::getAudio() const {
+
+	return *m_game->m_audio;
 }

@@ -71,7 +71,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)SDL2-2.0.6\include;$(SolutionDir)glew-2.1.0\include;$(SolutionDir)glm-0.9.8.5\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)SDL2-2.0.6\include;$(SolutionDir)glew-2.1.0\include;$(SolutionDir)glm-0.9.8.5\;$(SolutionDir)openal-soft-1.18.2-bin\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -94,8 +94,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)SDL2-2.0.6\lib\x86;$(SolutionDir)glew-2.1.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;glew32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)SDL2-2.0.6\lib\x86;$(SolutionDir)glew-2.1.0\lib\Release\Win32;$(SolutionDir)openal-soft-1.18.2-bin\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;glew32.lib;opengl32.lib;openal32.lib;ALURE32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -150,6 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="actor.hpp" />
+    <ClInclude Include="audio.hpp" />
     <ClInclude Include="iactor_component.hpp" />
     <ClInclude Include="collision_2d.hpp" />
     <ClInclude Include="game.hpp" />
@@ -169,6 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="actor.cpp" />
+    <ClCompile Include="audio.cpp" />
     <ClCompile Include="collision_2d.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="iactor_component.cpp" />

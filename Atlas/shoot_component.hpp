@@ -22,6 +22,11 @@ namespace atlas {
 		ShootComponent( pantheon::Actor::Key t_key, pantheon::Actor& t_owner )
 			: IActorComponent{ t_key, t_owner } {
 
+			pantheon::Audio& audio = pantheon::Game::GetAudio();
+			if ( !audio.hasSound( "shoot" ) ) {
+
+				audio.loadSound( "audio/shoot-01.wav", "shoot" );
+			}
 		}
 
 		~ShootComponent() {
@@ -47,6 +52,7 @@ namespace atlas {
 						, transform.position + up * 5.0f
 						, transform.findUp() * 160.0f ) );
 				m_shootTimer = cooldown;
+				pantheon::Game::GetAudio().playSound( "shoot" );
 				return true;
 			}
 			return false;

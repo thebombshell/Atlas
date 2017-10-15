@@ -1,12 +1,5 @@
-﻿  actor.cpp
-  Generating Code...
-  Skipping... (no relevant changes detected)
-  transform.cpp
-  shapes_2d.cpp
-  scene.cpp
-  line_renderer.cpp
-  iactor_component.cpp
-  game.cpp
-  collision_2d.cpp
-     Creating library C:\Users\Bombshell\Downloads\Atlas (1)\Atlas\Debug\Pantheon.lib and object C:\Users\Bombshell\Downloads\Atlas (1)\Atlas\Debug\Pantheon.exp
-  Pantheon.vcxproj -> C:\Users\Bombshell\Downloads\Atlas (1)\Atlas\Debug\Pantheon.dll
+﻿  audio.cpp
+c:\users\bombshell\documents\github\atlas\pantheon\audio.cpp(23): warning C4800: 'ALboolean': forcing value to bool 'true' or 'false' (performance warning)
+c:\users\bombshell\documents\github\atlas\pantheon\audio.cpp(36): warning C4800: 'ALboolean': forcing value to bool 'true' or 'false' (performance warning)
+     Creating library C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Pantheon.lib and object C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Pantheon.exp
+  Pantheon.vcxproj -> C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Pantheon.dll
