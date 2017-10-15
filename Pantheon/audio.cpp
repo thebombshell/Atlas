@@ -18,10 +18,16 @@ class Audio::AudioImpl {
 	friend class Audio;
 
 	AudioImpl() {
-
 		
-		bool isSuccess = alureInitDevice( NULL, NULL );
+		ALCint attribs[]
+			{ ALC_REFRESH, 20
+			, ALC_SYNC, 0
+			, 0 };
+		bool isSuccess = alureInitDevice( NULL, attribs );
 		assert( isSuccess && "Audio device could not be initialized." );
+
+		alListener3f( AL_POSITION, 0.0f, 0.0f, 0.0f );
+		alListener3f( AL_VELOCITY, 0.0f, 0.0f, 0.0f );
 
 	}
 
