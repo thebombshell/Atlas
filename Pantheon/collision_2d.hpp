@@ -63,12 +63,12 @@ namespace pantheon {
 		class CollisionImpl;
 		CollisionImpl* m_collision{ nullptr };
 
-		Collision2DManager();
+		Collision2DManager( ConstructCollisionPermit& );
 		~Collision2DManager();
 
 	public:
 
-		static IGameCollision* createInstance();
+		static IGameCollision* createInstance( ConstructCollisionPermit& );
 
 		void simulate() override;
 

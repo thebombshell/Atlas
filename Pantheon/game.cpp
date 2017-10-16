@@ -26,7 +26,11 @@ class Game::GameImpl {
 
 	friend class Game;
 
-	GameImpl() {
+	GameImpl
+		( ConstructRendererPermit& t_rendererPermit
+		, ConstructCollisionPermit& t_collisionPermit ) 
+		: m_rendererPermit{ t_rendererPermit }
+		, m_collisionPermit{ t_collisionPermit } {
 
 		// initialize, make error knowable if occured
 
@@ -148,7 +152,7 @@ class Game::GameImpl {
 
 	void logicThread() {
 
-		m_collision = m_collisionCreateFunc();
+		m_collision = m_collisionCreateFunc( m_collisionPermit );
 		m_gameStartFunc();
 
 		unsigned long long previousFrameTicks{ SDL_GetPerformanceCounter() };
@@ -221,7 +225,7 @@ class Game::GameImpl {
 
 		// initialize renderer
 
-		m_renderer = m_rendererCreateFunc();
+		m_renderer = m_rendererCreateFunc( m_rendererPermit );
 
 		while ( m_gameState == GAME_STATE_RUNNING ) {
 
@@ -268,8 +272,8 @@ class Game::GameImpl {
 
 	void start
 		( void(*t_gameStartFunc)()
-		, IGameRenderer*(*t_rendererCreateFunc)()
-		, IGameCollision*(*t_collisionCreateFunc)()) {
+		, IGameRenderer::CreateInstance t_rendererCreateFunc
+		, IGameCollision::CreateInstance t_collisionCreateFunc) {
 
 		m_gameStartFunc = t_gameStartFunc;
 		m_rendererCreateFunc = t_rendererCreateFunc;
@@ -333,9 +337,11 @@ class Game::GameImpl {
 	Scene* m_scene{ nullptr };
 	Audio* m_audio{ nullptr };
 	void( *m_gameStartFunc )( ) { nullptr };
-	IGameRenderer*(*m_rendererCreateFunc)() { nullptr };
+	ConstructRendererPermit& m_rendererPermit;
+	ConstructCollisionPermit& m_collisionPermit;
+	IGameRenderer::CreateInstance m_rendererCreateFunc { nullptr };
+	IGameCollision::CreateInstance m_collisionCreateFunc { nullptr };
 	IGameRenderer* m_renderer{ nullptr };
-	IGameCollision*(*m_collisionCreateFunc)() { nullptr };
 	IGameCollision* m_collision{ nullptr };
 
 	bool m_hasRendered{ false };
@@ -347,7 +353,7 @@ class Game::GameImpl {
 
 Game::Game() {
 	
-	m_game = new GameImpl();
+	m_game = new GameImpl(m_rendererPermit, m_collisionPermit);
 }
 
 Game::~Game() {
@@ -363,8 +369,8 @@ int Game::getError() {
 
 void Game::start
 	( void( *t_gameStartFunc )( )
-	, IGameRenderer*( *t_rendererCreateFunc )( )
-	, IGameCollision*( *t_collisionCreateFunc )( ) ) {
+	, IGameRenderer*( *t_rendererCreateFunc )( ConstructRendererPermit& )
+	, IGameCollision*( *t_collisionCreateFunc )( ConstructCollisionPermit& ) ) {
 
 	m_game->start( t_gameStartFunc, t_rendererCreateFunc, t_collisionCreateFunc );
 }

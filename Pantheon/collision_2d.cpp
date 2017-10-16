@@ -132,7 +132,8 @@ class Collision2DManager::CollisionImpl {
 	std::vector<Collision2DComponent*> m_collidables;
 };
 
-Collision2DManager::Collision2DManager() {
+Collision2DManager::Collision2DManager( ConstructCollisionPermit& t_permit ) 
+	: IGameCollision( t_permit ) {
 
 	m_collision = new CollisionImpl();
 }
@@ -142,9 +143,9 @@ Collision2DManager::~Collision2DManager() {
 	delete m_collision;
 }
 
-IGameCollision* Collision2DManager::createInstance() {
+IGameCollision* Collision2DManager::createInstance( ConstructCollisionPermit& t_permit ) {
 	
-	return new Collision2DManager();
+	return new Collision2DManager( t_permit );
 }
 
 void Collision2DManager::simulate() {

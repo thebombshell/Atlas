@@ -21,16 +21,29 @@ namespace pantheon {
 	class P_ConstructCollision;
 	class P_CallUpdatables;
 	class P_CallRenderables;
+	class P_AccessGl;
 	typedef Permission<Game, P_ConstructRenderer> ConstructRendererPermit;
 	typedef Permission<Game, P_ConstructCollision> ConstructCollisionPermit;
 	typedef Permission<Game, P_CallUpdatables> CallUpdatablesPermit;
 	typedef Permission<Game, P_CallRenderables> CallRenderablesPermit;
+	typedef Permission<IGameRenderer, P_AccessGl> AccessGlPermit;
 
 	// interface for a renderer
 
 	class PANTHEON_API IGameRenderer {
 
 	public:
+
+		typedef IGameRenderer* (*CreateInstance)( ConstructRendererPermit& );
+
+		IGameRenderer( ConstructRendererPermit& t_permit ) {
+
+			t_permit.use();
+		}
+
+		virtual ~IGameRenderer() = 0 {
+
+		}
 
 		// given exclusive access to the rendering context, render the scene
 
@@ -52,6 +65,17 @@ namespace pantheon {
 
 	public:
 
+		typedef IGameCollision* (*CreateInstance)(ConstructCollisionPermit&);
+
+		IGameCollision( ConstructCollisionPermit& t_permit ) {
+
+			t_permit.use();
+		}
+
+		virtual ~IGameCollision() = 0 {
+
+		}
+
 		// assuming exclusive access to actors, simulate collisions
 
 		virtual void simulate() = 0;
@@ -71,6 +95,8 @@ namespace pantheon {
 
 		class GameImpl;
 		GameImpl* m_game{ nullptr };
+		ConstructCollisionPermit m_collisionPermit;
+		ConstructRendererPermit m_rendererPermit;
 
 	public:
 
@@ -92,12 +118,12 @@ namespace pantheon {
 
 		void start
 			( void( *t_gameStartFunc )( )
-			, IGameRenderer*( *t_rendererCreateFunc )( )
-			, IGameCollision*( *t_collisionCreateFunc )( ) );
+			, IGameRenderer::CreateInstance t_rendererCreateFunc
+			, IGameCollision::CreateInstance t_collisionCreateFunc );
 		static void Start
-			( void( *t_gameStartFunc )( )
-			, IGameRenderer*( *t_rendererCreateFunc )( )
-			, IGameCollision*( *t_collisionCreateFunc )( ) ) {
+			( void( *t_gameStartFunc )()
+				, IGameRenderer::CreateInstance t_rendererCreateFunc
+				, IGameCollision::CreateInstance t_collisionCreateFunc ) {
 
 			getInstance().start( t_gameStartFunc, t_rendererCreateFunc
 				, t_collisionCreateFunc );

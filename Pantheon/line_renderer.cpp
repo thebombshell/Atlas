@@ -289,7 +289,7 @@ class LineRenderer::LineRendererImpl {
 			int isError = getFileAsString( t_path, outString );
 			if ( isError ) {
 
-				SDL_assert( false && "Could not load shader file" );
+				assert( false && "Could not load shader file" );
 			}
 			return outString;
 		};
@@ -304,8 +304,8 @@ class LineRenderer::LineRendererImpl {
 			, attributes, m_programId, errorString );
 		if ( isError ) {
 
-			SDL_Log( "Could not create program: %s", errorString );
-			SDL_assert( false );
+			printf( ("Could not create program:" + errorString).c_str() );
+			assert( false );
 		}
 
 		m_window = SDL_GL_GetCurrentWindow();
@@ -465,7 +465,7 @@ class LineRenderer::LineRendererImpl {
 	SDL_Window* m_window;
 };
 
-LineRenderer::LineRenderer() {
+LineRenderer::LineRenderer( ConstructRendererPermit& t_permit ) : IGameRenderer{ t_permit } {
 
 	m_lineRenderer = new LineRendererImpl();
 }
@@ -494,8 +494,8 @@ void LineRenderer::afterActorsDraw() {
 
 }
 
-IGameRenderer* LineRenderer::createInstance() {
+IGameRenderer* LineRenderer::createInstance( ConstructRendererPermit& t_permit ) {
 
-	return new LineRenderer();
+	return new LineRenderer( t_permit );
 }
 

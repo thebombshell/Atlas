@@ -19,6 +19,8 @@ namespace pantheon {
 	class Actor;
 	class Audio;
 	class IActorComponent;
+	class IGameCollision;
+	class IGameRenderer;
 	class Game;
 	class Input;
 	class Scene;

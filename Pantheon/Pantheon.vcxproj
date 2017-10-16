@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClInclude Include="actor.hpp" />
     <ClInclude Include="audio.hpp" />
+    <ClInclude Include="gl_objects.hpp" />
     <ClInclude Include="iactor_component.hpp" />
     <ClInclude Include="collision_2d.hpp" />
     <ClInclude Include="game.hpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="push_buffer.hpp" />
     <ClInclude Include="scene.hpp" />
     <ClInclude Include="shapes_2d.hpp" />
+    <ClInclude Include="sprite_renderer.hpp" />
     <ClInclude Include="static_subscriber_event.hpp" />
     <ClInclude Include="text_data_file.hpp" />
     <ClInclude Include="transform.hpp" />
@@ -173,11 +175,15 @@
     <ClCompile Include="audio.cpp" />
     <ClCompile Include="collision_2d.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="gl_helpers.cpp" />
+    <ClCompile Include="gl_objects.cpp" />
+    <ClCompile Include="helpers.cpp" />
     <ClCompile Include="iactor_component.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="line_renderer.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="shapes_2d.cpp" />
+    <ClCompile Include="sprite_renderer.cpp" />
     <ClCompile Include="text_data_file.cpp" />
     <ClCompile Include="transform.cpp" />
   </ItemGroup>

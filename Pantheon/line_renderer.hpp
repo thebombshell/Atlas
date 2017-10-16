@@ -141,7 +141,7 @@ namespace pantheon {
 
 	private:
 
-		LineRenderer();
+		LineRenderer( ConstructRendererPermit& );
 		~LineRenderer();
 
 		class LineRendererImpl;
@@ -149,7 +149,7 @@ namespace pantheon {
 
 	public:
 
-		static IGameRenderer* createInstance();
+		static IGameRenderer* createInstance( ConstructRendererPermit& );
 
 		void render() override;
 
