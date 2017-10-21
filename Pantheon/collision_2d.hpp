@@ -16,12 +16,16 @@
 
 namespace pantheon {
 
+	class Collision2DMessage;
 	class Collision2DComponent;
+	class Collision2DManager;
 
 	// permissions
 
 	class P_Collision2DRegistry;
+	class P_CallPhysics2DIncrement;
 	typedef Permission<Collision2DComponent, P_Collision2DRegistry> Collision2DRegistryPermit;
+	typedef Permission<Collision2DManager, P_Collision2DRegistry> CallPhysics2DIncrementPermit;
 
 	struct Collision2DMessage : public IActorEventMessage {
 
@@ -70,7 +74,7 @@ namespace pantheon {
 
 		static IGameCollision* createInstance( ConstructCollisionPermit& );
 
-		void simulate() override;
+		void simulate( float t_delta ) override;
 
 		// register and unregister collision components
 

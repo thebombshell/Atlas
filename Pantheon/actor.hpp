@@ -148,6 +148,11 @@ namespace pantheon {
 
 			return m_transform;
 		}
+
+		Transform2D getTransform2D() {
+
+			return m_transform;
+		}
 	};
 }
 

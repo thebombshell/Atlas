@@ -5,23 +5,18 @@
 
 #include "helpers.hpp"
 
+#include <fstream>
+
 using namespace pantheon;
 
-int pantheon::getFileAsString
-	( std::string t_path
-	, std::string& t_outContents ) {
+std::string pantheon::getFileAsString( std::string t_path ) {
 
 	std::ifstream file;
+	file.exceptions( std::ifstream::badbit | std::ifstream::failbit | std::ifstream::eofbit );
 	file.open( t_path );
-	if ( file.is_open() ) {
-		std::string contents(
-			(std::istreambuf_iterator<char>( file )),
-			(std::istreambuf_iterator<char>()) );
-		t_outContents = contents;
-	}
-	else {
-		return PANTHEON_ERROR;
-	}
+	std::string contents(
+		(std::istreambuf_iterator<char>( file )),
+		(std::istreambuf_iterator<char>()) );
+	return contents;
 
-	return PANTHEON_OK;
 }

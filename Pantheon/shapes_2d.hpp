@@ -152,7 +152,6 @@ namespace pantheon {
 
 		virtual std::vector<glm::vec2> getPoints() const override;
 
-
 		std::vector<glm::vec2> points;
 	};
 

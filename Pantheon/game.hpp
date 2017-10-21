@@ -78,7 +78,7 @@ namespace pantheon {
 
 		// assuming exclusive access to actors, simulate collisions
 
-		virtual void simulate() = 0;
+		virtual void simulate( float t_delta ) = 0;
 
 	};
 
@@ -168,7 +168,7 @@ namespace pantheon {
 		template<typename T>
 		static T* const GetRendererAs() {
 
-			return dynamic_cast<T* const>(&getInstance().getRenderer());
+			return dynamic_cast<T*>(&(getInstance().getRenderer()));
 		}
 
 		IGameCollision& Game::getCollisionManager();

@@ -1,11 +1,11 @@
-#version 120
+#version 150
 
 attribute vec3 attributePosition;
 attribute vec3 attributeColor;
 attribute vec2 attributeTexture;
 
-varying vec3 varyingColor;
-varying vec2 varyingTexture;
+out vec3 varyingColor;
+out vec2 varyingTexture;
 
 uniform mat4 uniformView;
 uniform mat4 uniformProjection;

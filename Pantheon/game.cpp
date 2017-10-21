@@ -10,8 +10,11 @@
 #define GLEW_DYNAMIC
 #include <algorithm>
 #include <GL\glew.h>
+#include <mutex>
+#include <queue>
 #include <SDL.h>
-#include <set>
+#include <SDL_image.h>
+#include <thread>
 
 using namespace pantheon;
 
@@ -53,10 +56,20 @@ class Game::GameImpl {
 
 		// initialize sdl
 
-		int isError = SDL_Init( SDL_INIT_EVERYTHING );
+		int isError = SDL_Init( SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC );
 		if ( isError ) {
 
 			SDL_Log( "SDL did not initialize correctly: %s", SDL_GetError() );
+			return PANTHEON_ERROR;
+		}
+
+		// initialize sdl image loading extension
+
+		int flags = IMG_INIT_JPG | IMG_INIT_PNG;
+		isError = IMG_Init( flags );
+		if ( (isError & flags) != flags ) {
+
+			SDL_Log( "SDL_Image did not initialize correctly: %s", IMG_GetError() );
 			return PANTHEON_ERROR;
 		}
 
@@ -79,10 +92,6 @@ class Game::GameImpl {
 
 		m_context = SDL_GL_CreateContext( m_window );
 		m_eventContext = SDL_GL_CreateContext( m_window );
-
-		// create and render mutex
-
-		m_renderMutex = SDL_CreateMutex();
 
 		// create supporting objects
 
@@ -108,6 +117,10 @@ class Game::GameImpl {
 			delete m_input;
 			delete m_scene;
 			delete m_audio;
+
+			// shutdown sdl extentions
+
+			IMG_Quit();
 
 			// shutdown sdl
 
@@ -153,8 +166,9 @@ class Game::GameImpl {
 	void logicThread() {
 
 		m_collision = m_collisionCreateFunc( m_collisionPermit );
-		m_gameStartFunc();
 
+		while ( m_renderer == nullptr );
+		m_gameStartFunc();
 		unsigned long long previousFrameTicks{ SDL_GetPerformanceCounter() };
 		while ( m_gameState == GAME_STATE_RUNNING ) {
 
@@ -167,11 +181,11 @@ class Game::GameImpl {
 			CallUpdatablesPermit updatePermit;
 			IUpdatable::call( updatePermit, timeDelta );
 
-			m_collision->simulate();
+			m_collision->simulate( timeDelta );
 
 			// try to get exclusive renderer access
 
-			if ( m_renderer != nullptr && SDL_TryLockMutex( m_renderMutex ) == 0 ) {
+			if ( m_renderer != nullptr && m_renderMutex.try_lock() ) {
 
 				m_renderer->beforeActorsDraw();
 
@@ -184,9 +198,8 @@ class Game::GameImpl {
 
 				m_hasRendered = false;
 
-				// return renderer access
+				m_renderMutex.unlock();
 
-				SDL_UnlockMutex( m_renderMutex );
 			}
 			else {
 
@@ -215,8 +228,8 @@ class Game::GameImpl {
 		if ( isError ) {
 
 			SDL_Log
-			( "Glew did not initialize correctly: %s"
-				, glewGetErrorString( isError ) );
+				( "Glew did not initialize correctly: %s"
+					, glewGetErrorString( isError ) );
 			return;
 		}
 
@@ -233,7 +246,7 @@ class Game::GameImpl {
 
 			if ( !m_hasRendered ) {
 
-				SDL_LockMutex( m_renderMutex );
+				std::lock_guard<std::mutex> guard{ m_renderMutex };
 
 				// start frame
 
@@ -248,11 +261,8 @@ class Game::GameImpl {
 				SDL_GL_SwapWindow( m_window );
 				m_hasRendered = true;
 
-				// end frame
-
-				SDL_UnlockMutex( m_renderMutex );
 			}
-			
+
 			SDL_Delay( 0 );
 		}
 
@@ -285,12 +295,11 @@ class Game::GameImpl {
 
 		// start logic thread
 		
-		m_logicThread = SDL_CreateThread( logicThreadFunc, "Pantheon Logic Thread", this );
+		m_logicThread = new std::thread( logicThreadFunc, this );
 
 		// start render thread
 
-		m_renderThread = SDL_CreateThread( renderThreadFunc, "Pantheon Render Thread", this );
-		SDL_DetachThread( m_renderThread );
+		m_renderThread = new std::thread( renderThreadFunc, this );
 
 		// enter in event loop
 		
@@ -330,9 +339,9 @@ class Game::GameImpl {
 	SDL_Window* m_window{ nullptr };
 	SDL_GLContext m_context, m_eventContext;
 
-	SDL_mutex* m_renderMutex{ nullptr };
-	SDL_Thread* m_logicThread{ nullptr };
-	SDL_Thread* m_renderThread{ nullptr };
+	std::mutex m_renderMutex;
+	std::thread* m_logicThread{ nullptr };
+	std::thread* m_renderThread{ nullptr };
 	Input* m_input{ nullptr };
 	Scene* m_scene{ nullptr };
 	Audio* m_audio{ nullptr };

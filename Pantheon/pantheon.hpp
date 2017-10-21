@@ -30,6 +30,7 @@ namespace pantheon {
 #ifdef PANTHEON_EXPORTS
 
 #define PANTHEON_API __declspec(dllexport) 
+#define PANTHEON_GL_DEBUG
 
 #else
 
@@ -39,6 +40,7 @@ namespace pantheon {
 #include <game.hpp>
 #include <iactor_component.hpp>
 #include <transform.hpp>
+#define pthn pantheon
 
 #endif //PANTHEON_EXPORT
 

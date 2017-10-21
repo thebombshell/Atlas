@@ -4,11 +4,15 @@ c:\users\bombshell\documents\github\atlas\pantheon\debug\actor.obj
 c:\users\bombshell\documents\github\atlas\pantheon\debug\audio.obj
 c:\users\bombshell\documents\github\atlas\pantheon\debug\collision_2d.obj
 c:\users\bombshell\documents\github\atlas\pantheon\debug\game.obj
+c:\users\bombshell\documents\github\atlas\pantheon\debug\gl_helpers.obj
+c:\users\bombshell\documents\github\atlas\pantheon\debug\gl_objects.obj
+c:\users\bombshell\documents\github\atlas\pantheon\debug\helpers.obj
 c:\users\bombshell\documents\github\atlas\pantheon\debug\iactor_component.obj
 c:\users\bombshell\documents\github\atlas\pantheon\debug\input.obj
 c:\users\bombshell\documents\github\atlas\pantheon\debug\line_renderer.obj
 c:\users\bombshell\documents\github\atlas\pantheon\debug\scene.obj
 c:\users\bombshell\documents\github\atlas\pantheon\debug\shapes_2d.obj
+c:\users\bombshell\documents\github\atlas\pantheon\debug\sprite_renderer.obj
 c:\users\bombshell\documents\github\atlas\pantheon\debug\text_data_file.obj
 c:\users\bombshell\documents\github\atlas\pantheon\debug\transform.obj
 c:\users\bombshell\documents\github\atlas\debug\pantheon.ilk

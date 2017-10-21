@@ -1,11 +1,16 @@
-#version 120
+#version 150
 
-varying vec3 varyingColor;
-varying vec2 varyingTexture;
+in vec3 varyingColor;
+in vec2 varyingTexture;
 
 uniform sampler2D uniformSampler;
 
+out vec4 outColour;
+
 void main( void ) {
 
-	gl_FragColor = vec4( texture2D(uniformSampler, varyingTexture).xyz * varyingColor, 1.0 );
+	ivec2 texRes = textureSize( uniformSampler, 0 );
+	vec2 texCoords = vec2( varyingTexture.x / float( texRes.x ), varyingTexture.y / float( texRes.y ) );
+	vec4 texSample = texture2D(uniformSampler, texCoords);
+	outColour = vec4( texSample.xyz * varyingColor, 1.0 );
 }

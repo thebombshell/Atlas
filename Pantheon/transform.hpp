@@ -14,44 +14,56 @@
 
 namespace pantheon {
 
+	// forward declarations
+
+	class Transform2D;
+	class Transform;
+
+	// 2D transform class
+
+	struct PANTHEON_API Transform2D {
+
+	public:
+
+		Transform2D();
+		Transform2D( const Transform2D& t_other );
+		Transform2D( const Transform& t_other );
+		Transform2D( const glm::vec2& t_position );
+		Transform2D( const glm::vec3& t_positionAndDepth );
+		Transform2D( const glm::vec2& t_position, const glm::vec2& t_scale );
+		Transform2D( const glm::vec3& t_positionAndDepth, const glm::vec2& t_scale );
+		Transform2D( const glm::vec2& t_position, const glm::vec2& t_scale, float t_rotation );
+		Transform2D( const glm::vec3& t_positionAndDepth, const glm::vec2& t_scale, float t_rotation );
+		~Transform2D();
+
+		glm::vec2 findUp() const;
+		glm::vec2 findDown() const;
+		glm::vec2 findRight() const;
+		glm::vec2 findLeft() const;
+		glm::mat3 findMatrix() const;
+
+		glm::vec2 position{ 0.0f, 0.0f };
+		glm::vec2 scale{ 1.0f, 1.0f };
+		float rotation{ 0.0f };
+		float depth{ 0.0f };
+
+	private:
+
+	};
+
+	// 3D transform class
+
 	struct PANTHEON_API Transform {
 
 	public:
 
-		Transform()
-			: position{ 0.0f, 0.0f, 0.0f }
-			, rotation{ 1.0f, 0.0f, 0.0f, 0.0f }
-			, scale{ 1.0f, 1.0f, 1.0f } {
-		}
+		Transform();
+		Transform( const Transform& t_other );
+		Transform( glm::vec3 t_position );
+		Transform( glm::vec3 t_position, glm::quat t_rotation );
+		Transform( glm::vec3 t_position, glm::quat t_rotation, glm::vec3 t_scale );
 
-		Transform( const Transform& t_other ) 
-			: position{ t_other.position }
-			, rotation{ t_other.rotation }
-			, scale{ t_other.scale } {
-
-		}
-
-		Transform( glm::vec3 t_position )
-			: position{ t_position } {
-
-		}
-
-		Transform( glm::vec3 t_position, glm::quat t_rotation )
-			: position{ t_position }
-			, rotation{ t_rotation } {
-
-		}
-
-		Transform( glm::vec3 t_position, glm::quat t_rotation, glm::vec3 t_scale )
-			: position{ t_position }
-			, rotation{ t_rotation }
-			, scale{ t_scale } {
-
-		}
-
-		~Transform() {
-
-		}
+		~Transform();
 
 		glm::vec3 findUp() const;
 		glm::vec3 findDown() const;
@@ -76,4 +88,4 @@ namespace pantheon {
 	static Transform operator*( const Transform& t_a, const Transform& t_b );
 }
 
-#endif // PANTHEON_TRANSFORM_HPP
+#endif

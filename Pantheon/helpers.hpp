@@ -8,8 +8,7 @@
 
 #include "pantheon.hpp"
 
-#include <assert.h>
-#include <fstream>
+#include <string>
 
 namespace pantheon {
 
@@ -65,10 +64,7 @@ namespace pantheon {
 
 	// reads a file and returns its contents as a string
 
-	PANTHEON_API int getFileAsString(
-		std::string t_path,
-		std::string& t_outContents
-		);
+	PANTHEON_API std::string getFileAsString( std::string t_path );
 
 }
 

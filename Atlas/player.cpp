@@ -150,7 +150,7 @@ void Player::render() {
 		, { m_vertices[3][0], m_vertices[3][1], m_vertices[3][2]
 		, colour[0], colour[1], colour[2] } };
 	LineRendererMessage message
-	{ vertices, vertices + 4, getOwner().getTransform().findMatrix() };
+	{ vertices, vertices + 4, getOwner().getTransform2D().findMatrix() };
 	message.loop();
 
 	renderer->queueDraw( message );

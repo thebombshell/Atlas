@@ -1,8 +1,3 @@
-﻿  gl_helpers.cpp
-  Generating Code...
-  Compiling...
-  sprite_renderer.cpp
-  line_renderer.cpp
-  Generating Code...
-     Creating library C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Pantheon.lib and object C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Pantheon.exp
+﻿  physics_component.cpp
+c:\users\bombshell\documents\github\atlas\pantheon\physics_component.cpp(36): warning C4189: 'imass': local variable is initialized but not referenced
   Pantheon.vcxproj -> C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Pantheon.dll

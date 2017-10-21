@@ -5,7 +5,7 @@
 
 #include "line_renderer.hpp"
 
-#include "gl_helpers.hpp"
+#include "gl_objects.hpp"
 #include "helpers.hpp"
 #include "push_buffer.hpp"
 #include "shapes_2d.hpp"
@@ -268,65 +268,52 @@ class LineRenderer::LineRendererImpl {
 
 	void initialize() {
 
-		// create buffers
+		GlShader vertexShader{ GlShader::vertexShader() };
+		vertexShader.compileFromFile( "shaders/color_line_vs_120.glsl" );
+		GlShader fragmentShader{ GlShader::fragmentShader() };
+		fragmentShader.compileFromFile( "shaders/color_line_fs_120.glsl" );
+		m_program.attachShader( vertexShader );
+		m_program.attachShader( fragmentShader );
+		m_program.bindAttributeLocation( "attributePosition", 0 );
+		m_program.bindAttributeLocation( "attributeColor", 1 );
+		m_program.link();
 
-		glGenBuffers( 1, &m_bufferId );
-		glGenVertexArrays( 1, &m_vertexArrayId );
-
-		// define array
-
-		glBindVertexArray( m_vertexArrayId );
-		glBindBuffer( GL_ARRAY_BUFFER, m_bufferId );
-		glEnableVertexAttribArray( 0 );
-		glEnableVertexAttribArray( 1 );
-		glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 24, (void*)(0) );
-		glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, 24, (void*)(12) );
-		glBindVertexArray( NULL );
-
-		auto getShaderString = []( std::string t_path )->std::string {
-
-			std::string outString;
-			int isError = getFileAsString( t_path, outString );
-			if ( isError ) {
-
-				assert( false && "Could not load shader file" );
-			}
-			return outString;
+		GlVertexAttribute attributes[2] = {
+			GlVertexAttribute::floatAttribute( 3 ),
+			GlVertexAttribute::floatAttribute( 3 )
 		};
 
-		std::vector<std::pair<char*, int>> attributes
-			{ { "attributePosition", 0 }, { "attributeColor", 1 } };
+		m_definition = new GlVertexDefinition{ attributes, attributes + 2 };
 
-		std::string errorString;
-		int isError = createProgram
-			( getShaderString( "shaders/color_line_vs_120.glsl" )
-			, getShaderString( "shaders/color_line_fs_120.glsl" )
-			, attributes, m_programId, errorString );
-		if ( isError ) {
+		GlGuard guards[] = {
+			{ m_buffer },
+			{ *m_definition },
+			{ m_vertexArrayObject }
+		};
 
-			printf( ("Could not create program:" + errorString).c_str() );
-			assert( false );
-		}
+		m_vertexArrayObject.bind();
+		m_buffer.bindToArray();
+		m_definition->bind();
 
 		m_window = SDL_GL_GetCurrentWindow();
-
 	}
 
 	void finalize() {
 
-		glDeleteBuffers( 1, &m_bufferId );
-		glDeleteVertexArrays( 1, &m_vertexArrayId );
+		delete m_definition;
 	}
 
 	void updateVertexBuffer() {
 
-		glBindBuffer( GL_ARRAY_BUFFER, m_bufferId );
-		glBufferData
-			( GL_ARRAY_BUFFER
-			, m_dataLength * sizeof( float )
-			, &(m_vertexData[0])
-			, GL_DYNAMIC_DRAW );
-		glBindBuffer( GL_ARRAY_BUFFER, NULL );
+		GlGuard guards[] = {
+			{ *m_definition },
+			{ m_buffer },
+			{ m_vertexArrayObject }
+		};
+		m_vertexArrayObject.bind();
+		m_buffer.bindToArray();
+		m_buffer.fillDynamicDraw( m_vertexData, m_dataLength * sizeof( float ) );
+		m_definition->bind();
 	}
 
 	// given the current state of Game, sets up the view matrix and sends it to the shader
@@ -347,11 +334,7 @@ class LineRenderer::LineRendererImpl {
 
 		// upload to shader
 
-		glUniformMatrix4fv(
-			glGetUniformLocation( m_programId, "uniformView" )
-			, 1
-			, GL_FALSE
-			, view );
+		m_program.getUniform( "uniformView" ).setValue( std::vector<float>{ view, view + 16 } );
 	}
 
 	// given the current state of Game, sets up the projection matrix and sends it to the shader
@@ -386,8 +369,7 @@ class LineRenderer::LineRendererImpl {
 		glm::mat4 projectionMatrix{ glm::ortho(
 			halfViewWidth, -halfViewWidth, -halfViewHeight, halfViewHeight, -1.0f, 1.0f ) };
 		float* projection{ glm::value_ptr( projectionMatrix ) };
-		glUniformMatrix4fv(
-			glGetUniformLocation( m_programId, "uniformProjection" ), 1, GL_FALSE, projection );
+		m_program.getUniform( "uniformProjection" ).setValue( std::vector<float>{ projection, projection + 16 } );
 	}
 
 	void render() {
@@ -401,16 +383,33 @@ class LineRenderer::LineRendererImpl {
 		glEnable( GL_BLEND );
 		glBlendFunc( GL_ONE, GL_ONE );
 		glViewport( 0, 0, windowWidth, windowHeight );
+		m_definition->enable();
+
 		updateVertexBuffer();
-		glUseProgram( m_programId );
+
+		GlGuard guards[] = {
+			{ *m_definition },
+			{ m_program },
+			{ m_vertexArrayObject }
+		};
+		m_program.bind();
+
 		setupViewMatrix();
 		setupProjectionMatrix();
-		glBindVertexArray( m_vertexArrayId );
-		glDrawArrays( GL_TRIANGLE_STRIP, 0, m_dataLength / 6 );
+
+		m_vertexArrayObject.bind();
+
+		try {
+
+			glDrawArrays( GL_TRIANGLE_STRIP, 0, m_dataLength / 6 );
+		}
+		catch ( const std::exception& e ) {
+
+			printf( e.what() );
+		}
 	}
 
-	void queueDraw( std::vector<LineRendererVertex>& t_vertices
-		, glm::mat4& t_matrix ) {
+	void queueDraw( std::vector<LineRendererVertex>& t_vertices, glm::mat3& t_matrix ) {
 
 		PushBuffer<float> buffer( static_cast<int>(t_vertices.size() * 12) );
 		auto begin = t_vertices.begin();
@@ -440,11 +439,9 @@ class LineRenderer::LineRendererImpl {
 
 					begin = end;
 				}
-				glm::vec3 position = t_matrix 
-					* glm::vec4(glm::make_vec3( end->position ), 1.0f);
+				glm::vec3 position = t_matrix * glm::vec3(glm::make_vec2( end->position ), 1.0f);
 				end->position[0] = position[0];
 				end->position[1] = position[1];
-				end->position[2] = position[2];
 			}
 		};
 		std::copy( buffer.pointer, buffer.pointer + buffer.size
@@ -457,9 +454,11 @@ class LineRenderer::LineRendererImpl {
 		m_dataLength = 0;
 	}
 
-	unsigned int m_bufferId;
-	unsigned int m_vertexArrayId;
-	unsigned int m_programId;
+	GlBuffer m_buffer;
+	GlVAObject m_vertexArrayObject;
+	GlProgram m_program;
+	GlVertexDefinition* m_definition;
+
 	float* m_vertexData;
 	unsigned int m_dataLength{ 0 };
 	SDL_Window* m_window;

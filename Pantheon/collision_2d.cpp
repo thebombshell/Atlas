@@ -5,6 +5,8 @@
 
 #include "collision_2d.hpp"
 
+#include "physics_component.hpp"
+
 #include <algorithm>
 
 using namespace pantheon;
@@ -118,8 +120,10 @@ class Collision2DManager::CollisionImpl {
 		}
 	}
 
-	void simulate() {
+	void simulate( float t_delta ) {
 
+		CallPhysics2DIncrementPermit permit;
+		PhysicsComponent2D::call( permit, t_delta );
 		for( auto component : m_collidables ) {
 
 			if ( component->isActive() ) {
@@ -148,9 +152,9 @@ IGameCollision* Collision2DManager::createInstance( ConstructCollisionPermit& t_
 	return new Collision2DManager( t_permit );
 }
 
-void Collision2DManager::simulate() {
+void Collision2DManager::simulate( float t_delta ) {
 
-	m_collision->simulate();
+	m_collision->simulate( t_delta );
 }
 
 void Collision2DManager::registerComponent( Collision2DRegistryPermit& t_permit

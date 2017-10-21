@@ -43,7 +43,7 @@ namespace atlas {
 
 		void render( void ) override;
 
-		void onEventMessage( pantheon::IActorEventMessage* const )override;
+		void onEventMessage( pantheon::IActorEventMessage* const ) override;
 
 	};
 }

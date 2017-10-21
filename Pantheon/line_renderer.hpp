@@ -87,7 +87,7 @@ namespace pantheon {
 
 		}
 
-		LineRendererMessage( const glm::mat4& t_transform )
+		LineRendererMessage( const glm::mat3& t_transform )
 			: vertices{ }, transform{ t_transform } {
 
 		}
@@ -99,7 +99,7 @@ namespace pantheon {
 		}
 
 		template<typename T>
-		LineRendererMessage( T t_begin, T t_end, const glm::mat4& t_transform )
+		LineRendererMessage( T t_begin, T t_end, const glm::mat3& t_transform )
 			: vertices{ t_begin, t_end }, transform{ t_transform } {
 
 		}
@@ -132,7 +132,7 @@ namespace pantheon {
 		}
 
 		std::vector<LineRendererVertex> vertices;
-		glm::mat4 transform;
+		glm::mat3 transform;
 	};
 
 	// public implementation of thick line renderer
