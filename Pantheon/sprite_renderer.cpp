@@ -116,7 +116,7 @@ class SpriteRenderer::SpriteRendererImpl {
 		// set up essential variables
 
 		glm::vec3 eye{ m_viewPostion, 0.0f };
-		glm::vec3 look{ 0.0f, 0.0f, 1.0f };
+		glm::vec3 look{ m_viewPostion, 1.0f };
 		glm::vec3 up{ 0.0f, 1.0f, 0.0f };
 
 		// create view matrix
@@ -360,6 +360,16 @@ void SpriteRenderer::unloadTexture( const std::string& t_name ) {
 void SpriteRenderer::queueDraw( const SpriteRendererMessage& t_message ) {
 
 	m_renderer->queueDraw( t_message );
+}
+
+glm::vec2 SpriteRenderer::getPosition() const {
+
+	return m_renderer->m_viewPostion;
+}
+
+float SpriteRenderer::getViewDistance() const {
+
+	return m_renderer->m_minViewDistance;
 }
 
 IGameRenderer* SpriteRenderer::createInstance( ConstructRendererPermit& t_permit ) {

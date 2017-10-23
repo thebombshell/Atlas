@@ -7,6 +7,18 @@
 
 using namespace pantheon;
 
+
+///////////////////////////////////////////////////////////////////////////////
+// PhysicsCollisionMessage2D
+///////////////////////////////////////////////////////////////////////////////
+
+PhysicsCollisionMessage2D::PhysicsCollisionMessage2D( ConstructPhysicsCollisionMessage2DPermit& t_permit,
+	const glm::vec2& t_resolve, const glm::vec2& t_force, PhysicsComponent2D& t_other )
+	: resolve{ t_resolve }, force{ t_force }, other{ t_other } {
+	t_permit.use();
+
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // PhysicsComponent2D
 ///////////////////////////////////////////////////////////////////////////////
@@ -30,6 +42,7 @@ void PhysicsComponent2D::increment( float t_delta ) {
 
 		velocity += PhysicsComponent2D::g_gravity * t_delta;
 	}
+	velocity -= velocity * airResistance * t_delta;
 
 	Transform& transform = getOwner().getTransform();
 	assert( mass > 0.0f  && "mass must be more than zero" );
@@ -39,10 +52,24 @@ void PhysicsComponent2D::increment( float t_delta ) {
 	
 }
 
-void PhysicsComponent2D::onCollision( const glm::vec2& t_resolve ) {
+void PhysicsComponent2D::onCollision( const glm::vec2& t_resolve, const glm::vec2& t_force, PhysicsComponent2D& t_other  ) {
 
+	if ( glm::length2( t_force ) >= 0.001f ) {
+
+		glm::vec2 axis = glm::normalize( t_force );
+		assert( mass > 0.0f  && "mass must be more than zero" );
+		float ifriction = 1.0f - friction;
+		float iMass = 1.0f / mass;
+		glm::vec2 velAxis = glm::normalize( velocity );
+		glm::vec2 bounceVelocity = velocity * -glm::dot( velocity, axis );
+		glm::vec2 frictionVelocity = velocity + bounceVelocity;
+		velocity = bounceVelocity * bounce + frictionVelocity * ifriction + t_force * iMass;
+	}
 	Transform& transform = getOwner().getTransform();
 	transform.position += glm::vec3( t_resolve, 0.0f );
+	ConstructPhysicsCollisionMessage2DPermit permit{};
+	PhysicsCollisionMessage2D message{ permit, t_resolve, t_force, t_other };
+	getOwner().dispatchEvent( message );
 }
 
 void PhysicsComponent2D::onEventMessage( pantheon::IActorEventMessage* const t_message ) {
@@ -59,19 +86,41 @@ void PhysicsComponent2D::onEventMessage( pantheon::IActorEventMessage* const t_m
 				return;
 			}
 
-			if ( !other.isKinematic() ) {
+			if ( !isKinematic() && !other.isKinematic() ) {
 
-				onCollision( -collision.axis * collision.separation * 0.5f );
-				other.onCollision( collision.axis * collision.separation * 0.5f );
+				float force = glm::dot( velocity, -collision.axis );
+				if ( force > 0.0f ) {
+
+					velocity += force * collision.axis;
+					force = mass * force;
+				}
+				else {
+
+					force = 0.0f;
+				}
+				float otherForce = glm::dot( other.velocity, collision.axis );
+				if ( otherForce > 0.0f ) {
+
+					other.velocity += otherForce * collision.axis;
+					otherForce = other.mass * otherForce;
+				}
+				else {
+
+					otherForce = 0.0f;
+				}
+				otherForce = otherForce > 0.0f ? otherForce : 0.0f;
+				float totalForce = force + otherForce;
+				float totalMass = mass + other.mass;
+				float massFactor = mass / totalMass;
+				onCollision( -collision.axis * collision.separation * massFactor
+					, collision.axis * massFactor * totalForce, other );
+				other.onCollision( collision.axis * collision.separation * ( 1.0f - massFactor )
+					, -collision.axis * ( 1.0f - massFactor ) * totalForce, *this );
 			}
-			else {
+			else if (!isKinematic()) {
 
-				float ifriction = 1.0f - friction;
-				glm::vec2 velAxis = glm::normalize( velocity );
-				glm::vec2 bounceVelocity = collision.axis * -glm::dot( velocity, collision.axis );
-				glm::vec2 frictionVelocity = velocity + bounceVelocity;
-				velocity = bounceVelocity * bounce + frictionVelocity * ifriction;
-				onCollision( -collision.axis * collision.separation );
+				onCollision( -collision.axis * collision.separation
+					, { 0.0f, 0.0f }, other );
 			}
 		}
 	}

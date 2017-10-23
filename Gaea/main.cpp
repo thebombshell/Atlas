@@ -21,9 +21,17 @@ int main() {
 
 	Game::Start<SpriteRenderer, Collision2DManager>( []() {
 
+
+		PhysicsComponent2D::setGravity( { 0.0f, -8.0f } );
 		Game::GetScene().createPrefab<TestPrefab>();
-		auto& floor = Game::GetScene().createPrefab<FloorPrefab>();
-		floor.getTransform().position = { 0.0f, -2.0f, 0.0f };
+		BlockMessage messageA{ { 0.0f, -2.0f }, { 50.0f, 1.0f }, false };
+		BlockMessage messageB{ { 2.0f, 1.0f }, { 2.0f, 2.0f }, true };
+		BlockMessage messageC{ { 4.0f, 1.0f }, { 1.0f, 1.0f }, true };
+		BlockMessage messageD{ { -4.0f, 1.0f }, { 1.0f, 1.0f }, true };
+		Game::GetScene().createPrefab<BlockPrefab>( messageA );
+		Game::GetScene().createPrefab<BlockPrefab>( messageB );
+		Game::GetScene().createPrefab<BlockPrefab>( messageC );
+		Game::GetScene().createPrefab<BlockPrefab>( messageD );
 	} );
 
 	return 0;

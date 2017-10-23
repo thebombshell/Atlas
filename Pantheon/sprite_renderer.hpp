@@ -55,6 +55,10 @@ namespace pantheon {
 
 		void afterActorsDraw() override;
 
+		glm::vec2 getPosition() const;
+
+		float getViewDistance() const;
+
 	private:
 
 		SpriteRenderer( ConstructRendererPermit& );

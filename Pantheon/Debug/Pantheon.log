@@ -1,3 +1,4 @@
 ﻿  physics_component.cpp
-c:\users\bombshell\documents\github\atlas\pantheon\physics_component.cpp(36): warning C4189: 'imass': local variable is initialized but not referenced
-  Pantheon.vcxproj -> C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Pantheon.dll
+d:\git\atlas\pantheon\physics_component.cpp(49): warning C4189: 'imass': local variable is initialized but not referenced
+  Pantheon.vcxproj -> D:\GIT\Atlas\Debug\Pantheon.dll
+  Pantheon.vcxproj -> D:\GIT\Atlas\Debug\Pantheon.pdb (Full PDB)
