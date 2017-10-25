@@ -25,6 +25,17 @@ using namespace pantheon;
 
 const float PI2 = float( M_PI ) * 2;
 
+glm::vec3 cols[4] = 
+	{ { 1.0f, 1.0f, 0.0f }
+	, { 0.0f, 1.0f, 1.0f }
+	, { 1.0f, 0.0f, 1.0f }
+	, { 0.0f, 1.0f, 0.0f } };
+glm::vec2 spawns[4] =
+	{ { -200.0f, 50.0f }
+	, { 200.0f, 50.0f }
+	, { -200.0f, -50.0f }
+	, { 200.0f, -50.0f } };
+
 Player::Player( pantheon::ConstructComponentPermit& t_permit, Actor& t_owner, const PlayerInfo& t_info )
 	: IActorComponent( t_permit, t_owner ), m_index{ t_info.index }
 	, m_input{ PlayerInputProfile::fromIndex( t_info.index ) }
@@ -34,7 +45,8 @@ Player::Player( pantheon::ConstructComponentPermit& t_permit, Actor& t_owner, co
 	t_owner.createComponent<ShipMoveComponent>();
 	t_owner.createComponent<ShootComponent>();
 
-	t_owner.getTransform().position = t_info.position;
+	Transform& transform = t_owner.getTransform();
+	transform.position = glm::vec3{ spawns[t_info.index], 0.0f };
 
 	setupVertices();
 	setupColliders();
@@ -82,21 +94,28 @@ void Player::setupVertices() {
 void Player::update( float t_delta ) {
 
 	const Input& input = Game::GetInput();
+	Transform& transform = getOwner().getTransform();
 
 	// handle death
 
 	if ( m_respawnTimer > 0.0f ) {
 
 		m_respawnTimer -= t_delta;
-		m_shieldTimer = 3.0f;
+		m_shieldTimer = 1.0f;
 		if ( m_respawnTimer <= 0.0f ) {
 
 			getOwner().getComponent<Collision2DComponent>().enable();
 		}
+		return;
 	}
 	else if ( m_shieldTimer > 0.0f ) {
 
 		m_shieldTimer -= t_delta;
+
+		if ( transform.position[0] > 128.0f || transform.position[0] < -128.0f
+			|| transform.position[1] > 127.0f || transform.position[1] < -128.0f ) {
+			m_shieldTimer = 1.0f;
+		}
 	}
 
 	// handle movement
@@ -110,7 +129,7 @@ void Player::update( float t_delta ) {
 
 	if ( input.isKeyDown( m_input.fire ) && m_shieldTimer <= 0.0f ) {
 
-		getOwner().getComponent<ShootComponent>().shoot();
+		getOwner().getComponent<ShootComponent>().shoot( cols[m_index] );
 	}
 }
 
@@ -131,11 +150,11 @@ void Player::render() {
 
 	// handle colour
 
-	glm::vec3 colour = { 1.0f, 1.0f, 1.0f };
+	glm::vec3 colour = cols[m_index];
 
 	if ( m_shieldTimer > 0.0f ) {
 
-		colour = glm::vec3(1.0f, 1.0f, 1.0f) * cos( m_shieldTimer * PI2 * 2.0f );
+		colour = cols[m_index] * cos( m_shieldTimer * PI2 * 2.0f );
 	}
 
 	// create render message and queue to draw
@@ -173,22 +192,22 @@ bool Player::kill() {
 
 	if ( m_shieldTimer <= 0.0f ) {
 
-		m_respawnTimer = 5.0f;
+		m_respawnTimer = 1.0f;
 		Actor& owner = getOwner();
-		ExplodeInfo info = ExplodeInfo( owner.getTransform().position
-			, owner.getComponent<ShipMoveComponent>().getVelocity()
-			, owner.getTransform().scale[0] );
+		ExplodeInfo info = ExplodeInfo( owner.getTransform()
+			, owner.getComponent<ShipMoveComponent>().getVelocity() );
 		Game::GetScene().createPrefab<ExplodeComponent>( info );
 		owner.getTransform().reset();
-		float offset = (PI2 / 8) * m_index;
-		owner.getTransform().position = { cos( offset ) * 50.0f, sin( offset ) * 50.0f, 0.0f };
+		owner.getTransform().position = { spawns[m_index][0], spawns[m_index][1], 0.0f };
 		owner.getComponent<ShipMoveComponent>().reset();
 		owner.getComponent<Collision2DComponent>().disable();
 		return true;
 	}
 	return false;
 }
-
+bool Player::isKillable() {
+	return m_shieldTimer <= 0.0f;
+}
 void Player::grow() {
 
 	getOwner().getTransform().scale += glm::vec3( 1.0f, 1.0f, 1.0f );

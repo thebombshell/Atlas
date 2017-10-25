@@ -278,6 +278,24 @@ class LineRenderer::LineRendererImpl {
 		m_program.bindAttributeLocation( "attributeColor", 1 );
 		m_program.link();
 
+		try {
+
+			GlShader clearVertexShader{ GlShader::vertexShader() };
+			clearVertexShader.compileFromFile( "shaders/fsq_vs_330.glsl" );
+			GlShader clearGeometryShader{ GlShader::geometryShader() };
+			clearGeometryShader.compileFromFile( "shaders/fsq_gs_330.glsl" );
+			GlShader clearFragmentShader{ GlShader::fragmentShader() };
+			clearFragmentShader.compileFromFile( "shaders/clear_fs_330.glsl" );
+			m_clearProgram.attachShader( clearVertexShader );
+			m_clearProgram.attachShader( clearGeometryShader );
+			m_clearProgram.attachShader( clearFragmentShader );
+			m_clearProgram.link();
+		}
+		catch ( const std::exception& e ) {
+
+			printf( e.what() );
+			std::rethrow_exception( std::current_exception() );
+		}
 		GlVertexAttribute attributes[2] = {
 			GlVertexAttribute::floatAttribute( 3 ),
 			GlVertexAttribute::floatAttribute( 3 )
@@ -378,9 +396,14 @@ class LineRenderer::LineRendererImpl {
 		int windowHeight{ 720 };
 		SDL_GetWindowSize( m_window, &windowWidth, &windowHeight );
 
+		glEnable( GL_BLEND );
+		glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+		m_clearProgram.bind();
+		m_clearProgram.getUniform( "uniformColour" ).setValue( std::vector<float>{ 0.0f, 0.0f, 0.0f, 0.5f } );
+		glDrawArrays( GL_POINTS, 0, 1 );
+
 		glDisable( GL_DEPTH_TEST );
 		glDisable( GL_CULL_FACE );
-		glEnable( GL_BLEND );
 		glBlendFunc( GL_ONE, GL_ONE );
 		glViewport( 0, 0, windowWidth, windowHeight );
 		m_definition->enable();
@@ -457,6 +480,7 @@ class LineRenderer::LineRendererImpl {
 	GlBuffer m_buffer;
 	GlVAObject m_vertexArrayObject;
 	GlProgram m_program;
+	GlProgram m_clearProgram;
 	GlVertexDefinition* m_definition;
 
 	float* m_vertexData;

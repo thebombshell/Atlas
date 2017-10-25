@@ -15,14 +15,15 @@ namespace atlas {
 
 	public:
 
-		BulletInfo( pantheon::Actor& t_firer, glm::vec2 t_position, glm::vec2 t_velocity )
-			: firer( t_firer ), position( t_position ), velocity( t_velocity ) {
+		BulletInfo( pantheon::Actor& t_firer, glm::vec2 t_position, glm::vec2 t_velocity, glm::vec3 t_colour )
+			: firer( t_firer ), position( t_position ), velocity( t_velocity ), colour{ t_colour } {
 
 		}
 
 		pantheon::Actor& firer;
 		glm::vec2 position;
 		glm::vec2 velocity;
+		glm::vec3 colour;
 	};
 
 	class Bullet : public pantheon::IUpdatable, pantheon::IRenderable {
@@ -31,6 +32,7 @@ namespace atlas {
 
 		pantheon::Actor& m_firer;
 		glm::vec2 m_velocity;
+		glm::vec3 m_colour;
 		float m_timer{ 0.0f };
 		pantheon::Circle m_collider;
 

@@ -15,7 +15,7 @@ using namespace pantheon;
 
 Bullet::Bullet( ConstructComponentPermit& t_permit, pantheon::Actor& t_owner
 	, const BulletInfo& t_info ) : IActorComponent( t_permit, t_owner )
-	, m_firer{ t_info.firer }, m_velocity{ t_info.velocity } 
+	, m_firer{ t_info.firer }, m_velocity{ t_info.velocity }, m_colour{ t_info.colour }
 	, m_collider{ t_owner.getTransform(), 1.0f } {
 
 	t_owner.createComponent<Collision2DComponent>();
@@ -52,7 +52,7 @@ void Bullet::render() {
 	Transform& transform = getOwner().getTransform();
 
 	LineRendererVertex vertices[2]
-		{ { transform.position[0], transform.position[1], 0.5f, 1.0f, 0.2f, 0.2f }
+		{ { transform.position[0], transform.position[1], 0.5f, m_colour[0] + 0.2f, m_colour[1] + 0.2f, m_colour[2] + 0.2f }
 		, { transform.position[0] - m_velocity[0] * 0.08f
 		, transform.position[1] - m_velocity[1] * 0.08f, 0.5f
 		, 0.0f, 0.0f, 0.0f } };

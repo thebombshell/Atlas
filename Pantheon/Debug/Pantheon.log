@@ -1,4 +1,22 @@
-﻿  physics_component.cpp
-d:\git\atlas\pantheon\physics_component.cpp(49): warning C4189: 'imass': local variable is initialized but not referenced
-  Pantheon.vcxproj -> D:\GIT\Atlas\Debug\Pantheon.dll
-  Pantheon.vcxproj -> D:\GIT\Atlas\Debug\Pantheon.pdb (Full PDB)
+﻿  transform.cpp
+  text_data_file.cpp
+  sprite_renderer.cpp
+  shapes_2d.cpp
+  scene.cpp
+  physics_component.cpp
+c:\users\bombshell\documents\github\atlas\pantheon\physics_component.cpp(49): warning C4189: 'imass': local variable is initialized but not referenced
+  line_renderer.cpp
+  input.cpp
+  iactor_component.cpp
+  helpers.cpp
+  gl_objects.cpp
+  gl_helpers.cpp
+  game.cpp
+  collision_2d.cpp
+  audio.cpp
+c:\users\bombshell\documents\github\atlas\pantheon\audio.cpp(26): warning C4800: 'ALboolean': forcing value to bool 'true' or 'false' (performance warning)
+c:\users\bombshell\documents\github\atlas\pantheon\audio.cpp(46): warning C4800: 'ALboolean': forcing value to bool 'true' or 'false' (performance warning)
+  actor.cpp
+  Generating Code...
+     Creating library C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Pantheon.lib and object C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Pantheon.exp
+  Pantheon.vcxproj -> C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Pantheon.dll

@@ -1,2 +1,7 @@
-﻿  Atlas.vcxproj -> D:\GIT\Atlas\Debug\Atlas.exe
-  Atlas.vcxproj -> D:\GIT\Atlas\Debug\Atlas.pdb (Full PDB)
+﻿  player.cpp
+  main.cpp
+  explode_component.cpp
+  default_level.cpp
+  bullet.cpp
+  Generating Code...
+  Atlas.vcxproj -> C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Atlas.exe

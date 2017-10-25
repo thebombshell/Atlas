@@ -14,53 +14,57 @@ namespace atlas {
 
 	public:
 
-		ExplodeInfo( glm::vec3 t_position, glm::vec2 t_direction, float t_scale ) 
-			: position{ t_position }, direction { t_direction }, scale{ t_scale } {
+		ExplodeInfo( pthn::Transform t_transform, glm::vec2 t_velocity ) 
+			: transform{ t_transform }, velocity{ t_velocity } {
 
 		}
 
-		glm::vec3 position;
-		glm::vec2 direction;
-		float scale;
+		pthn::Transform transform;
+		glm::vec2 velocity;
 
 	};
 
-	class ExplodeComponent : public pantheon::IUpdatable, pantheon::IRenderable {
+	class ExplodeComponent : public pthn::IUpdatable, pthn::IRenderable {
 
 	private:
 
-		pantheon::Source* m_source;
+		pthn::Source* m_source;
 		float m_timer{ 0.0f };
 		glm::vec2 m_velocity;
+		glm::vec2 m_vertices[4];
+		glm::vec2 m_normals[4];
 		float m_scale;
 
 	public:
-		ExplodeComponent( pantheon::ConstructComponentPermit& t_permit
-			, pantheon::Actor& t_owner, const ExplodeInfo& t_info )
+		ExplodeComponent( pthn::ConstructComponentPermit& t_permit
+			, pthn::Actor& t_owner, const ExplodeInfo& t_info )
 			: IActorComponent{ t_permit, t_owner }
-			, m_velocity{ t_info.direction }, m_scale{ t_info.scale } {
+			, m_velocity{ t_info.velocity } {
 
-			pantheon::Audio& audio = pantheon::Game::GetAudio();
+			pthn::Audio& audio = pthn::Game::GetAudio();
 			if ( !audio.hasSound( "explode" ) ) {
 
 				audio.loadSound( "audio/explode-01.wav", "explode" );
 			}
 			m_source = audio.createSource( "explode" );
-			m_source->play();
-			getOwner().getTransform().position = t_info.position;
+			m_source->play(); 
+			setupVertices();
+			getOwner().getTransform() = t_info.transform;
 		}
 
 		~ExplodeComponent() {
 
-			pantheon::Game::GetAudio().deleteSource( m_source );
+			pthn::Game::GetAudio().deleteSource( m_source );
 		}
+
+		void setupVertices();
 
 		void update( float t_delta ) {
 
 			m_timer += t_delta;
 			if ( m_timer > 3.0f ) {
 
-				pantheon::Game::GetScene().destroyActor( &getOwner() );
+				pthn::Game::GetScene().destroyActor( &getOwner() );
 			}
 		}
 

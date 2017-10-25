@@ -24,9 +24,13 @@ int main() {
 	Game::Start<LineRenderer, Collision2DManager>( []() {
 
 		pantheon::Game::GetScene().createPrefab<Player>(
-			PlayerInfo( 0, { -50.0f, 0.0f, 0.0f } ) );
+			PlayerInfo( 0 ) );
 		pantheon::Game::GetScene().createPrefab<Player>(
-			PlayerInfo( 1, { 50.0f, 0.0f, 0.0f } ) );
+			PlayerInfo( 1 ) );
+		pantheon::Game::GetScene().createPrefab<Player>(
+			PlayerInfo( 2 ) );
+		pantheon::Game::GetScene().createPrefab<Player>(
+			PlayerInfo( 3 ) );
 		pantheon::Game::GetScene().createPrefab<DefaultLevel>();
 	} );
 	

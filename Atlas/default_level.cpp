@@ -24,6 +24,14 @@ void atlas::DefaultLevel::update( float ) {
 	Game::GetScene().forEach( [](Actor* const t_actor) {
 
 		glm::vec3& position = t_actor->getTransform().position;
+		if ( t_actor->hasComponent<Player>() ) {
+
+			Player& player = t_actor->getComponent<Player>();
+			if ( !player.isKillable() ) {
+
+				return;
+			}
+		}
 		if ( position[0] > 128.0f ) {
 
 			position[0] -= 256.0f;

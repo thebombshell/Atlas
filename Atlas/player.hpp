@@ -37,12 +37,29 @@ namespace atlas {
 
 		static PlayerInputProfile fromIndex(int index) {
 
-			std::string joystick = "joystick" + std::to_string( index );
-			return{
-				joystick + "_axis1", "NA",
-				joystick + "_axis0", "NA",
-				joystick + "_button0"
-			};
+			std::string joystick = "";
+			switch ( index ) {
+				case 0:
+				case 1:
+					joystick = "joystick" + std::to_string( index );
+					return{
+						joystick + "_axis1", "NA",
+						joystick + "_axis0", "NA",
+						joystick + "_button4"
+					};
+					break;
+				case 2:
+				case 3:
+					joystick = "joystick" + std::to_string( index - 2 );
+					return{
+						joystick + "_axis4", "NA",
+						joystick + "_axis3", "NA",
+						joystick + "_button5"
+					};
+					break;
+
+			}
+			return{ };
 		}
 
 		std::string forward;
@@ -58,13 +75,11 @@ namespace atlas {
 
 	public:
 
-		PlayerInfo( int t_index, const glm::vec3& t_position )
-			: index( t_index ), position{ t_position } {
+		PlayerInfo( int t_index ) : index( t_index ) {
 
 		}
 
 		const int index;
-		const glm::vec3 position;
 	};
 
 	class Player : public pantheon::IUpdatable, public pantheon::IRenderable {
@@ -81,7 +96,7 @@ namespace atlas {
 		pantheon::ConvexHull m_colliders[2];
 
 		float m_respawnTimer{ 0.0f };
-		float m_shieldTimer{ 0.0f };
+		float m_shieldTimer{ 1.0f };
 
 	public:
 
@@ -96,6 +111,8 @@ namespace atlas {
 		void onEventMessage( pantheon::IActorEventMessage* const ) override;
 
 		bool kill();
+
+		bool isKillable();
 
 		void grow();
 	};

@@ -1,0 +1,33 @@
+﻿  transform.cpp
+c:\users\bombshell\documents\github\atlas\pantheon\pantheon.hpp(12): fatal error C1083: Cannot open include file: 'glm\glm.hpp': No such file or directory
+  text_data_file.cpp
+c:\users\bombshell\documents\github\atlas\pantheon\pantheon.hpp(12): fatal error C1083: Cannot open include file: 'glm\glm.hpp': No such file or directory
+  sprite_renderer.cpp
+c:\users\bombshell\documents\github\atlas\pantheon\pantheon.hpp(12): fatal error C1083: Cannot open include file: 'glm\glm.hpp': No such file or directory
+  shapes_2d.cpp
+c:\users\bombshell\documents\github\atlas\pantheon\pantheon.hpp(12): fatal error C1083: Cannot open include file: 'glm\glm.hpp': No such file or directory
+  scene.cpp
+c:\users\bombshell\documents\github\atlas\pantheon\pantheon.hpp(12): fatal error C1083: Cannot open include file: 'glm\glm.hpp': No such file or directory
+  physics_component.cpp
+c:\users\bombshell\documents\github\atlas\pantheon\pantheon.hpp(12): fatal error C1083: Cannot open include file: 'glm\glm.hpp': No such file or directory
+  line_renderer.cpp
+c:\users\bombshell\documents\github\atlas\pantheon\pantheon.hpp(12): fatal error C1083: Cannot open include file: 'glm\glm.hpp': No such file or directory
+  input.cpp
+c:\users\bombshell\documents\github\atlas\pantheon\pantheon.hpp(12): fatal error C1083: Cannot open include file: 'glm\glm.hpp': No such file or directory
+  iactor_component.cpp
+c:\users\bombshell\documents\github\atlas\pantheon\pantheon.hpp(12): fatal error C1083: Cannot open include file: 'glm\glm.hpp': No such file or directory
+  helpers.cpp
+c:\users\bombshell\documents\github\atlas\pantheon\pantheon.hpp(12): fatal error C1083: Cannot open include file: 'glm\glm.hpp': No such file or directory
+  gl_objects.cpp
+c:\users\bombshell\documents\github\atlas\pantheon\pantheon.hpp(12): fatal error C1083: Cannot open include file: 'glm\glm.hpp': No such file or directory
+  gl_helpers.cpp
+c:\users\bombshell\documents\github\atlas\pantheon\pantheon.hpp(12): fatal error C1083: Cannot open include file: 'glm\glm.hpp': No such file or directory
+  game.cpp
+c:\users\bombshell\documents\github\atlas\pantheon\pantheon.hpp(12): fatal error C1083: Cannot open include file: 'glm\glm.hpp': No such file or directory
+  collision_2d.cpp
+c:\users\bombshell\documents\github\atlas\pantheon\pantheon.hpp(12): fatal error C1083: Cannot open include file: 'glm\glm.hpp': No such file or directory
+  audio.cpp
+c:\users\bombshell\documents\github\atlas\pantheon\pantheon.hpp(12): fatal error C1083: Cannot open include file: 'glm\glm.hpp': No such file or directory
+  actor.cpp
+c:\users\bombshell\documents\github\atlas\pantheon\pantheon.hpp(12): fatal error C1083: Cannot open include file: 'glm\glm.hpp': No such file or directory
+  Generating Code...
