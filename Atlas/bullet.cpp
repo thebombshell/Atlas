@@ -19,7 +19,10 @@ Bullet::Bullet( ConstructComponentPermit& t_permit, pantheon::Actor& t_owner
 	, m_collider{ t_owner.getTransform(), 1.0f } {
 
 	t_owner.createComponent<Collision2DComponent>();
-	t_owner.getComponent<Collision2DComponent>().addCollider( &m_collider );
+	Collision2DComponent& collision = t_owner.getComponent<Collision2DComponent>();
+	collision.addCollider( &m_collider );
+	collision.setCollisionFlags(1 << 5);
+	collision.setCollideWithFlags( (1 | 2 | 4 | 8) & ~t_info.flag );
 	t_owner.getTransform().position = glm::vec3( t_info.position, 0.5f );
 }
 

@@ -203,7 +203,7 @@ class Game::GameImpl {
 			}
 			else {
 
-				SDL_Delay( 2 );
+				SDL_Delay( 0 );
 			}
 		}
 

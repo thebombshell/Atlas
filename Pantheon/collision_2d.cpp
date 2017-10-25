@@ -6,6 +6,7 @@
 #include "collision_2d.hpp"
 
 #include "physics_component.hpp"
+#include "spatial_hash_map.hpp"
 
 #include <algorithm>
 
@@ -33,18 +34,36 @@ Collision2DComponent::~Collision2DComponent() {
 	collision->unregisterComponent( registryPermit, this );
 }
 
-void pantheon::Collision2DComponent::addCollider( ICollider2D * const t_collider ) {
+void Collision2DComponent::addCollider( ICollider2D * const t_collider ) {
 
 	assert( std::find( m_colliders.begin(), m_colliders.end(), t_collider )
 		== m_colliders.end() && "Collider is already added to component" );
 	m_colliders.push_back( t_collider );
 }
 
-void pantheon::Collision2DComponent::removeCollider( ICollider2D * const t_collider ) {
+void Collision2DComponent::removeCollider( ICollider2D * const t_collider ) {
 
 	auto iter = std::find( m_colliders.begin(), m_colliders.end(), t_collider );
 	assert( iter != m_colliders.end() && "Collider does not exist in component" );
 	m_colliders.erase( iter );
+}
+
+void Collision2DComponent::setCollisionFlags( unsigned int t_flags ) {
+
+	m_collisionFlags = t_flags;
+}
+unsigned int Collision2DComponent::getCollissionFlags() {
+
+	return m_collisionFlags;
+}
+
+void Collision2DComponent::setCollideWithFlags( unsigned int t_flags ) {
+
+	m_collideWithFlags = t_flags;
+}
+unsigned int Collision2DComponent::getCollideWithFlags() {
+
+	return m_collideWithFlags;
 }
 
 const std::vector<ICollider2D*>& pantheon::Collision2DComponent::getColliders() const {
@@ -56,7 +75,7 @@ class Collision2DManager::CollisionImpl {
 
 	friend class Collision2DManager;
 
-	CollisionImpl() {
+	CollisionImpl() : m_spatialHashMap{ 32 } {
 
 	}
 
@@ -111,7 +130,8 @@ class Collision2DManager::CollisionImpl {
 		for( auto other : m_collidables ) {
 
 			std::vector<Collision2D> results;
-			if ( other->isActive() && t_component != other 
+			if ( other->isActive() && t_component != other
+				&& t_component->getCollideWithFlags() & other->getCollissionFlags()
 				&& findCollisionsBetweenActors( t_component, other, results ) ) {
 
 				t_component->getOwner().dispatchEvent<Collision2DMessage>
@@ -124,7 +144,9 @@ class Collision2DManager::CollisionImpl {
 
 		CallPhysics2DIncrementPermit permit;
 		PhysicsComponent2D::call( permit, t_delta );
-		for( auto component : m_collidables ) {
+
+
+		for ( auto component : m_collidables ) {
 
 			if ( component->isActive() ) {
 			
@@ -134,6 +156,7 @@ class Collision2DManager::CollisionImpl {
 	}
 
 	std::vector<Collision2DComponent*> m_collidables;
+	SpatialHashMap2D<Collision2DComponent> m_spatialHashMap;
 };
 
 Collision2DManager::Collision2DManager( ConstructCollisionPermit& t_permit ) 

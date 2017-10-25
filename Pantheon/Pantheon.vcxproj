@@ -166,6 +166,7 @@
     <ClInclude Include="push_buffer.hpp" />
     <ClInclude Include="scene.hpp" />
     <ClInclude Include="shapes_2d.hpp" />
+    <ClInclude Include="spatial_hash_map.hpp" />
     <ClInclude Include="sprite_renderer.hpp" />
     <ClInclude Include="static_subscriber_event.hpp" />
     <ClInclude Include="text_data_file.hpp" />

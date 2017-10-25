@@ -126,6 +126,11 @@ std::vector<glm::vec2> pantheon::Circle::getPoints() const {
 	return { transform.position };
 }
 
+glm::vec4 Circle::getBounds() const {
+
+	return { glm::vec2( transform.position ) - radius, glm::vec2( transform.position ) + radius };
+}
+
 std::vector<glm::vec2> ConvexHull::getAxes( const ICollider2D * const )
 	const {
 
@@ -164,6 +169,32 @@ std::vector<glm::vec2> ConvexHull::getPoints() const {
 		newPoints.push_back( matrix * glm::vec4(point, 0.0f, 1.0f) );
 	}
 	return newPoints;
+}
+
+glm::vec4 ConvexHull::getBounds() const {
+
+	glm::vec2 min = points[0];
+	glm::vec2 max = points[0];
+	for ( auto& point : points ) {
+
+		if ( point[0] < min[0] ) {
+
+			min[0] = point[0];
+		}
+		else if ( point[0] > max[0] ) {
+
+			max[0] = point[0];
+		}
+		if ( point[1] < min[1] ) {
+
+			min[1] = point[1];
+		}
+		else if ( point[1] > max[1] ) {
+
+			max[1] = point[1];
+		}
+	}
+	return{ min, max };
 }
 
 Ray2D Ray2D::fromLineSegment( glm::vec2 t_start, glm::vec2 t_end ) {

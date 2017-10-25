@@ -47,9 +47,6 @@ namespace pantheon {
 
 	class PANTHEON_API Collision2DComponent : public IActorComponent {
 
-	private:
-		
-		std::vector<ICollider2D*> m_colliders;
 	public:
 
 		Collision2DComponent(ConstructComponentPermit&, Actor& t_owner);
@@ -57,7 +54,17 @@ namespace pantheon {
 
 		void addCollider( ICollider2D* const t_collider );
 		void removeCollider( ICollider2D* const t_collider );
+		void setCollisionFlags( unsigned int t_flags );
+		unsigned int getCollissionFlags();
+		void setCollideWithFlags( unsigned int t_flags);
+		unsigned int getCollideWithFlags();
 		const std::vector<ICollider2D*>& getColliders() const;
+
+	private:
+
+		unsigned int m_collisionFlags{ 0xffffffff };
+		unsigned int m_collideWithFlags{ 0xffffffff };
+		std::vector<ICollider2D*> m_colliders;
 
 	};
 

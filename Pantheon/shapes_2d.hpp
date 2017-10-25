@@ -41,6 +41,10 @@ namespace pantheon {
 
 		virtual std::vector<glm::vec2> getPoints() const = 0;
 
+		// returns approximate axis aligned boundings
+
+		virtual glm::vec4 getBounds() const = 0;
+
 		const Transform& transform;
 	};
 
@@ -124,6 +128,8 @@ namespace pantheon {
 
 		virtual std::vector<glm::vec2> getPoints() const override;
 
+		glm::vec4 getBounds() const override;
+
 		float radius{ 1.0f };
 	};
 
@@ -151,6 +157,8 @@ namespace pantheon {
 		virtual glm::vec2 getBounds( const glm::vec2 & t_axis ) const override;
 
 		virtual std::vector<glm::vec2> getPoints() const override;
+
+		glm::vec4 getBounds() const override;
 
 		std::vector<glm::vec2> points;
 	};

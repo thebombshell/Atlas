@@ -43,7 +43,7 @@ namespace atlas {
 			}
 		}
 
-		bool shoot( glm::vec3 t_colour ) {
+		bool shoot( glm::vec3 t_colour, unsigned int t_flag ) {
 
 			if ( m_shootTimer <= 0.0f ) {
 
@@ -53,7 +53,7 @@ namespace atlas {
 				pantheon::Game::GetScene().createPrefab<Bullet>(
 					BulletInfo( owner
 						, transform.position + up * transform.scale * 5.0f
-						, transform.findUp() * 160.0f, t_colour ) );
+						, transform.findUp() * 160.0f, t_colour, t_flag ) );
 				m_shootTimer = cooldown;
 				m_source->play();
 				return true;

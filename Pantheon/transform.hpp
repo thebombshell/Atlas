@@ -12,6 +12,8 @@
 #include <glm\gtc\quaternion.hpp>
 #include <glm\gtx\quaternion.hpp>
 
+//#include <memory>
+
 namespace pantheon {
 
 	// forward declarations
@@ -49,6 +51,11 @@ namespace pantheon {
 
 	private:
 
+		//glm::vec2 old_position{ 0.0f, 0.0f };
+		//glm::vec2 old_scale{ 1.0f, 1.0f };
+		//float old_rotation{ 0.0f };
+
+		//std::unique_ptr<glm::mat3> m_matrix{ std::make_unique<glm::mat3>() };
 	};
 
 	// 3D transform class
@@ -83,6 +90,16 @@ namespace pantheon {
 		glm::vec3 position{ 0.0f, 0.0f, 0.0f };
 		glm::quat rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
 		glm::vec3 scale{ 1.0f, 1.0f, 1.0f };
+
+	private:
+
+		Transform( bool ) : m_old{ nullptr }, m_old_mat{ nullptr } {
+
+		}
+
+		Transform* m_old;
+		glm::mat4* m_old_mat;
+		
 	};
 
 	static Transform operator*( const Transform& t_a, const Transform& t_b );

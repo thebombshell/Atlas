@@ -15,8 +15,8 @@ namespace atlas {
 
 	public:
 
-		BulletInfo( pantheon::Actor& t_firer, glm::vec2 t_position, glm::vec2 t_velocity, glm::vec3 t_colour )
-			: firer( t_firer ), position( t_position ), velocity( t_velocity ), colour{ t_colour } {
+		BulletInfo( pantheon::Actor& t_firer, glm::vec2 t_position, glm::vec2 t_velocity, glm::vec3 t_colour, unsigned int t_flag )
+			: firer( t_firer ), position( t_position ), velocity( t_velocity ), colour{ t_colour }, flag{ t_flag } {
 
 		}
 
@@ -24,6 +24,7 @@ namespace atlas {
 		glm::vec2 position;
 		glm::vec2 velocity;
 		glm::vec3 colour;
+		unsigned int flag;
 	};
 
 	class Bullet : public pantheon::IUpdatable, pantheon::IRenderable {

@@ -74,6 +74,9 @@ void Player::setupColliders() {
 		getOwner().getComponent<Collision2DComponent>();
 	collisionComponent.addCollider( &m_colliders[0] );
 	collisionComponent.addCollider( &m_colliders[1] );
+	unsigned int collisionFlags = 1 << m_index;
+	collisionComponent.setCollisionFlags( collisionFlags );
+	collisionComponent.setCollideWithFlags( 0xffffffff & ~collisionFlags );
 }
 
 void Player::setupVertices() {
@@ -129,7 +132,7 @@ void Player::update( float t_delta ) {
 
 	if ( input.isKeyDown( m_input.fire ) && m_shieldTimer <= 0.0f ) {
 
-		getOwner().getComponent<ShootComponent>().shoot( cols[m_index] );
+		getOwner().getComponent<ShootComponent>().shoot( cols[m_index], 1 << m_index );
 	}
 }
 

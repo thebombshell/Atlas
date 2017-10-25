@@ -1,7 +1,8 @@
-﻿  player.cpp
+﻿  bullet.cpp
+  Generating Code...
+  Skipping... (no relevant changes detected)
+  player.cpp
   main.cpp
   explode_component.cpp
   default_level.cpp
-  bullet.cpp
-  Generating Code...
   Atlas.vcxproj -> C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Atlas.exe

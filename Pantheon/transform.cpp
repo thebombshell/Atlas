@@ -91,27 +91,31 @@ glm::mat3 Transform2D::findMatrix() const {
 // Transform
 ///////////////////////////////////////////////////////////////////////////////
 
-Transform::Transform() {
+Transform::Transform() : m_old{ new Transform( true ) }, m_old_mat{ new glm::mat4() } {
 
 }
-Transform::Transform( const Transform& t_other )
-	: position{ t_other.position }, rotation{ t_other.rotation }, scale{ t_other.scale } {
+Transform::Transform( const Transform& t_other ) : m_old{ new Transform( true ) }, m_old_mat{ new glm::mat4() }
+	, position{ t_other.position }, rotation{ t_other.rotation }, scale{ t_other.scale } {
 
 }
-Transform::Transform( glm::vec3 t_position )
-	: position{ t_position } {
+Transform::Transform( glm::vec3 t_position ) : m_old{ new Transform( true ) }, m_old_mat{ new glm::mat4() }
+	, position{ t_position } {
 
 }
-Transform::Transform( glm::vec3 t_position, glm::quat t_rotation )
-	: position{ t_position }, rotation{ t_rotation } {
+Transform::Transform( glm::vec3 t_position, glm::quat t_rotation ) : m_old{ new Transform( true ) }, m_old_mat{ new glm::mat4() }
+	, position{ t_position }, rotation{ t_rotation } {
 
 }
-Transform::Transform( glm::vec3 t_position, glm::quat t_rotation, glm::vec3 t_scale )
-	: position{ t_position }, rotation{ t_rotation }, scale{ t_scale } {
+Transform::Transform( glm::vec3 t_position, glm::quat t_rotation, glm::vec3 t_scale ) : m_old{ new Transform( true ) }, m_old_mat{ new glm::mat4() }
+	, position{ t_position }, rotation{ t_rotation }, scale{ t_scale } {
 
 }
 Transform::~Transform() {
 
+	if ( m_old != nullptr ) {
+		delete m_old;
+		delete m_old_mat;
+	}
 }
 
 glm::vec3 Transform::findUp() const {
@@ -141,10 +145,17 @@ glm::vec3 Transform::findBackward() const {
 
 glm::mat4 Transform::findMatrix() const {
 
-	glm::mat4 rotateMatrix = glm::toMat4( rotation );
-	glm::mat4 scaleMatrix = glm::scale( { }, scale );
-	glm::mat4 translateMatrix = glm::translate( { }, position );
-	return translateMatrix * rotateMatrix * scaleMatrix;
+	if ( m_old->position != position || m_old->scale != scale || m_old->rotation != rotation ) {
+
+		glm::mat4 rotateMatrix = glm::toMat4( rotation );
+		glm::mat4 scaleMatrix = glm::scale( { }, scale );
+		glm::mat4 translateMatrix = glm::translate( { }, position );
+		*m_old_mat = translateMatrix * rotateMatrix * scaleMatrix;
+		m_old->rotation = rotation;
+		m_old->scale = scale;
+		m_old->position = position;
+	}
+	return *m_old_mat;
 }
 
 Transform pantheon::operator*( const Transform& t_a, const Transform& t_b ) {
