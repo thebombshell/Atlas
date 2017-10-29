@@ -1,14 +1,2 @@
-﻿  transform.cpp
-  shapes_2d.cpp
-  Generating Code...
-  Skipping... (no relevant changes detected)
-  sprite_renderer.cpp
-  scene.cpp
-  physics_component.cpp
-  line_renderer.cpp
-  iactor_component.cpp
-  game.cpp
-  collision_2d.cpp
-  actor.cpp
-     Creating library C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Pantheon.lib and object C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Pantheon.exp
+﻿  collision_2d.cpp
   Pantheon.vcxproj -> C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Pantheon.dll

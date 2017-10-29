@@ -26,24 +26,23 @@ namespace pantheon {
 
 		}
 
-		// returns a list of potential separating axes given the other collider
+		// prepares the colliders axes and points
 
-		virtual std::vector<glm::vec2> getAxes
-			( const ICollider2D* const t_other ) const = 0;
+		virtual void prepare() = 0;
 
 		// returns the minimum and maximum bounds of the collider given a 
 		// projection axis
 
 		virtual glm::vec2 getBounds( const glm::vec2& t_axis ) const = 0;
 
+		// returns a list of potential separating axes given the other collider
+
+		virtual const std::vector<glm::vec2>& getAxes( const ICollider2D* const t_other ) const = 0;
+
 		// returns a list of shape important points
 		// used in finding axes for rounded colliders
 
-		virtual std::vector<glm::vec2> getPoints() const = 0;
-
-		// returns approximate axis aligned boundings
-
-		virtual glm::vec4 getBounds() const = 0;
+		virtual const std::vector<glm::vec2>& getPoints() const = 0;
 
 		const Transform& transform;
 	};
@@ -108,8 +107,6 @@ namespace pantheon {
 
 	struct PANTHEON_API Circle : public ICollider2D {
 
-	private:
-
 	public:
 
 		Circle( const Transform& t_transform ) : ICollider2D( t_transform ) {
@@ -121,21 +118,22 @@ namespace pantheon {
 
 		}
 
-		virtual std::vector<glm::vec2> getAxes
-			( const ICollider2D* const t_other ) const override;
-
 		virtual glm::vec2 getBounds( const glm::vec2& t_axis ) const override;
 
-		virtual std::vector<glm::vec2> getPoints() const override;
+		virtual const std::vector<glm::vec2>& getAxes( const ICollider2D* const t_other ) const override;
 
-		glm::vec4 getBounds() const override;
+		virtual const std::vector<glm::vec2>& getPoints() const override;
+
+		virtual void prepare() override;
 
 		float radius{ 1.0f };
+
+	private:
+
+		std::vector<glm::vec2> m_points{ 1 };
 	};
 
 	struct PANTHEON_API ConvexHull : public ICollider2D {
-
-	private:
 
 	public:
 
@@ -151,16 +149,20 @@ namespace pantheon {
 
 		}
 
-		virtual std::vector<glm::vec2> getAxes( const ICollider2D * const t_other )
-			const override;
+		virtual const std::vector<glm::vec2>& getAxes( const ICollider2D * const t_other ) const override;
 
 		virtual glm::vec2 getBounds( const glm::vec2 & t_axis ) const override;
 
-		virtual std::vector<glm::vec2> getPoints() const override;
+		virtual const std::vector<glm::vec2>& getPoints() const override;
 
-		glm::vec4 getBounds() const override;
+		virtual void prepare() override;
 
 		std::vector<glm::vec2> points;
+
+	private:
+
+		std::vector<glm::vec2> m_points;
+		std::vector<glm::vec2> m_axes;
 	};
 
 	struct PANTHEON_API Ray2D {

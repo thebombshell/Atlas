@@ -66,16 +66,56 @@ unsigned int Collision2DComponent::getCollideWithFlags() {
 	return m_collideWithFlags;
 }
 
-const std::vector<ICollider2D*>& pantheon::Collision2DComponent::getColliders() const {
+const std::vector<ICollider2D*>& Collision2DComponent::getColliders() const {
 
 	return m_colliders;
+}
+
+void Collision2DComponent::prepare() {
+
+	getOwner().getTransform().calculateMatrix();
+	for ( auto& collider : m_colliders ) {
+
+		collider->prepare();
+	}
+}
+
+glm::vec4 Collision2DComponent::getBounds() const {
+
+	assert( m_colliders.size() > 0 && "Component has no colliders" );
+	glm::vec2 x{ m_colliders[0]->getBounds( { 1.0f, 0.0f } ) };
+	glm::vec2 y{ m_colliders[0]->getBounds( { 0.0f, 1.0f } ) };
+
+	for ( auto collider : m_colliders ) {
+
+		glm::vec2 newX{ collider->getBounds( { 1.0f, 0.0f } ) };
+		glm::vec2 newY{ collider->getBounds( { 0.0f, 1.0f } ) };
+		if ( newX[0] < x[0] ) {
+
+			x[0] = newX[0];
+		}
+		if ( newX[1] > x[1] ) {
+
+			x[1] = newX[1];
+		}
+		if ( newY[0] < y[0] ) {
+
+			y[0] = newY[0];
+		}
+		if ( newY[1] > y[1] ) {
+
+			y[1] = newY[1];
+		}
+	}
+
+	return{ x[0], y[0], x[1], y[1] };
 }
 
 class Collision2DManager::CollisionImpl {
 
 	friend class Collision2DManager;
 
-	CollisionImpl() : m_spatialHashMap{ 32 } {
+	CollisionImpl() {
 
 	}
 
@@ -108,6 +148,14 @@ class Collision2DManager::CollisionImpl {
 		const std::vector<ICollider2D*>& collidersB 
 			= t_componentB->getColliders();
 
+		for ( auto colliderA : collidersA ) {
+
+			colliderA->prepare();
+		}
+		for ( auto colliderB : collidersB ) {
+
+			colliderB->prepare();
+		}
 		// find all collisions between all shapes and return them
 
 		for( auto colliderA : collidersA ) { 
@@ -127,7 +175,9 @@ class Collision2DManager::CollisionImpl {
 
 	void findAndHandleCollisions( Collision2DComponent* t_component ) {
 
-		for( auto other : m_collidables ) {
+		glm::vec4 bounds = t_component->getBounds();
+		std::vector<Collision2DComponent*> candidates = m_map.query( { bounds }, { bounds[2], bounds[3] } );
+		for( auto other : candidates ) {
 
 			std::vector<Collision2D> results;
 			if ( other->isActive() && t_component != other
@@ -145,6 +195,22 @@ class Collision2DManager::CollisionImpl {
 		CallPhysics2DIncrementPermit permit;
 		PhysicsComponent2D::call( permit, t_delta );
 
+		for ( auto component : m_collidables ) {
+
+			if ( component->isActive() ) {
+
+				component->prepare();
+				glm::vec4 bounds = component->getBounds();
+				if ( m_map.has( component ) ) {
+
+					m_map.move( component, { bounds }, { bounds[2], bounds[3] } );
+				}
+				else {
+
+					m_map.add( component, { bounds }, { bounds[2], bounds[3] } );
+				}
+			}
+		}
 
 		for ( auto component : m_collidables ) {
 
@@ -156,7 +222,7 @@ class Collision2DManager::CollisionImpl {
 	}
 
 	std::vector<Collision2DComponent*> m_collidables;
-	SpatialHashMap2D<Collision2DComponent> m_spatialHashMap;
+	SpatialHashMap2D<Collision2DComponent> m_map;
 };
 
 Collision2DManager::Collision2DManager( ConstructCollisionPermit& t_permit ) 

@@ -59,6 +59,8 @@ namespace pantheon {
 		void setCollideWithFlags( unsigned int t_flags);
 		unsigned int getCollideWithFlags();
 		const std::vector<ICollider2D*>& getColliders() const;
+		void prepare();
+		glm::vec4 getBounds() const;
 
 	private:
 

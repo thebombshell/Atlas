@@ -103,14 +103,14 @@ Collision2D Collision2D::fromColliders
 		, t_colliderA, t_colliderB ) : NoCollision();
 }
 
-std::vector<glm::vec2> Circle::getAxes
+const std::vector<glm::vec2>& Circle::getAxes
 	( const ICollider2D * const t_other ) const {
 
-	std::vector<glm::vec2> points = t_other->getPoints();
+	const std::vector<glm::vec2>& points = t_other->getPoints();
 	std::vector<glm::vec2> axes;
 	for ( auto point : points ) {
 
-		axes.push_back( glm::normalize( glm::vec2{ transform.position } -point ) );
+		axes.push_back( glm::normalize( m_points[0] - point ) );
 	}
 	return axes;
 }
@@ -121,35 +121,20 @@ glm::vec2 Circle::getBounds( const glm::vec2 & t_axis ) const {
 	return { dot - radius, dot + radius };
 }
 
-std::vector<glm::vec2> pantheon::Circle::getPoints() const {
+const std::vector<glm::vec2>& pantheon::Circle::getPoints() const {
 
-	return { transform.position };
+	return m_points;
 }
 
-glm::vec4 Circle::getBounds() const {
+void Circle::prepare() {
 
-	return { glm::vec2( transform.position ) - radius, glm::vec2( transform.position ) + radius };
-}
-
-std::vector<glm::vec2> ConvexHull::getAxes( const ICollider2D * const )
-	const {
-
-	std::vector<glm::vec2> axes;
-	std::vector<glm::vec2> newPoints = getPoints();
-	glm::vec2 previousPoint = *(newPoints.end() - 1);
-	for( auto point : newPoints ) {
-
-		glm::vec2 axis = glm::normalize( point - previousPoint );
-		axes.push_back( { axis[1], -axis[0] } );
-		previousPoint = point;
-	}
-	return axes;
+	m_points[0] = transform.position;
 }
 
 glm::vec2 ConvexHull::getBounds( const glm::vec2& t_axis ) const {
 
 	float min, max;
-	std::vector<glm::vec2> newPoints = getPoints();
+	const std::vector<glm::vec2>& newPoints = getPoints();
 	min = max = glm::dot( t_axis, newPoints[0] );
 	for ( auto point : newPoints ) {
 
@@ -160,41 +145,32 @@ glm::vec2 ConvexHull::getBounds( const glm::vec2& t_axis ) const {
 	return{ min, max };
 }
 
-std::vector<glm::vec2> ConvexHull::getPoints() const {
+const std::vector<glm::vec2>& ConvexHull::getAxes( const ICollider2D * const ) const {
 
-	std::vector<glm::vec2> newPoints;
-	glm::mat4 matrix = transform.findMatrix();
-	for( auto point : points ) {
-
-		newPoints.push_back( matrix * glm::vec4(point, 0.0f, 1.0f) );
-	}
-	return newPoints;
+	return m_axes;
 }
 
-glm::vec4 ConvexHull::getBounds() const {
+const std::vector<glm::vec2>& ConvexHull::getPoints() const {
 
-	glm::vec2 min = points[0];
-	glm::vec2 max = points[0];
-	for ( auto& point : points ) {
+	return m_points;
+}
 
-		if ( point[0] < min[0] ) {
+void ConvexHull::prepare() {
 
-			min[0] = point[0];
-		}
-		else if ( point[0] > max[0] ) {
+	m_points.clear();
+	m_axes.clear();
+	glm::mat4 matrix = transform.getMatrix();
+	for ( auto point : points ) {
 
-			max[0] = point[0];
-		}
-		if ( point[1] < min[1] ) {
-
-			min[1] = point[1];
-		}
-		else if ( point[1] > max[1] ) {
-
-			max[1] = point[1];
-		}
+		m_points.push_back( matrix * glm::vec4( point, 0.0f, 1.0f ) );
 	}
-	return{ min, max };
+	glm::vec2 previousPoint = *(m_points.end() - 1);
+	for ( auto point : m_points ) {
+
+		glm::vec2 axis = glm::normalize( point - previousPoint );
+		m_axes.push_back( { axis[1], -axis[0] } );
+		previousPoint = point;
+	}
 }
 
 Ray2D Ray2D::fromLineSegment( glm::vec2 t_start, glm::vec2 t_end ) {

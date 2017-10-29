@@ -1,8 +1,8 @@
 
 // spatial_hash_map.hpp
 
-#ifndef PANTHEON_SPATIAL_HASH_MAP
-#define PANTHEON_SPATIAL_HASH_MAP
+#ifndef PANTHEON_SPATIAL_HASH_MAP_HPP
+#define PANTHEON_SPATIAL_HASH_MAP_HPP
 
 #include "pantheon.hpp"
 
@@ -11,121 +11,149 @@
 
 namespace pantheon {
 
-	typedef glm::tvec2<short, glm::precision::mediump> shvec2;
-	typedef glm::tvec4<short, glm::precision::mediump> shvec4;
-	
 	template<typename T>
-	class PANTHEON_API SpatialHashMap2D {
+	class SpatialHashMap2D {
 
 	public:
 
-		SpatialHashMap2D( int resolution ) : m_resolution { resolution } {
+		SpatialHashMap2D() {
 
+			m_map.resize( 0xff );
 		}
+
 		~SpatialHashMap2D() {
 
 		}
 
-		void add( T* t_element, const glm::vec2& t_start, const glm::vec2& t_end ) {
+		unsigned int hash( const glm::vec2& t_position ) {
 
-			assert( m_elements.find( t_element ) == m_elements.end()
-				&& "element already exists in spatial hash map" );
-
-			shvec2 start = glm::floor( t_start / static_cast<float>(m_resolution) );
-			shvec2 end = glm::floor( t_start / static_cast<float>(m_resolution) );
-			shvec4 key = { start, end };
-			addMapping( t_element, key );
-			m_elements.insert( { t_element, key } );
+			unsigned int x = t_position[0] <= -1024.0f
+				? 0 : (t_position[0] >= 1024.0f
+					? 15 : static_cast<unsigned int>(floor( (t_position[0] + 1024.0f) / 128.0f )));
+			unsigned int y = t_position[1] <= -1024.0f
+				? 0 : (t_position[1] >= 1024.0f
+					? 15 : static_cast<unsigned int>(floor( (t_position[1] + 1024.0f) / 128.0f )));
+			return x | (y << 4);
 		}
 
-		void remove( T* t_element ) {
+		unsigned int makeHash( unsigned int t_x, unsigned int t_y ) {
 
-			auto pair = m_elements.find( t_element );
-			assert( pair != m_elements.end() 
-				&& "element does not exist in spatial hash map" );
-			removeMapping( pair.first, pair.second );
-			m_elements.erase( pair );
+			return t_x | (t_y << 4);
 		}
 
-		void change(T* element, const glm::vec2& t_start, const glm::vec2& t_end ) {
+		unsigned int getHashX( unsigned int t_hash ) {
 
-			auto& pair = m_elements.find( t_element );
-			assert( pair != m_elements.end()
-				&& "element does not exist in spatial hash map" );
-			shvec2 start = glm::floor( t_start / static_cast<float>(m_resolution) );
-			shvec2 end = glm::floor( t_start / static_cast<float>(m_resolution) );
-			shvec4 key = { start, end };
-			removeMapping( pair.first, pair.second );
-			addMapping( pair.first, key );
-			pair.second = key;
+			return t_hash & 0xf;
+		}
+		unsigned int getHashY( unsigned int t_hash ) {
+
+			return (t_hash & 0xf0) >> 4;
 		}
 
-		std::vector<T*> query( const glm::vec2& t_start, const glm::vec2& t_end ) {
+		bool has( T* t_entry ) {
 
-			shvec2 start = glm::floor( t_start / static_cast<float>(m_resolution) );
-			shvec2 end = glm::floor( t_start / static_cast<float>(m_resolution) );
-			std::vector<T*> outVector;
-			for ( int i = start[0]; i < end[0]; ++i ) {
-				for ( int j = start[1]; i < end[1]; ++j ) {
+			return m_entries.find( t_entry ) != m_entries.end();
+		}
 
-					int myHash = hash( { i, j } );
-					if ( m_map.find( myHash ) != m_map.end() ) {
+		void add( T* t_entry, const glm::vec2& t_min, const glm::vec2& t_max ) {
 
-						for ( T* element : m_map[myHash] ) {
+			assert( !has( t_entry ) && "Entry does not exist in hash map" );
+			unsigned int min = hash( t_min );
+			unsigned int max = hash( t_max );
+			if ( min == max ) {
 
-							if ( std::find( outVector.begin(), outVector.end(), element ) == outVector.end() ) {
+				m_entries.insert( { t_entry, { min, max } } );
+				m_map[min].push_back( t_entry );
+				return;
+			}
+			glm::u32vec2 begin{ getHashX( min ), getHashY( min ) };
+			glm::u32vec2 end{ getHashX( max ), getHashY( max ) };
+			m_entries.insert( { t_entry, { min, max } } );
+			for ( unsigned int i = begin[0]; i <= end[0]; ++i ) {
+				for ( unsigned int j = begin[1]; j <= end[1]; ++j ) {
 
-								outVector.push_back( element );
-							}
-						}
-					}
+					m_map[makeHash( i, j )].push_back( t_entry );
 				}
 			}
-			return outVector;
 		}
 
+		void move(T* t_entry, const glm::vec2& t_min, const glm::vec2& t_max ) {
+
+			assert( has( t_entry ) && "Entry does not exist in hash map" );
+			auto pair = m_entries.find( t_entry );
+			unsigned int oldMin = m_entries[t_entry][0];
+			unsigned int oldMax = m_entries[t_entry][1];
+			unsigned int min = hash( t_min );
+			unsigned int max = hash( t_max );
+			pair->second = { min, max };
+			glm::u32vec2 begin{ getHashX( oldMin ), getHashY( oldMin ) };
+			glm::u32vec2 end{ getHashX( oldMax ), getHashY( oldMax ) };
+			for ( unsigned int i = begin[0]; i <= end[0]; ++i ) {
+				for ( unsigned int j = begin[1]; j <= end[1]; ++j ) {
+					std::vector<T*>& sector = m_map[makeHash( i, j )];
+					auto iter = std::find( sector.begin(), sector.end(), t_entry );
+					sector.erase( iter );
+				}
+			}
+			begin = { getHashX( min ), getHashY( min ) };
+			end = { getHashX( max ), getHashY( max ) };
+			for ( unsigned int i = begin[0]; i <= end[0]; ++i ) {
+				for ( unsigned int j = begin[1]; j <= end[1]; ++j ) {
+
+					m_map[makeHash( i, j )].push_back( t_entry );
+				}
+			}
+		}
+
+		void remove( T* t_entry ) {
+
+			assert( has( t_entry ) && "Entry does not exist in hash map" );
+			unsigned int min = m_entries[t_entry][0];
+			unsigned int max = m_entries[t_entry][1];
+			if ( min == max ) {
+
+				m_entries.erase( t_entry );
+				std::vector<T*>& sector = m_map[min];
+				auto iter = std::find( sector.begin(), sector.end(), t_entry );
+				sector.erase( iter );
+				return;
+			}
+			glm::u32vec2 begin{ getHashX( min ), getHashY( min ) };
+			glm::u32vec2 end{ getHashX( max ), getHashY( max ) };
+			m_entries.erase( t_entry );
+			for ( unsigned int i = begin[0]; i <= end[0]; ++i ) {
+				for ( unsigned int j = begin[1]; i <= end[1]; ++j ) {
+
+					std::vector<T*>& sector = m_map[makeHash( i, j )];
+					auto iter = std::find( sector.begin(), sector.end(), t_entry );
+					sector.erase( iter );
+				}
+			}
+		}
+
+		std::vector<T*> query( const glm::vec2& t_min, const glm::vec2& t_max ) {
+
+			unsigned int min = hash( t_min );
+			unsigned int max = hash( t_max );
+			glm::u32vec2 begin{ getHashX( min ), getHashY( min ) };
+			glm::u32vec2 end{ getHashX( max ), getHashY( max ) };
+			std::vector<T*> output;
+			for ( unsigned int i = begin[0]; i <= end[0]; ++i ) {
+				for ( unsigned int j = begin[1]; j <= end[1]; ++j ) {
+
+					std::vector<T*>& sector = m_map[makeHash( i, j )];
+					output.insert( output.begin(), sector.begin(), sector.end() );
+				}
+			}
+			std::sort( output.begin(), output.end() );
+			auto last = std::unique( output.begin(), output.end() );
+			output.erase( last, output.end() );
+			return output;
+		}
 	private:
 
-		int hash( const shvec2& t_key ) {
-
-			return (t_key[1] << 16) | t_key[0];
-		}
-
-		void removeMapping( void* t_element, const shvec4& t_key ) {
-
-			for ( int i = t_key[0]; i < t_key[2]; ++i ) {
-				for ( int j = t_key[1]; i < t_key[3]; ++j ) {
-
-					int myHash = hash( { i, j } );
-					if ( m_map.find( myHash ) != m_map.end() ) {
-
-						auto& vector = m_map[myHash];
-						auto iter = std::find(vector.begin(), vector.end(), t_element );
-						vector.erase( iter );
-					}
-				}
-			}
-
-		}
-
-		void addMapping( void* t_element, const shvec4& t_key ) {
-
-			for ( int i = t_key[0]; i < t_key[2]; ++i ) {
-				for ( int j = t_key[1]; i < t_key[3]; ++j ) {
-
-					int myHash = hash( { i, j } );
-					if ( m_map.find( myHash ) == m_map.end() ) {
-
-						m_map.insert( { myHash, { } } );
-					}
-					m_map[myHash].push_back( t_element );
-				}
-			}
-		}
-
-		const int m_resolution;
-		std::map<void*, shvec4> m_elements;
-		std::map<int, std::vector<void*>> m_map;
+		std::map<T*, glm::u32vec2> m_entries;
+		std::vector<std::vector<T*>> m_map;
 	};
 }
 

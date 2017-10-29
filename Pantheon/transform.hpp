@@ -78,7 +78,8 @@ namespace pantheon {
 		glm::vec3 findRight() const;
 		glm::vec3 findForward() const;
 		glm::vec3 findBackward() const;
-		glm::mat4 findMatrix() const;
+		void calculateMatrix();
+		glm::mat4 getMatrix() const;
 
 		void reset() {
 
@@ -93,12 +94,7 @@ namespace pantheon {
 
 	private:
 
-		Transform( bool ) : m_old{ nullptr }, m_old_mat{ nullptr } {
-
-		}
-
-		Transform* m_old;
-		glm::mat4* m_old_mat;
+		glm::mat4 m_matrix{ };
 		
 	};
 

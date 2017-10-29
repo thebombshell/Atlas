@@ -46,7 +46,6 @@ void PhysicsComponent2D::increment( float t_delta ) {
 
 	Transform& transform = getOwner().getTransform();
 	assert( mass > 0.0f  && "mass must be more than zero" );
-	float imass = 1.0f / mass;
 	transform.position += glm::vec3(velocity, 0.0f) * t_delta;
 	transform.rotation *= glm::angleAxis( angularVelocity * t_delta, glm::vec3( 0.0f, 0.0f, 1.0f ) );
 	
