@@ -25,6 +25,13 @@ const int GAME_STATE_RUNNING{ 2 };
 const int DRAW_STATE_CLEAN{ 0 };
 const int DRAW_STATE_PENDING{ 1 };
 
+float timeDelta{ 0.0f };
+
+float pantheon::getTimeDelta() {
+
+	return timeDelta;
+}
+
 class Game::GameImpl {
 
 	friend class Game;
@@ -173,7 +180,8 @@ class Game::GameImpl {
 		while ( m_gameState == GAME_STATE_RUNNING ) {
 
 			unsigned long long  currentFrameTicks{ SDL_GetPerformanceCounter() };
-			float timeDelta = (currentFrameTicks - previousFrameTicks) / static_cast<float>(SDL_GetPerformanceFrequency());
+			timeDelta = (currentFrameTicks - previousFrameTicks) / static_cast<float>(SDL_GetPerformanceFrequency());
+			timeDelta = timeDelta > (1.0f / 10.0f) ? 1.0f / 10.0f : timeDelta;
 			previousFrameTicks = currentFrameTicks;
 
 			m_scene->update();

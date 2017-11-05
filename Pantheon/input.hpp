@@ -30,7 +30,8 @@ namespace pantheon {
 		void releaseKey( const std::string& t_name );
 		void updateJoystickAxis( int t_joystickIndex, int t_axisIndex );
 		void updateJoystickButton( int t_joystickIndex, int t_buttonIndex );
-
+		void updateMousePosition( int t_x, int t_y );
+		void updateMouseButton( int t_index, bool t_isPressed );
 		// check key or axis is not 0
 
 		bool isKeyDown( const std::string& t_name ) const;
@@ -53,6 +54,7 @@ namespace pantheon {
 		float getAxisValue
 			( const std::string& t_negative
 			, const std::string& t_possitive, float t_tollerance ) const;
+		glm::vec2 getMousePosition() const;
 	};
 }
 

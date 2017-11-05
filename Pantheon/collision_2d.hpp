@@ -60,6 +60,9 @@ namespace pantheon {
 		unsigned int getCollideWithFlags();
 		const std::vector<ICollider2D*>& getColliders() const;
 		void prepare();
+		void queueCollision(const CollisionGroup2D& t_collision);
+		void processCollisions();
+		const std::vector<CollisionGroup2D>& getRecentCollisions();
 		glm::vec4 getBounds() const;
 
 	private:
@@ -67,7 +70,7 @@ namespace pantheon {
 		unsigned int m_collisionFlags{ 0xffffffff };
 		unsigned int m_collideWithFlags{ 0xffffffff };
 		std::vector<ICollider2D*> m_colliders;
-
+		std::vector<CollisionGroup2D> m_collisions;
 	};
 
 	class PANTHEON_API Collision2DManager : public IGameCollision {
@@ -82,8 +85,14 @@ namespace pantheon {
 	public:
 
 		static IGameCollision* createInstance( ConstructCollisionPermit& );
-
+		
+		// simulates and resolves collision components
+		
 		void simulate( float t_delta ) override;
+
+		// 
+
+		std::vector<CollisionGroup2D> query( ICollider2D* const collider );
 
 		// register and unregister collision components
 

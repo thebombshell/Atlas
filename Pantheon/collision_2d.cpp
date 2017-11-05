@@ -78,6 +78,30 @@ void Collision2DComponent::prepare() {
 
 		collider->prepare();
 	}
+	m_collisions.clear();
+}
+
+void Collision2DComponent::queueCollision( const CollisionGroup2D& t_collision ) {
+
+	m_collisions.push_back( t_collision );
+}
+
+void Collision2DComponent::processCollisions() {
+
+	for ( auto& group : m_collisions ) {
+
+		getOwner().dispatchEvent( Collision2DMessage( group.collisions, group.other ) );
+	}
+	if ( getOwner().hasComponent<PhysicsComponent2D>() ) {
+	
+		PhysicsComponent2D& physics = getOwner().getComponent<PhysicsComponent2D>();
+		physics.processCollisions( m_collisions );
+	}
+}
+
+const std::vector<CollisionGroup2D>& Collision2DComponent::getRecentCollisions() {
+
+	return m_collisions;
 }
 
 glm::vec4 Collision2DComponent::getBounds() const {
@@ -176,18 +200,67 @@ class Collision2DManager::CollisionImpl {
 	void findAndHandleCollisions( Collision2DComponent* t_component ) {
 
 		glm::vec4 bounds = t_component->getBounds();
-		std::vector<Collision2DComponent*> candidates = m_map.query( { bounds }, { bounds[2], bounds[3] } );
-		for( auto other : candidates ) {
+		std::vector<void*> candidates = m_map.query( { bounds }, { bounds[2], bounds[3] } );
+		for ( auto pointer : candidates ) {
+
+			Collision2DComponent* other = static_cast<Collision2DComponent*>(pointer);
 
 			std::vector<Collision2D> results;
 			if ( other->isActive() && t_component != other
 				&& t_component->getCollideWithFlags() & other->getCollissionFlags()
+				&& other->getCollideWithFlags() & t_component->getCollissionFlags()
 				&& findCollisionsBetweenActors( t_component, other, results ) ) {
 
-				t_component->getOwner().dispatchEvent<Collision2DMessage>
-					( { results, other->getOwner() } );
+				t_component->queueCollision( { other->getOwner(), results } );
 			}
 		}
+	}
+
+	std::vector<CollisionGroup2D> findCollisionsWithActors( ICollider2D* const t_collider ) {
+
+		glm::vec2 x{ t_collider->getBounds( { 1.0f, 0.0f } ) };
+		glm::vec2 y{ t_collider->getBounds( { 0.0f, 1.0f } ) };
+		glm::vec4 bounds = { x[0], y[0], x[1], y[1] };
+		std::vector<void*> candidates = m_map.query( { bounds }, { bounds[2], bounds[3] } );
+		t_collider->prepare();
+		std::vector<CollisionGroup2D> output;
+		for ( auto pointer : candidates ) {
+
+			Collision2DComponent* other = static_cast<Collision2DComponent*>(pointer);
+			if ( !other->isActive() ) {
+
+				continue;
+			}
+			std::vector<Collision2D> results;
+
+			// get colliders
+
+			const std::vector<ICollider2D*>& colliders
+				= other->getColliders();
+
+			for ( auto collider : colliders ) {
+
+				collider->prepare();
+			}
+
+			// find all collisions between all shapes and return them
+
+			for ( auto collider : colliders ) {
+				Collision2D collision =
+					Collision2D::fromColliders( t_collider, collider );
+				if ( collision.hasCollided() ) {
+
+					results.push_back( collision );
+				}
+			}
+
+			if ( results.size() > 0 ) {
+			
+				output.push_back( { other->getOwner(), results } );
+			}
+		}
+
+		return output;
 	}
 
 	void simulate( float t_delta ) {
@@ -217,12 +290,18 @@ class Collision2DManager::CollisionImpl {
 			if ( component->isActive() ) {
 			
 				findAndHandleCollisions( component );
+				component->processCollisions();
 			}
 		}
 	}
 
+	std::vector<CollisionGroup2D> query( ICollider2D* const t_collider ) {
+
+		return findCollisionsWithActors( t_collider );
+	}
+
 	std::vector<Collision2DComponent*> m_collidables;
-	SpatialHashMap2D<Collision2DComponent> m_map;
+	SpatialHashMap2D m_map;
 };
 
 Collision2DManager::Collision2DManager( ConstructCollisionPermit& t_permit ) 
@@ -244,6 +323,11 @@ IGameCollision* Collision2DManager::createInstance( ConstructCollisionPermit& t_
 void Collision2DManager::simulate( float t_delta ) {
 
 	m_collision->simulate( t_delta );
+}
+
+std::vector<CollisionGroup2D> Collision2DManager::query( ICollider2D* const t_collider ) {
+
+	return m_collision->query( t_collider );
 }
 
 void Collision2DManager::registerComponent( Collision2DRegistryPermit& t_permit

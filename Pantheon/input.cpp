@@ -120,6 +120,16 @@ void Input::updateJoystickButton( int t_joystickIndex, int t_buttonIndex ) {
 
 	m_input->updateJoystickButton( t_joystickIndex, t_buttonIndex );
 }
+void Input::updateMousePosition( int t_x, int t_y ) {
+
+	m_input->m_values["mouse_x"] = t_x;
+	m_input->m_values["mouse_y"] = t_y;
+}
+
+void Input::updateMouseButton( int t_index, bool t_isPressed ) {
+
+	m_input->m_values["mouse_button" + std::to_string( t_index )] = t_isPressed ? 1.0f : 0.0f;
+}
 
 bool Input::isKeyDown( const std::string& t_key ) const {
 
@@ -159,4 +169,9 @@ float Input::getAxisValue( const std::string& t_negative, const std::string& t_p
 		return 0.0f;
 	}
 	return value;
+}
+
+glm::vec2 Input::getMousePosition() const {
+
+	return{ getAxisValue( "mouse_x" ), getAxisValue( "mouse_y" ) };
 }

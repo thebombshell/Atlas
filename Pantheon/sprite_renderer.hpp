@@ -7,8 +7,8 @@
 #define PANTHEON_SPRITE_RENDERER_HPP
 
 #include "pantheon.hpp"
-
 #include "game.hpp"
+#include "gl_objects.hpp"
 
 namespace pantheon {
 

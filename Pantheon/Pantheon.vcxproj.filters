@@ -131,5 +131,8 @@
     <ClCompile Include="physics_component.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="spatial_hash_map.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

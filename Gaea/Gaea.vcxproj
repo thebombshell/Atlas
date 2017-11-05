@@ -145,11 +145,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="blocks.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="player_prefab.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.hpp" />
-    <ClInclude Include="test_prefab.hpp" />
+    <ClInclude Include="player_prefab.hpp" />
+    <ClInclude Include="blocks.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

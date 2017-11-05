@@ -48,78 +48,79 @@ void PhysicsComponent2D::increment( float t_delta ) {
 	assert( mass > 0.0f  && "mass must be more than zero" );
 	transform.position += glm::vec3(velocity, 0.0f) * t_delta;
 	transform.rotation *= glm::angleAxis( angularVelocity * t_delta, glm::vec3( 0.0f, 0.0f, 1.0f ) );
+	m_velocitySnapshot = velocity;
 	
 }
 
-void PhysicsComponent2D::onCollision( const glm::vec2& t_resolve, const glm::vec2& t_force, PhysicsComponent2D& t_other  ) {
+void PhysicsComponent2D::onCollisionWithKinematic( const glm::vec2& t_resolve, const glm::vec2& t_axis, PhysicsComponent2D& t_other ) {
 
-	if ( glm::length2( t_force ) >= 0.001f ) {
+	assert( mass > 0.0f  && "mass must be more than zero" );
 
-		glm::vec2 axis = glm::normalize( t_force );
-		assert( mass > 0.0f  && "mass must be more than zero" );
-		float ifriction = 1.0f - friction;
-		float iMass = 1.0f / mass;
-		glm::vec2 velAxis = glm::normalize( velocity );
-		glm::vec2 bounceVelocity = velocity * -glm::dot( velocity, axis );
-		glm::vec2 frictionVelocity = velocity + bounceVelocity;
-		velocity = bounceVelocity * bounce + frictionVelocity * ifriction + t_force * iMass;
-	}
+	float iFriction = 1.0f - friction;
+	glm::vec2 bounceVelocity = t_axis * glm::dot( velocity, t_axis );
+	glm::vec2 frictionVelocity = velocity - t_axis * glm::dot( velocity, t_axis );
+	velocity = bounceVelocity * bounce + frictionVelocity * iFriction;
+
 	Transform& transform = getOwner().getTransform();
 	transform.position += glm::vec3( t_resolve, 0.0f );
-	ConstructPhysicsCollisionMessage2DPermit permit{};
-	PhysicsCollisionMessage2D message{ permit, t_resolve, t_force, t_other };
+	ConstructPhysicsCollisionMessage2DPermit permit{ };
+	PhysicsCollisionMessage2D message{ permit, t_resolve, -bounceVelocity * mass, t_other };
 	getOwner().dispatchEvent( message );
 }
 
-void PhysicsComponent2D::onEventMessage( pantheon::IActorEventMessage* const t_message ) {
 
-	Collision2DMessage* const collisionMessage = t_message->as<Collision2DMessage>();
-	if ( collisionMessage != nullptr && isSolid() ) {
+void PhysicsComponent2D::onCollisionWithDynamic( const glm::vec2& t_resolve, PhysicsComponent2D& t_other ) {
 
-		auto collision = collisionMessage->collisions[0];
-		if ( collisionMessage->other.hasComponent<PhysicsComponent2D>() ) {
+	assert( mass > 0.0f  && "mass must be more than zero" );
 
-			auto& other = collisionMessage->other.getComponent<PhysicsComponent2D>();
-			if ( !other.isActive() || !other.isSolid() ) {
+	glm::vec2 axis = glm::normalize( t_resolve );
+	velocity = (m_velocitySnapshot * (mass - t_other.mass) + (2.0f * t_other.mass * t_other.m_velocitySnapshot)) / (mass + t_other.mass);
+	
+	Transform& transform = getOwner().getTransform();
+	transform.position += glm::vec3( t_resolve, 0.0f );
+	ConstructPhysicsCollisionMessage2DPermit permit{ };
+	PhysicsCollisionMessage2D message{ permit, t_resolve, velocity - m_velocitySnapshot, t_other };
+	getOwner().dispatchEvent( message );
+}
 
-				return;
+void PhysicsComponent2D::processCollisions( const std::vector<CollisionGroup2D>& t_collisions ) {
+
+	if ( !isSolid() || isKinematic() ) {
+
+		return;
+	}
+
+	for ( auto& group : t_collisions ) {
+
+		float minimum{ std::numeric_limits<float>::max() };
+		Actor* minActor{ nullptr };
+		const Collision2D* minCollision{ nullptr };
+		glm::vec2 velocityNormal = glm::normalize( -m_velocitySnapshot );
+		glm::vec2 step = m_velocitySnapshot * getTimeDelta();
+		for ( auto& collision : group.collisions ) {
+
+			float dot = glm::dot( collision.axis * collision.separation, step );
+			if ( dot < minimum ) {
+
+				minimum = dot;
+				minActor = &group.other;
+				minCollision = &collision;
 			}
+		}
 
-			if ( !isKinematic() && !other.isKinematic() ) {
+		if ( minActor != nullptr && minActor->hasComponent<PhysicsComponent2D>()) {
 
-				float force = glm::dot( velocity, -collision.axis );
-				if ( force > 0.0f ) {
+			PhysicsComponent2D& other = minActor->getComponent<PhysicsComponent2D>();
 
-					velocity += force * collision.axis;
-					force = mass * force;
-				}
-				else {
+			if ( other.isKinematic() ) {
 
-					force = 0.0f;
-				}
-				float otherForce = glm::dot( other.velocity, collision.axis );
-				if ( otherForce > 0.0f ) {
-
-					other.velocity += otherForce * collision.axis;
-					otherForce = other.mass * otherForce;
-				}
-				else {
-
-					otherForce = 0.0f;
-				}
-				otherForce = otherForce > 0.0f ? otherForce : 0.0f;
-				float totalForce = force + otherForce;
-				float totalMass = mass + other.mass;
-				float massFactor = mass / totalMass;
-				onCollision( -collision.axis * collision.separation * massFactor
-					, collision.axis * massFactor * totalForce, other );
-				other.onCollision( collision.axis * collision.separation * ( 1.0f - massFactor )
-					, -collision.axis * ( 1.0f - massFactor ) * totalForce, *this );
+				glm::vec2 resolve = -minCollision->axis * minCollision->separation;
+				onCollisionWithKinematic( resolve, minCollision->axis, other );
 			}
-			else if (!isKinematic()) {
+			else {
 
-				onCollision( -collision.axis * collision.separation
-					, { 0.0f, 0.0f }, other );
+				glm::vec2 resolve = -minCollision->axis * minCollision->separation * 0.5f;
+				onCollisionWithDynamic( resolve, other );
 			}
 		}
 	}

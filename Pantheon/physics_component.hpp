@@ -10,9 +10,11 @@
 #include "iactor_component.hpp"
 #include "permission.hpp"
 
+#include <vector>
+
 namespace pantheon {
 
-	//
+	// forward decclaration
 
 	class PhysicsComponent2D;
 
@@ -26,6 +28,8 @@ namespace pantheon {
 	const int PHYSICS_IS_SOLID{ 1 };
 	const int PHYSICS_IS_KINEMATIC{ 2 };
 	const int PHYSICS_IS_GRAVITY_ENABLED{ 4 };
+
+	// physics collision message
 
 	class PANTHEON_API PhysicsCollisionMessage2D : public IActorEventMessage {
 
@@ -48,7 +52,7 @@ namespace pantheon {
 
 		void increment( float t_delta );
 
-		void onEventMessage( IActorEventMessage* const ) override;
+		void processCollisions( const std::vector<CollisionGroup2D>& t_collisions );
 
 		void setSolid();
 		void setSoft();
@@ -73,9 +77,10 @@ namespace pantheon {
 
 	private:
 
-		void onCollision( const glm::vec2& t_resolve, const glm::vec2& t_force, PhysicsComponent2D& t_other );
-
+		void onCollisionWithKinematic( const glm::vec2& t_resolve, const glm::vec2& t_axis, PhysicsComponent2D& t_other );
+		void onCollisionWithDynamic( const glm::vec2& t_resolve, PhysicsComponent2D& t_other );
 		int m_flags{ 0 };
+		glm::vec2 m_velocitySnapshot{ 0.0f, 0.0f };
 
 		static glm::vec2 g_gravity;
 	};

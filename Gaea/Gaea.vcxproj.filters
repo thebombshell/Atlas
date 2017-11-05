@@ -18,12 +18,21 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="player_prefab.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="blocks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="test_prefab.hpp">
+    <ClInclude Include="player_prefab.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="blocks.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

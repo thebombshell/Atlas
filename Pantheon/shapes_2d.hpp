@@ -14,6 +14,8 @@
 
 namespace pantheon {
 
+	class Collision2DComponent;
+
 	const int PANTHEON_INTERSECTION_NOT_FOUND{ 0 };
 	const int PANTHEON_INTERSECTION_FOUND{ 1 };
 
@@ -54,8 +56,13 @@ namespace pantheon {
 		Collision2D( const glm::vec2& t_axis, float t_separation
 			, const ICollider2D* const t_colliderA
 			, const ICollider2D* const t_colliderB )
-			: axis{ t_axis }, separation{ t_separation }
+			: axis{ t_separation < 0.0f ? -t_axis : t_axis }, separation{ t_separation < 0.0f ? -t_separation : t_separation }
 			, colliderA{ t_colliderA }, colliderB{ t_colliderB } {
+
+		}
+		Collision2D( const Collision2D& t_other )
+			: axis{ t_other.axis }, separation{ t_other.separation }
+			, colliderA{ t_other.colliderA }, colliderB{ t_other.colliderB } {
 
 		}
 
@@ -85,37 +92,44 @@ namespace pantheon {
 		const ICollider2D* const colliderB;
 	};
 
-	struct PANTHEON_API ColliderGroup2D {
+	struct PANTHEON_API CollisionGroup2D {
 
 	public:
 
-		ColliderGroup2D() : colliders{} {
+		CollisionGroup2D( Actor& t_other
+			, const std::vector<Collision2D>& t_collisions )
+			: other{ t_other }, collisions{ t_collisions } {
+
+		}
+		CollisionGroup2D( const CollisionGroup2D& t_other )
+			: other{ t_other.other }, collisions{ t_other.collisions } {
 
 		}
 
-		ColliderGroup2D( ICollider2D* const t_collider ) : colliders{} {
-
-			colliders.push_back( t_collider );
-		}
-
-		~ColliderGroup2D() {
+		~CollisionGroup2D() {
 
 		}
 
-		std::vector<ICollider2D*> colliders{};
+		const std::vector<Collision2D> collisions;
+		Actor& other;
 	};
 
 	struct PANTHEON_API Circle : public ICollider2D {
 
 	public:
 
-		Circle( const Transform& t_transform ) : ICollider2D( t_transform ) {
+		Circle( const Transform& t_transform ) : ICollider2D{ t_transform } {
 
 		}
 
 		Circle( const Transform& t_transform, float t_radius )
-			: ICollider2D( t_transform ), radius( t_radius ) {
+			: ICollider2D{ t_transform }, radius{ t_radius } {
 
+		}
+
+		~Circle() {
+
+			delete m_axes;
 		}
 
 		virtual glm::vec2 getBounds( const glm::vec2& t_axis ) const override;
@@ -131,6 +145,7 @@ namespace pantheon {
 	private:
 
 		std::vector<glm::vec2> m_points{ 1 };
+		std::vector<glm::vec2>* m_axes{ new std::vector<glm::vec2>() };
 	};
 
 	struct PANTHEON_API ConvexHull : public ICollider2D {

@@ -28,6 +28,10 @@ namespace pantheon {
 	typedef Permission<Game, P_CallRenderables> CallRenderablesPermit;
 	typedef Permission<IGameRenderer, P_AccessGl> AccessGlPermit;
 
+	// returns the logic threads time delta
+	
+	float getTimeDelta();
+
 	// interface for a renderer
 
 	class PANTHEON_API IGameRenderer {
@@ -175,6 +179,11 @@ namespace pantheon {
 		static IGameCollision& Game::GetCollisionManager() {
 
 			return getInstance().getCollisionManager();
+		}
+		template<typename T>
+		static T* const GetCollisionManagerAs() {
+
+			return dynamic_cast<T*>(&(getInstance().getCollisionManager()));
 		}
 
 		Scene& getScene();

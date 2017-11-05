@@ -107,12 +107,12 @@ const std::vector<glm::vec2>& Circle::getAxes
 	( const ICollider2D * const t_other ) const {
 
 	const std::vector<glm::vec2>& points = t_other->getPoints();
-	std::vector<glm::vec2> axes;
+	m_axes->clear();
 	for ( auto point : points ) {
 
-		axes.push_back( glm::normalize( m_points[0] - point ) );
+		m_axes->push_back( glm::normalize( m_points[0] - point ) );
 	}
-	return axes;
+	return *m_axes;
 }
 
 glm::vec2 Circle::getBounds( const glm::vec2 & t_axis ) const {

@@ -4,7 +4,8 @@
 // source file for application entry
 
 #include "main.hpp"
-#include "test_prefab.hpp"
+#include "player_prefab.hpp"
+#include "blocks.hpp"
 
 #include <sprite_renderer.hpp>
 #include <collision_2d.hpp>
@@ -21,17 +22,18 @@ int main() {
 
 	Game::Start<SpriteRenderer, Collision2DManager>( []() {
 
+		Game::GetRendererAs<SpriteRenderer>()->loadTexture( "images/sprites.png", "sprites" );
 
-		PhysicsComponent2D::setGravity( { 0.0f, -8.0f } );
-		Game::GetScene().createPrefab<TestPrefab>();
-		BlockMessage messageA{ { 0.0f, -2.0f }, { 50.0f, 1.0f }, false };
-		BlockMessage messageB{ { 2.0f, 1.0f }, { 2.0f, 2.0f }, true };
-		BlockMessage messageC{ { 4.0f, 1.0f }, { 1.0f, 1.0f }, true };
-		BlockMessage messageD{ { -4.0f, 1.0f }, { 1.0f, 1.0f }, true };
+		PhysicsComponent2D::setGravity( { 0.0f, -14.0f } );
+		Game::GetScene().createPrefab<PlayerPrefab>();
+		BlockMessage messageA{ { 0.0f, -2.0f }, { 50.0f, 1.0f } };
+		BlockMessage messageB{ { 4.0f, 1.0f }, { 2.0f, 2.0f } };
+		BlockMessage messageC{ { 2.0f, -1.0f }, { 1.0f, 1.0f } };
+		MovingBlockMessage messageD{ { -8.0f, 2.0f }, { -6.0f, -1.0f }, { 2.0f, 1.0f } };
 		Game::GetScene().createPrefab<BlockPrefab>( messageA );
 		Game::GetScene().createPrefab<BlockPrefab>( messageB );
-		Game::GetScene().createPrefab<BlockPrefab>( messageC );
-		Game::GetScene().createPrefab<BlockPrefab>( messageD );
+		Game::GetScene().createPrefab<HazardPrefab>( messageC );
+		Game::GetScene().createPrefab<MovingBlockPrefab>( messageD );
 	} );
 
 	return 0;

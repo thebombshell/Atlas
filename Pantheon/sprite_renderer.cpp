@@ -167,8 +167,10 @@ class SpriteRenderer::SpriteRendererImpl {
 		glDisable( GL_DEPTH_TEST );
 		glDisable( GL_CULL_FACE );
 		glViewport( 0, 0, windowWidth, windowHeight );
-
+		glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 		GlGuard guards[] = {
+
 			{ m_program },
 			{ *m_mesh }
 		};
@@ -247,6 +249,7 @@ class SpriteRenderer::SpriteRendererImpl {
 			GlGuard guard{ *texture };
 			texture->bind( 0 );
 			texture->fillFromFile( t_path );
+			texture->setMinMagNear();
 		}
 		catch ( const std::exception& e ) {
 

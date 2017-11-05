@@ -13,8 +13,8 @@
 #include <map>
 #include <memory>
 
-#define GLERRCASE(X) case (X) : printf( #X ); assert( false ); break;
-#define GLERROR { switch( glGetError() ) { GLERRCASE(GL_OUT_OF_MEMORY) GLERRCASE(GL_INVALID_ENUM) GLERRCASE(GL_INVALID_VALUE) GLERRCASE(GL_INVALID_OPERATION) GLERRCASE(GL_INVALID_FRAMEBUFFER_OPERATION) case GL_NO_ERROR: break; default: assert( false ); break; } }
+//#define GLERRCASE(X) case (X) : printf( #X ); assert( false ); break;
+//#define GLERROR { switch( glGetError() ) { GLERRCASE(GL_OUT_OF_MEMORY) GLERRCASE(GL_INVALID_ENUM) GLERRCASE(GL_INVALID_VALUE) GLERRCASE(GL_INVALID_OPERATION) GLERRCASE(GL_INVALID_FRAMEBUFFER_OPERATION) case GL_NO_ERROR: break; default: assert( false ); break; } }
 
 namespace pantheon {
 
