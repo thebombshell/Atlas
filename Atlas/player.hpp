@@ -112,13 +112,16 @@ namespace atlas {
 		void setupColliders();
 		void setupVertices();
 		void setupPhysics();
+		void setupSounds();
 
 		int m_index{ 0 };
 		int m_score{ 0 };
 		PlayerInputProfile m_input{ };
 
 		glm::vec3 m_vertices[4];
-		pantheon::ConvexHull m_colliders[2];
+		pthn::ConvexHull m_colliders[2];
+		pthn::Source* m_bonkSource;
+		pthn::Source* m_wooshSource;
 
 		float m_respawnTimer{ 0.0f };
 		float m_shieldTimer{ 1.0f };

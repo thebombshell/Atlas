@@ -26,7 +26,7 @@ namespace atlas {
 			pantheon::Audio& audio = pantheon::Game::GetAudio();
 			if ( !audio.hasSound( "shoot" ) ) {
 
-				audio.loadSound( "audio/shoot-01.wav", "shoot" );
+				audio.loadSound( "audio/shoot.wav", "shoot" );
 			}
 			m_source = audio.createSource( "shoot" );
 		}

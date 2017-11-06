@@ -23,14 +23,21 @@ int main() {
 
 	Game::Start<LineRenderer, Collision2DManager>( []() {
 
-		pantheon::Game::GetScene().createPrefab<Player>(
-			PlayerInfo( 0 ) );
-		pantheon::Game::GetScene().createPrefab<Player>(
-			PlayerInfo( 1 ) );
-		pantheon::Game::GetScene().createPrefab<Player>(
-			PlayerInfo( 2 ) );
-		pantheon::Game::GetScene().createPrefab<Player>(
-			PlayerInfo( 3 ) );
+		Audio& audio = Game::GetAudio();
+		audio.loadSound( "audio/bonk.wav", "bonk" );
+		audio.loadSound( "audio/shoot.wav", "shoot" );
+		audio.loadSound( "audio/explode.wav", "explode" );
+		audio.loadSound( "audio/woosh.wav", "woosh" );
+
+		int joystickCount = Game::GetInput().getJoystickCount();
+		if ( joystickCount > 0 ) {
+			pantheon::Game::GetScene().createPrefab<Player>( PlayerInfo( 0 ) );
+			pantheon::Game::GetScene().createPrefab<Player>( PlayerInfo( 2 ) );
+		}
+		if ( joystickCount > 1 ) {
+			pantheon::Game::GetScene().createPrefab<Player>( PlayerInfo( 1 ) );
+			pantheon::Game::GetScene().createPrefab<Player>( PlayerInfo( 3 ) );
+		}
 		pantheon::Game::GetScene().createPrefab<DefaultLevel>();
 	} );
 	

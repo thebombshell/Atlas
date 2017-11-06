@@ -55,6 +55,8 @@ namespace pantheon {
 			( const std::string& t_negative
 			, const std::string& t_possitive, float t_tollerance ) const;
 		glm::vec2 getMousePosition() const;
+
+		int getJoystickCount() const;
 	};
 }
 

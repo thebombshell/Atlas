@@ -29,6 +29,13 @@ class Input::InputImpl {
 
 				SDL_JoystickID id = SDL_JoystickInstanceID( joystick );
 				m_joysticks.insert( { id, joystick } );
+				std::string name = SDL_JoystickName( joystick );
+				if ( name.find( "XInput" ) == 0 ) {
+
+					updateJoystickAxis( id, 2 );
+					updateJoystickAxis( id, 5 );
+				}
+				
 			}
 		}
 	}
@@ -78,7 +85,7 @@ class Input::InputImpl {
 
 	}
 
-	float getAxisValue(const std::string& t_key) const {
+	float getAxisValue( const std::string& t_key ) const {
 
 		auto value = m_values.find( t_key );
 		if ( value == m_values.end() ) {
@@ -174,4 +181,9 @@ float Input::getAxisValue( const std::string& t_negative, const std::string& t_p
 glm::vec2 Input::getMousePosition() const {
 
 	return{ getAxisValue( "mouse_x" ), getAxisValue( "mouse_y" ) };
+}
+
+int Input::getJoystickCount() const {
+
+	return m_input->m_joysticks.size();
 }

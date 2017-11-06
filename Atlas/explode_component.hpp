@@ -44,7 +44,7 @@ namespace atlas {
 			pthn::Audio& audio = pthn::Game::GetAudio();
 			if ( !audio.hasSound( "explode" ) ) {
 
-				audio.loadSound( "audio/explode-01.wav", "explode" );
+				audio.loadSound( "audio/explode.wav", "explode" );
 			}
 			m_source = audio.createSource( "explode" );
 			m_source->play(); 

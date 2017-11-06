@@ -53,10 +53,13 @@ Player::Player( pantheon::ConstructComponentPermit& t_permit, Actor& t_owner, co
 	setupVertices();
 	setupColliders();
 	setupPhysics();
+	setupSounds();
 }
 
 Player::~Player() {
 
+	Game::GetAudio().deleteSource( m_bonkSource );
+	Game::GetAudio().deleteSource( m_wooshSource );
 }
 
 void Player::setupColliders() {
@@ -109,6 +112,21 @@ void Player::setupPhysics() {
 	physics.mass = 1.0f;
 }
 
+void Player::setupSounds() {
+
+	Audio& audio = Game::GetAudio();
+	if ( !audio.hasSound( "bonk" ) ) {
+
+		audio.loadSound( "audio/bonk.wav", "bonk" );
+	}
+	m_bonkSource = audio.createSource( "bonk" );
+	if ( !audio.hasSound( "woosh" ) ) {
+
+		audio.loadSound( "audio/woosh.wav", "woosh" );
+	}
+	m_wooshSource = audio.createSource( "woosh" );
+}
+
 void Player::update( float t_delta ) {
 
 	const Input& input = Game::GetInput();
@@ -150,10 +168,11 @@ void Player::update( float t_delta ) {
 	
 		m_boostTimer -= t_delta;
 	}
-	if ( input.getAxisValue( m_input.boost ) > 1.0f && m_boostTimer <= 0.0f ) {
+	if ( input.getAxisValue( m_input.boost ) < 0.5f && m_boostTimer <= 0.0f ) {
 
 		physics.velocity += glm::vec2( transform.findUp() ) * 128.0f;
-		m_boostTimer = 1.0f;
+		m_wooshSource->play();
+		m_boostTimer = 3.0f;
 	}
 
 	// handle shooting
@@ -214,6 +233,7 @@ void Player::onEventMessage( IActorEventMessage* const t_message ) {
 
 			physMessage->other.velocity += 32.0f * glm::normalize(
 				physMessage->other.getOwner().getTransform2D().position - getOwner().getTransform2D().position);
+			m_bonkSource->play();
 		}
 	}
 }
