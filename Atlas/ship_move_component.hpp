@@ -7,18 +7,14 @@
 #define ATLAS_SHIP_MOVE_COMPONENT_HPP
 
 #include <pantheon.hpp>
+#include <physics_component.hpp>
 
 namespace atlas {
 
-	class ShipMoveComponent : public pantheon::IActorComponent {
-
-	private:
-
-		glm::vec2 m_velocity{ 0.0f, 0.0f };
-		float m_angularVelocity{ 0.0f };
+	class ShipMoveComponent : public pthn::IActorComponent {
 
 	public:
-		ShipMoveComponent( pantheon::ConstructComponentPermit& t_permit, pantheon::Actor& t_owner )
+		ShipMoveComponent( pthn::ConstructComponentPermit& t_permit, pthn::Actor& t_owner )
 			: IActorComponent{ t_permit, t_owner } {
 
 		}
@@ -29,26 +25,28 @@ namespace atlas {
 
 		void update(float t_delta, float t_rotationInput, float t_thrustInput ) {
 
-			pantheon::Transform& transform = getOwner().getTransform();
+			pthn::Transform& transform = getOwner().getTransform();
+			pthn::PhysicsComponent2D& physics = getOwner().getComponent<pthn::PhysicsComponent2D>();
 
 			m_angularVelocity -= m_angularVelocity * angularDeccelFactor * t_delta;
 			m_angularVelocity += t_rotationInput * angularAccelSpeed * t_delta;
 			transform.rotation *= glm::angleAxis( m_angularVelocity * t_delta
 					, glm::vec3( 0.0f, 0.0f, 1.0f ) );
 
-			m_velocity -= m_velocity * deccelerationFactor * t_delta;
-			m_velocity += glm::vec2( transform.findUp() ) * accelerationSpeed * t_thrustInput * t_delta;
-			transform.position += glm::vec3( m_velocity, 0.0f ) * t_delta;
+			physics.velocity -= physics.velocity * deccelerationFactor * t_delta;
+			physics.velocity += glm::vec2( transform.findUp() ) * accelerationSpeed * t_thrustInput * t_delta;
 		}
 
 		glm::vec2 getVelocity() {
 
-			return m_velocity;
+			pthn::PhysicsComponent2D& physics = getOwner().getComponent<pthn::PhysicsComponent2D>();
+			return physics.velocity;
 		}
 
 		void reset() {
 
-			m_velocity = { 0.0f, 0.0f };
+			pthn::PhysicsComponent2D& physics = getOwner().getComponent<pthn::PhysicsComponent2D>();
+			physics.velocity = { 0.0f, 0.0f };
 			m_angularVelocity = 0.0f;
 		}
 
@@ -57,6 +55,11 @@ namespace atlas {
 
 		float accelerationSpeed{ 80.0f };
 		float deccelerationFactor{ 0.5f };
+
+	private:
+
+		float m_angularVelocity{ 0.0f };
+
 	};
 }
 

@@ -73,10 +73,11 @@ void Bullet::onEventMessage( IActorEventMessage* const t_message ) {
 			if ( &collisionMessage->other != &m_firer
 				&& collisionMessage->other.hasComponent<Player>() ) {
 
-				if ( collisionMessage->other.getComponent<Player>().kill() 
-					&& m_firer.hasComponent<Player>()) {
+				Player& otherPlayer = collisionMessage->other.getComponent<Player>();
+				if ( otherPlayer.kill()	&& m_firer.hasComponent<Player>() ) {
 
-					m_firer.getComponent<Player>().grow();
+					int score = otherPlayer.getScore();
+					m_firer.getComponent<Player>().score( (score > 1 ? score - 1 : 0)  + 1);
 				}
 				Game::GetScene().destroyActor( &getOwner() );
 			}

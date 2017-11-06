@@ -20,16 +20,16 @@ namespace atlas {
 		PlayerInputProfile()
 			: forward{ "NA" }, backward{ "NA" }
 			, rotateCW{ "NA" }, rotateCCW{ "NA" }
-			, fire{ "NA" } {
+			, fire{ "NA" }, boost{ "NA" } {
 
 		}
 		PlayerInputProfile
 			( std::string t_forward, std::string t_backward
 			, std::string t_rotateCW, std::string t_rotateCCW
-			, std::string t_fire )
+			, std::string t_fire, std::string t_boost )
 			: forward{ t_forward }, backward{ t_backward }
 			, rotateCW{ t_rotateCW }, rotateCCW{ t_rotateCCW }
-			, fire{ t_fire } {
+			, fire{ t_fire }, boost{ t_boost } {
 
 		}
 
@@ -45,7 +45,8 @@ namespace atlas {
 					return{
 						joystick + "_axis1", "NA",
 						joystick + "_axis0", "NA",
-						joystick + "_button4"
+						joystick + "_button4",
+						joystick + "_axis2"
 					};
 					break;
 				case 2:
@@ -54,7 +55,8 @@ namespace atlas {
 					return{
 						joystick + "_axis4", "NA",
 						joystick + "_axis3", "NA",
-						joystick + "_button5"
+						joystick + "_button5",
+						joystick + "_axis5"
 					};
 					break;
 
@@ -67,6 +69,7 @@ namespace atlas {
 		std::string rotateCW;
 		std::string rotateCCW;
 		std::string fire;
+		std::string boost;
 	};
 
 	// info object to be passed on player creation
@@ -84,20 +87,6 @@ namespace atlas {
 
 	class Player : public pantheon::IUpdatable, public pantheon::IRenderable {
 
-	private:
-
-		void setupColliders();
-		void setupVertices();
-
-		int m_index{ 0 };
-		PlayerInputProfile m_input{ };
-
-		glm::vec3 m_vertices[4];
-		pantheon::ConvexHull m_colliders[2];
-
-		float m_respawnTimer{ 0.0f };
-		float m_shieldTimer{ 1.0f };
-
 	public:
 
 		Player( pantheon::ConstructComponentPermit&, pantheon::Actor&, const PlayerInfo& t_info );
@@ -114,7 +103,26 @@ namespace atlas {
 
 		bool isKillable();
 
-		void grow();
+		void score( int t_ammount );
+
+		int getScore();
+
+	private:
+
+		void setupColliders();
+		void setupVertices();
+		void setupPhysics();
+
+		int m_index{ 0 };
+		int m_score{ 0 };
+		PlayerInputProfile m_input{ };
+
+		glm::vec3 m_vertices[4];
+		pantheon::ConvexHull m_colliders[2];
+
+		float m_respawnTimer{ 0.0f };
+		float m_shieldTimer{ 1.0f };
+		float m_boostTimer{ 1.0f };
 	};
 }
 #endif

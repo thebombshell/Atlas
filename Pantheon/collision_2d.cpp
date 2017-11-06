@@ -158,6 +158,10 @@ class Collision2DManager::CollisionImpl {
 			, t_component );
 		assert( iter != m_collidables.end() && "Collidable not registered." );
 		m_collidables.erase( iter );
+		if ( m_map.has( t_component ) ) {
+
+			m_map.remove( t_component );
+		}
 	}
 
 	bool findCollisionsBetweenActors

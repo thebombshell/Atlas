@@ -12,6 +12,7 @@
 #include "line_text_helpers.hpp"
 
 #include <collision_2d.hpp>
+#include <physics_component.hpp>
 #include <line_renderer.hpp>
 
 #define _USE_MATH_DEFINES
@@ -42,6 +43,7 @@ Player::Player( pantheon::ConstructComponentPermit& t_permit, Actor& t_owner, co
 	, m_colliders{ { t_owner.getTransform() }, { t_owner.getTransform() } } {
 
 	t_owner.createComponent<Collision2DComponent>();
+	t_owner.createComponent<PhysicsComponent2D>();
 	t_owner.createComponent<ShipMoveComponent>();
 	t_owner.createComponent<ShootComponent>();
 
@@ -50,6 +52,7 @@ Player::Player( pantheon::ConstructComponentPermit& t_permit, Actor& t_owner, co
 
 	setupVertices();
 	setupColliders();
+	setupPhysics();
 }
 
 Player::~Player() {
@@ -94,9 +97,22 @@ void Player::setupVertices() {
 	std::copy( vertices, vertices + 4, m_vertices );
 }
 
+void Player::setupPhysics() {
+
+	PhysicsComponent2D& physics = getOwner().getComponent<PhysicsComponent2D>();
+
+	physics.setSolid();
+	physics.setDynamic();
+	physics.setGravityDisabled();
+	physics.bounce = 1.0f;
+	physics.friction = 0.0f;
+	physics.mass = 1.0f;
+}
+
 void Player::update( float t_delta ) {
 
 	const Input& input = Game::GetInput();
+	PhysicsComponent2D& physics = getOwner().getComponent<PhysicsComponent2D>();
 	Transform& transform = getOwner().getTransform();
 
 	// handle death
@@ -127,6 +143,18 @@ void Player::update( float t_delta ) {
 		( t_delta
 			, input.getAxisValue( m_input.rotateCCW, m_input.rotateCW, 0.1f )
 			, input.getAxisValue( m_input.backward, m_input.forward, 0.1f ) );
+
+	// handle boost
+
+	if ( m_boostTimer > 0.0f ) {
+	
+		m_boostTimer -= t_delta;
+	}
+	if ( input.getAxisValue( m_input.boost ) > 1.0f && m_boostTimer <= 0.0f ) {
+
+		physics.velocity += glm::vec2( transform.findUp() ) * 128.0f;
+		m_boostTimer = 1.0f;
+	}
 
 	// handle shooting
 
@@ -179,14 +207,13 @@ void Player::render() {
 }
 
 void Player::onEventMessage( IActorEventMessage* const t_message ) {
-
+	
 	{
-		auto collisionMessage = t_message->as<Collision2DMessage>();
-		if ( collisionMessage != nullptr
-			&& collisionMessage->other.hasComponent<Player>()) {
+		PhysicsCollisionMessage2D* physMessage = t_message->as<PhysicsCollisionMessage2D>();
+		if ( physMessage != nullptr ) {
 
-			collisionMessage->other.getComponent<Player>().kill();
-			kill();
+			physMessage->other.velocity += 32.0f * glm::normalize(
+				physMessage->other.getOwner().getTransform2D().position - getOwner().getTransform2D().position);
 		}
 	}
 }
@@ -204,14 +231,25 @@ bool Player::kill() {
 		owner.getTransform().position = { spawns[m_index][0], spawns[m_index][1], 0.0f };
 		owner.getComponent<ShipMoveComponent>().reset();
 		owner.getComponent<Collision2DComponent>().disable();
+		score( -1 );
 		return true;
 	}
 	return false;
 }
+
 bool Player::isKillable() {
+
 	return m_shieldTimer <= 0.0f;
 }
-void Player::grow() {
 
-	getOwner().getTransform().scale += glm::vec3( 1.0f, 1.0f, 1.0f );
+void Player::score(int t_ammount) {
+
+	m_score += t_ammount;
+	m_score = m_score < 0 ? 0 : m_score;
+	getOwner().getTransform().scale = glm::vec3( 1.0f, 1.0f, 1.0f ) * (1.0f + m_score * 0.33f);
+}
+
+int Player::getScore() {
+
+	return m_score;
 }
