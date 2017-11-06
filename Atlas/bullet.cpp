@@ -77,7 +77,7 @@ void Bullet::onEventMessage( IActorEventMessage* const t_message ) {
 				if ( otherPlayer.kill()	&& m_firer.hasComponent<Player>() ) {
 
 					int score = otherPlayer.getScore();
-					m_firer.getComponent<Player>().score( (score > 1 ? score - 1 : 0)  + 1);
+					m_firer.getComponent<Player>().score( 1 );
 				}
 				Game::GetScene().destroyActor( &getOwner() );
 			}

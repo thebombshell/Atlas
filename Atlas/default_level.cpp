@@ -5,14 +5,19 @@
 
 #include "default_level.hpp"
 #include "player.hpp"
+#include "line_text_helpers.hpp"
 #include <line_renderer.hpp>
 
 using namespace pantheon;
 using namespace atlas;
 
+LineRendererMessage tutorialMessage;
+
 DefaultLevel::DefaultLevel( pantheon::ConstructComponentPermit& t_permit, pantheon::Actor& t_owner )
 	: IActorComponent( t_permit, t_owner ) {
 
+	tutorialMessage = stringToLines( "up & down to thrust, left & right to rotate, bumper to shoot, trigger to boost." );
+	tutorialMessage.transform = Transform2D( { -128.0f, 128.0f }, { 1.0f, 1.0f }, 0.0f ).findMatrix();
 }
 
 DefaultLevel::~DefaultLevel() {
@@ -90,4 +95,5 @@ void atlas::DefaultLevel::render( void ) {
 	};
 	LineRendererMessage message{vertices, vertices + 12};
 	renderer->queueDraw( message );
+	renderer->queueDraw( tutorialMessage );
 }

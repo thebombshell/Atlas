@@ -12,11 +12,11 @@ class SpatialHashMap2D::SpatialHashMap2DImpl {
 
 	friend class SpatialHashMap2D;
 
-	SpatialHashMap2DImpl() : m_resolution{ 64 * 0x0000ffff }, m_sectorSize{ 64 } {
+	SpatialHashMap2DImpl() : m_resolution{ 64 * 0x0000ffff }, m_sectorSize{ 128 } {
 
 	}
 
-	SpatialHashMap2DImpl( unsigned int t_resolution ) : m_resolution{ t_resolution }, m_sectorSize{ (m_resolution * 2) / 0x0000ffff } {
+	SpatialHashMap2DImpl( unsigned int t_resolution ) : m_resolution{ t_resolution }, m_sectorSize{ (m_resolution * 2) / 0x000ffff } {
 
 	}
 
@@ -26,12 +26,10 @@ class SpatialHashMap2D::SpatialHashMap2DImpl {
 
 	unsigned int hash( const glm::vec2& t_position ) {
 
-		unsigned int x = t_position[0] <= -static_cast<int>(m_resolution)
-			? 0 : (t_position[0] >= m_resolution
-				? 0x0000ffff : static_cast<unsigned int>(floor( (t_position[0] + m_resolution) / m_sectorSize )));
-		unsigned int y = t_position[1] <= -static_cast<int>(m_resolution)
-			? 0 : (t_position[1] >= m_resolution
-				? 0x0000ffff : static_cast<unsigned int>(floor( (t_position[1] + m_resolution) / m_sectorSize )));
+		unsigned int x = t_position[0] <= -static_cast<float>(m_resolution) ? 0 : ( t_position[0] >= m_resolution
+			? 0x0000ffff : static_cast< unsigned int >( floor( ( t_position[0] + m_resolution ) / m_sectorSize ) ) );
+		unsigned int y = t_position[1] <= -static_cast<float>(m_resolution) ? 0 : ( t_position[1] >= m_resolution
+			? 0x0000ffff : static_cast< unsigned int >( floor( ( t_position[1] + m_resolution ) / m_sectorSize ) ) );
 		return x | (y << 16);
 	}
 
@@ -248,7 +246,6 @@ void SpatialHashMap2D::remove( void* t_entry ) {
 
 	m_map->remove( t_entry );
 }
-
 
 std::vector<void*> SpatialHashMap2D::query( const glm::vec2& t_min, const glm::vec2& t_max ) {
 

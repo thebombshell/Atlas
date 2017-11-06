@@ -1,2 +1,25 @@
-﻿     Creating library C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Pantheon.lib and object C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Pantheon.exp
-  Pantheon.vcxproj -> C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Pantheon.dll
+﻿  transform.cpp
+  text_data_file.cpp
+  sprite_renderer.cpp
+  spatial_hash_map.cpp
+  shapes_2d.cpp
+  scene.cpp
+  physics_component.cpp
+  line_renderer.cpp
+  input.cpp
+d:\git\atlas\pantheon\input.cpp(132): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+d:\git\atlas\pantheon\input.cpp(133): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  iactor_component.cpp
+  helpers.cpp
+  gl_objects.cpp
+  gl_helpers.cpp
+  game.cpp
+  collision_2d.cpp
+  audio.cpp
+d:\git\atlas\pantheon\audio.cpp(26): warning C4800: 'ALboolean': forcing value to bool 'true' or 'false' (performance warning)
+d:\git\atlas\pantheon\audio.cpp(46): warning C4800: 'ALboolean': forcing value to bool 'true' or 'false' (performance warning)
+  actor.cpp
+  Generating Code...
+     Creating library D:\GIT\Atlas\Debug\Pantheon.lib and object D:\GIT\Atlas\Debug\Pantheon.exp
+  Pantheon.vcxproj -> D:\GIT\Atlas\Debug\Pantheon.dll
+  Pantheon.vcxproj -> D:\GIT\Atlas\Debug\Pantheon.pdb (Full PDB)

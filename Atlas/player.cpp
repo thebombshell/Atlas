@@ -9,7 +9,6 @@
 #include "explode_component.hpp"
 #include "ship_move_component.hpp"
 #include "shoot_component.hpp"
-#include "line_text_helpers.hpp"
 
 #include <collision_2d.hpp>
 #include <physics_component.hpp>
@@ -170,9 +169,9 @@ void Player::update( float t_delta ) {
 	}
 	if ( input.getAxisValue( m_input.boost ) < 0.5f && m_boostTimer <= 0.0f ) {
 
-		physics.velocity += glm::vec2( transform.findUp() ) * 128.0f;
+		physics.velocity += glm::vec2( transform.findUp() ) * ( m_shieldTimer > 0.0f ? 180.0f : 128.0f );
 		m_wooshSource->play();
-		m_boostTimer = 3.0f;
+		m_boostTimer = 2.0f;
 	}
 
 	// handle shooting
@@ -243,6 +242,7 @@ bool Player::kill() {
 	if ( m_shieldTimer <= 0.0f ) {
 
 		m_respawnTimer = 1.0f;
+		m_boostTimer = 0.0f;
 		Actor& owner = getOwner();
 		ExplodeInfo info = ExplodeInfo( owner.getTransform()
 			, owner.getComponent<ShipMoveComponent>().getVelocity() );
