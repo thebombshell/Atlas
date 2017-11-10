@@ -55,10 +55,8 @@ void Bullet::render() {
 	Transform& transform = getOwner().getTransform();
 
 	LineRendererVertex vertices[2]
-		{ { transform.position[0], transform.position[1], 0.5f, m_colour[0] + 0.2f, m_colour[1] + 0.2f, m_colour[2] + 0.2f }
-		, { transform.position[0] - m_velocity[0] * 0.08f
-		, transform.position[1] - m_velocity[1] * 0.08f, 0.5f
-		, 0.0f, 0.0f, 0.0f } };
+		{ { transform.position[0], transform.position[1], 0.5f, m_colour[0], m_colour[1], m_colour[2]}
+		, { transform.position[0] - m_velocity[0] * 0.032f, transform.position[1] - m_velocity[1] * 0.032f, 0.5f, m_colour[0] * 0.5f, m_colour[1] * 0.5f, m_colour[2] * 0.5f } };
 	LineRendererMessage message{ vertices, vertices + 2 };
 	message.separate();
 	renderer->queueDraw( message );

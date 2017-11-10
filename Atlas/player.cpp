@@ -35,6 +35,11 @@ glm::vec2 spawns[4] =
 	, { 200.0f, 50.0f }
 	, { -200.0f, -50.0f }
 	, { 200.0f, -50.0f } };
+glm::vec3 vertices[4] =
+	{ glm::vec3( -sin( PI2 * 0.0f ) * 5.0f, cos( PI2 * 0.0f ) * 5.0f, 0.0f )
+	, glm::vec3( -sin( PI2 * 0.33f ) * 5.0f, cos( PI2 * 0.33f ) * 5.0f, 0.0f )
+	, glm::vec3( 0.0f, 0.0f, 0.0f )
+	, glm::vec3( -sin( PI2 * 0.66f ) * 5.0f, cos( PI2 * 0.66f ) * 5.0f, 0.0f ) };
 
 Player::Player( pantheon::ConstructComponentPermit& t_permit, Actor& t_owner, const PlayerInfo& t_info )
 	: IActorComponent( t_permit, t_owner ), m_index{ t_info.index }
@@ -65,13 +70,13 @@ void Player::setupColliders() {
 
 	// set up both triangles
 
-	m_colliders[0].points.push_back( m_vertices[0] );
-	m_colliders[0].points.push_back( m_vertices[1] );
-	m_colliders[0].points.push_back( m_vertices[2] );
+	m_colliders[0].points.push_back( vertices[0] );
+	m_colliders[0].points.push_back( vertices[1] );
+	m_colliders[0].points.push_back( vertices[2] );
 
-	m_colliders[1].points.push_back( m_vertices[2] );
-	m_colliders[1].points.push_back( m_vertices[3] );
-	m_colliders[1].points.push_back( m_vertices[0] );
+	m_colliders[1].points.push_back( vertices[2] );
+	m_colliders[1].points.push_back( vertices[3] );
+	m_colliders[1].points.push_back( vertices[0] );
 
 	// add them to the collider
 
@@ -86,17 +91,6 @@ void Player::setupColliders() {
 
 void Player::setupVertices() {
 
-	// find triangle points and center point
-
-	glm::vec3 vertices[] =
-	{ glm::vec3
-		( -sin( PI2 * 0.0f ) * 5.0f, cos( PI2 * 0.0f ) * 5.0f, 0.0f )
-		, glm::vec3
-		( -sin( PI2 * 0.33f ) * 5.0f, cos( PI2 * 0.33f ) * 5.0f, 0.0f )
-		, glm::vec3( 0.0f, 0.0f, 0.0f )
-		, glm::vec3
-		( -sin( PI2 * 0.66f ) * 5.0f, cos( PI2 * 0.66f ) * 5.0f, 0.0f ) };
-	std::copy( vertices, vertices + 4, m_vertices );
 }
 
 void Player::setupPhysics() {
@@ -208,17 +202,16 @@ void Player::render() {
 
 	// create render message and queue to draw
 
-	LineRendererVertex vertices[4]
-	{ { m_vertices[0][0], m_vertices[0][1], m_vertices[0][2]
+	LineRendererVertex lineVertices[4]
+	{ { vertices[0][0], vertices[0][1], vertices[0][2]
 		, colour[0], colour[1], colour[2] }
-		, { m_vertices[1][0], m_vertices[1][1], m_vertices[1][2]
+		, { vertices[1][0], vertices[1][1], vertices[1][2]
 		, colour[0], colour[1], colour[2] }
-		, { m_vertices[2][0], m_vertices[2][1], m_vertices[2][2]
+		, { vertices[2][0], vertices[2][1], vertices[2][2]
 		, colour[0], colour[1], colour[2] }
-		, { m_vertices[3][0], m_vertices[3][1], m_vertices[3][2]
+		, { vertices[3][0], vertices[3][1], vertices[3][2]
 		, colour[0], colour[1], colour[2] } };
-	LineRendererMessage message
-	{ vertices, vertices + 4, getOwner().getTransform2D().findMatrix() };
+	LineRendererMessage message{ lineVertices, lineVertices + 4, getOwner().getTransform2D().findMatrix() };
 	message.loop();
 
 	renderer->queueDraw( message );

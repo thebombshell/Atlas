@@ -131,6 +131,20 @@ namespace pantheon {
 			vertices.push_back( LineRendererVertex::separator() );
 		}
 
+		// applies a given function to each vertex
+
+		template<typename T_FUNC>
+		void applyEffect(T_FUNC t_vertexEffect) {
+
+			for ( auto& vertex : vertices ) {
+
+				if ( !vertex.isSeperator() ) {
+				
+					t_vertexEffect( vertex );
+				}
+			}
+		}
+
 		std::vector<LineRendererVertex> vertices;
 		glm::mat3 transform;
 	};

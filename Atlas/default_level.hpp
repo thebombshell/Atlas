@@ -12,9 +12,6 @@ namespace atlas {
 
 	class DefaultLevel : public pantheon::IUpdatable, public pantheon::IRenderable {
 
-	private:
-
-		pantheon::Transform m_transform{ };
 	public:
 
 		DefaultLevel( pantheon::ConstructComponentPermit&, pantheon::Actor& );
@@ -24,6 +21,10 @@ namespace atlas {
 
 		void render( void ) override;
 
+	private:
+
+		pantheon::Transform m_transform{ };
+		float m_colourTimer{ 0.0f };
 	};
 }
 

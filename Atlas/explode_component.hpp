@@ -31,8 +31,6 @@ namespace atlas {
 		pthn::Source* m_source;
 		float m_timer{ 0.0f };
 		glm::vec2 m_velocity;
-		glm::vec2 m_vertices[4];
-		glm::vec2 m_normals[4];
 		float m_scale;
 
 	public:
@@ -47,8 +45,7 @@ namespace atlas {
 				audio.loadSound( "audio/explode.wav", "explode" );
 			}
 			m_source = audio.createSource( "explode" );
-			m_source->play(); 
-			setupVertices();
+			m_source->play();
 			getOwner().getTransform() = t_info.transform;
 		}
 
@@ -56,8 +53,6 @@ namespace atlas {
 
 			pthn::Game::GetAudio().deleteSource( m_source );
 		}
-
-		void setupVertices();
 
 		void update( float t_delta ) {
 

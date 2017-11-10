@@ -8,23 +8,30 @@
 #include "line_text_helpers.hpp"
 #include <line_renderer.hpp>
 
+#define _USE_MATH_DEFINES
+
+#include <math.h>
+
+const float PI2 = float( M_PI ) * 2;
+
 using namespace pantheon;
 using namespace atlas;
 
-LineRendererMessage tutorialMessage;
+float m_timer{ 0.0f };
+
+LineRendererMessage tutorialMessage = stringToLines( "up & down to thrust  left & right to rotate  bumper to shoot  trigger to boost" );
+LineRendererMessage playAreaMessage = stringToLines( "enter the play area to begin" );
 
 DefaultLevel::DefaultLevel( pantheon::ConstructComponentPermit& t_permit, pantheon::Actor& t_owner )
 	: IActorComponent( t_permit, t_owner ) {
 
-	tutorialMessage = stringToLines( "up & down to thrust, left & right to rotate, bumper to shoot, trigger to boost." );
-	tutorialMessage.transform = Transform2D( { -128.0f, 128.0f }, { 1.0f, 1.0f }, 0.0f ).findMatrix();
 }
 
 DefaultLevel::~DefaultLevel() {
 
 }
 
-void atlas::DefaultLevel::update( float ) {
+void DefaultLevel::update( float t_delta ) {
 
 	Game::GetScene().forEach( [](Actor* const t_actor) {
 
@@ -70,9 +77,22 @@ void atlas::DefaultLevel::update( float ) {
 			position[1] += 256.0f;
 		}
 	} );
+
+	m_timer += t_delta;
+	if ( m_timer >= PI2 ) {
+
+		m_timer -= PI2;
+	}
 }
 
-void atlas::DefaultLevel::render( void ) {
+void waveEffect( LineRendererVertex& t_vertex ) {
+
+	float offset{ cos( m_timer * 2.0f + t_vertex.position[0] * 0.1f ) * 0.5f };
+
+	t_vertex.position[1] += offset;
+}
+
+void DefaultLevel::render( void ) {
 
 	LineRenderer* const renderer = Game::GetRendererAs<LineRenderer>();
 	if ( renderer == nullptr ) {
@@ -94,6 +114,14 @@ void atlas::DefaultLevel::render( void ) {
 		LineRendererVertex::separator(),
 	};
 	LineRendererMessage message{vertices, vertices + 12};
+
 	renderer->queueDraw( message );
-	renderer->queueDraw( tutorialMessage );
+	LineRendererMessage tutMessage = tutorialMessage;
+	tutMessage.transform = Transform2D( { -232.0f, -136.5f }, { 1.0f, 1.0f }, 0.0f ).findMatrix();
+	tutMessage.applyEffect( waveEffect );
+	renderer->queueDraw( LineRendererMessage( tutMessage ) );
+	LineRendererMessage playMessage = playAreaMessage;
+	playMessage.transform = Transform2D( { -80.0f, 131.5f }, { 1.0f, 1.0f }, 0.0f ).findMatrix();
+	playMessage.applyEffect( waveEffect );
+	renderer->queueDraw( LineRendererMessage( playMessage ) );
 }
