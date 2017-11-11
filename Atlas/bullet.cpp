@@ -6,6 +6,7 @@
 #include "bullet.hpp"
 
 #include "player.hpp"
+#include "health_component.hpp"
 
 #include <collision_2d.hpp>
 #include <line_renderer.hpp>
@@ -69,15 +70,18 @@ void Bullet::onEventMessage( IActorEventMessage* const t_message ) {
 		if ( collisionMessage != nullptr ) {
 
 			if ( &collisionMessage->other != &m_firer
-				&& collisionMessage->other.hasComponent<Player>() ) {
+				&& collisionMessage->other.hasComponent<HealthComponent>() ) {
 
-				Player& otherPlayer = collisionMessage->other.getComponent<Player>();
-				if ( otherPlayer.kill()	&& m_firer.hasComponent<Player>() ) {
+				HealthComponent& otherHealth = collisionMessage->other.getComponent<HealthComponent>();
+				if ( otherHealth.isActive() ) {
 
-					int score = otherPlayer.getScore();
-					m_firer.getComponent<Player>().score( 1 );
+					otherHealth.damage( 1 );
+					if ( m_firer.hasComponent<HealthComponent>() ) {
+
+						m_firer.getComponent<HealthComponent>().heal( 1 );
+					}
+					Game::GetScene().destroyActor( &getOwner() );
 				}
-				Game::GetScene().destroyActor( &getOwner() );
 			}
 		}
 	}

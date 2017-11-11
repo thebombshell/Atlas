@@ -5,6 +5,7 @@
 
 #include "main.hpp"
 
+#include "game_state_prefab.hpp"
 #include "default_level.hpp"
 #include "player.hpp"
 
@@ -28,6 +29,9 @@ int main() {
 		audio.loadSound( "audio/shoot.wav", "shoot" );
 		audio.loadSound( "audio/explode.wav", "explode" );
 		audio.loadSound( "audio/woosh.wav", "woosh" );
+		audio.loadSound( "audio/hum.wav", "hum" );
+
+		pantheon::Game::GetScene().createPrefab<GameStatePrefab>();
 
 		int joystickCount = Game::GetInput().getJoystickCount();
 		if ( joystickCount > 0 ) {

@@ -95,8 +95,18 @@ class Input::InputImpl {
 		return value->second;
 	}
 
+	std::string getText() {
+
+		std::string output;
+		output.insert( 0, m_text + m_textPos, 255 - m_textPos );
+		output.insert( 255 - m_textPos, m_text, m_textPos );
+		return output;
+	}
+
 	std::map<std::string, float> m_values;
 	std::map<SDL_JoystickID, SDL_Joystick*> m_joysticks;
+	char m_text[256];
+	unsigned char m_textPos{ 0 };
 };
 
 Input::Input() {
@@ -112,6 +122,11 @@ Input::~Input() {
 void Input::pressKey( const std::string& m_key ) {
 
 	m_input->m_values[m_key] = 1.0f;
+	if ( m_key.size() == 1 ) {
+
+		m_input->m_text[m_input->m_textPos] = m_key[0];
+		m_input->m_textPos = m_input->m_textPos == 255 ? 0 : (m_input->m_textPos + 1);
+	}
 }
 
 void Input::releaseKey( const std::string& m_key ) {
@@ -186,4 +201,9 @@ glm::vec2 Input::getMousePosition() const {
 int Input::getJoystickCount() const {
 
 	return m_input->m_joysticks.size();
+}
+
+std::string Input::getText() const {
+
+	return m_input->getText();
 }

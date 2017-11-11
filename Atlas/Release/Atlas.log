@@ -1,0 +1,9 @@
+﻿  bullet.cpp
+  default_level.cpp
+  explode_component.cpp
+  main.cpp
+  player.cpp
+  Generating code
+  All 485 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  Atlas.vcxproj -> C:\Users\Bombshell\Documents\GitHub\Atlas\Release\Atlas.exe

@@ -57,6 +57,7 @@ namespace pantheon {
 		glm::vec2 getMousePosition() const;
 
 		int getJoystickCount() const;
+		std::string getText() const;
 	};
 }
 

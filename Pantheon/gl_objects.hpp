@@ -376,6 +376,8 @@ namespace pantheon {
 		unsigned int m_type;
 	};
 
+	// helper uniform data object
+
 	class PANTHEON_API GlUniform {
 
 	public:
@@ -521,7 +523,7 @@ namespace pantheon {
 		std::string m_reason;
 	};
 
-	//
+	// gl 2d texture class
 
 	class PANTHEON_API GlTexture2D : public IGlObject {
 
@@ -544,16 +546,18 @@ namespace pantheon {
 			fill( t_level, format, t_width, t_height, t_border, format, type, &t_data[0] );
 		}
 		template<typename T, typename = std::enable_if<std::is_unsigned<T>::value, T>::type>
-		void fillUnsigned() {
+		void fillUnsigned( int t_level, unsigned int t_width, unsigned int t_height
+			, int t_border, std::vector<T> t_data ) {
 
 			static_assert((sizeof( T ) == 1 || sizeof( T ) == 2 || sizeof( T ) == 4)
-				&& "Only unsigned char, short and int types supported.");
+				, "Only unsigned char, short and int types supported.");
 			unsigned int format = findFormat( t_width, t_height, t_data.size() );
 			unsigned int type = findUnsignedType( sizeof( T ) );
 			fill( t_level, format, t_width, t_height, t_border, format, type, &t_data[0] );
 		}
 		template<typename T, typename = std::enable_if<std::is_floating_point<T>::value, T>::type>
-		void fillFloating() {
+		void fillFloating( int t_level, unsigned int t_width, unsigned int t_height
+			, int t_border, std::vector<T> t_data ) {
 
 			static_assert((sizeof( T ) == 4 || sizeof( T ) == 8)
 				&& "Only float and double types supported.");
@@ -579,6 +583,8 @@ namespace pantheon {
 		void bind( unsigned int t_index );
 		void unbind() override;
 
+		unsigned int getId();
+
 	private:
 
 		static unsigned int findFormat( unsigned int t_width, unsigned int t_height, unsigned int t_dataLength );
@@ -593,6 +599,36 @@ namespace pantheon {
 
 		int m_bind{ -1 };
 		unsigned int m_id{ 0 };
+	};
+	
+	// gl frame buffer class
+
+	class PANTHEON_API GlFrameBuffer : public IGlObject {
+
+	public:
+
+		GlFrameBuffer(unsigned int t_targetCount);
+		GlFrameBuffer( const GlFrameBuffer& ) = delete;
+		GlFrameBuffer& operator=( const GlFrameBuffer& ) = delete;
+		~GlFrameBuffer();
+
+		void bind();
+		void unbind() override;
+
+		void attachColourTarget( unsigned int t_index, GlTexture2D& t_target );
+		void detachColourTarget( unsigned int t_index );
+		void completeAttachment();
+		std::string getStatus();
+		bool isComplete();
+
+		unsigned int getId();
+		unsigned int getTargetCount();
+
+	private:
+
+		unsigned int m_id; 
+		unsigned int m_targetCount;
+		std::vector<unsigned int> m_targets;
 	};
 }
 

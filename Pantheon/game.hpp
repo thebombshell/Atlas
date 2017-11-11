@@ -32,6 +32,10 @@ namespace pantheon {
 	
 	float getTimeDelta();
 
+	// returns the logic threads time alpha
+
+	float getTimeAlpha();
+
 	// interface for a renderer
 
 	class PANTHEON_API IGameRenderer {

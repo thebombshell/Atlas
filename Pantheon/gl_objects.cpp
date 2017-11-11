@@ -1253,3 +1253,88 @@ unsigned int GlTexture2D::findFloatingType( unsigned int t_size ) {
 	assert( false && "A size which is not 4 or 8 should not be given here." );
 	return GL_NONE;
 }
+unsigned int GlTexture2D::getId() {
+
+	return m_id;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// GlFrameBuffer
+///////////////////////////////////////////////////////////////////////////////
+
+GlFrameBuffer::GlFrameBuffer( unsigned int t_targetCount ) : m_targetCount{ t_targetCount } {
+
+	glGenFramebuffers( 1, &m_id );
+	m_targets.resize( t_targetCount );
+}
+
+GlFrameBuffer::~GlFrameBuffer() {
+
+	glDeleteFramebuffers( 1, &m_id );
+}
+
+void GlFrameBuffer::bind() {
+
+	glBindFramebuffer( GL_FRAMEBUFFER, m_id );
+}
+
+void GlFrameBuffer::unbind() {
+
+	glBindFramebuffer( GL_FRAMEBUFFER, NULL );
+}
+
+void GlFrameBuffer::attachColourTarget( unsigned int t_index, GlTexture2D& t_target ) {
+
+	assert( t_index < m_targetCount && t_index >= 0 && "Index of target is out of range of framebuffer." );
+
+	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + t_index, GL_TEXTURE_2D, t_target.getId(), 0 );
+	m_targets[t_index] = t_target.getId();
+}
+void GlFrameBuffer::detachColourTarget( unsigned int t_index ) {
+
+	assert( t_index < m_targetCount && t_index >= 0 && "Index of target is out of range of framebuffer." );
+
+	glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + t_index, NULL, 0 );
+	m_targets[t_index] = NULL;
+}
+void GlFrameBuffer::completeAttachment() {
+
+	std::vector<unsigned int> drawBuffers;
+	drawBuffers.resize( m_targetCount );
+	for ( int i = 0; i < m_targetCount; ++i ) {
+
+		drawBuffers[i] = GL_COLOR_ATTACHMENT0 + i;
+	}
+	glDrawBuffers( m_targetCount, &drawBuffers[0] );
+}
+std::string GlFrameBuffer::getStatus() {
+
+	switch ( glCheckFramebufferStatus( GL_FRAMEBUFFER ) ) {
+
+		case GL_FRAMEBUFFER_COMPLETE:
+			return "Framebuffer status is complete";
+		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+			return "Framebuffer attachment is incomplete";
+		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+			return "Framebuffer is missing an attachment";
+		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+			return "Framebuffer draw buffer is incomplete";
+		case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+			return "Framebuffer read buffer is incomplete";
+		case GL_FRAMEBUFFER_UNSUPPORTED:
+			return "Framebuffer is not supported";
+	}
+	return "Unknown framebuffer status";
+}
+bool GlFrameBuffer::isComplete() {
+
+	return glCheckFramebufferStatus( GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE;
+}
+unsigned int GlFrameBuffer::getId() {
+
+	return m_id;
+}
+unsigned int GlFrameBuffer::getTargetCount() {
+
+	return m_targetCount;
+}

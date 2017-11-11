@@ -11,8 +11,13 @@
 #include "game.hpp"
 
 #include <vector>
+#include <cstdarg>
 
 namespace pantheon {
+
+	//
+
+	void PANTHEON_API shake( float t_intensity );
 
 	// line renderer vertex object
 
@@ -172,6 +177,10 @@ namespace pantheon {
 		void afterActorsDraw() override;
 
 		void queueDraw( LineRendererMessage& t_drawMessage );
+
+		void enableAwesome();
+
+		void disableAwesome();
 
 	};
 }

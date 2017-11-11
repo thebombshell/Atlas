@@ -79,6 +79,10 @@ namespace pantheon {
 
 		bool isStopped() const;
 
+		void setGain( float t_value );
+
+		void setPitch( float t_value );
+
 	private:
 
 		unsigned int m_id;

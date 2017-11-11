@@ -119,9 +119,9 @@ void DefaultLevel::render( void ) {
 	LineRendererMessage tutMessage = tutorialMessage;
 	tutMessage.transform = Transform2D( { -232.0f, -136.5f }, { 1.0f, 1.0f }, 0.0f ).findMatrix();
 	tutMessage.applyEffect( waveEffect );
-	renderer->queueDraw( LineRendererMessage( tutMessage ) );
+	renderer->queueDraw( tutMessage );
 	LineRendererMessage playMessage = playAreaMessage;
 	playMessage.transform = Transform2D( { -80.0f, 131.5f }, { 1.0f, 1.0f }, 0.0f ).findMatrix();
 	playMessage.applyEffect( waveEffect );
-	renderer->queueDraw( LineRendererMessage( playMessage ) );
+	renderer->queueDraw( playMessage );
 }

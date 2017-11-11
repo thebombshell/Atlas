@@ -21,6 +21,19 @@ using namespace pantheon;
 
 const unsigned int MAX_VERTEX_COUNT{ 32000 };
 
+float shakeIntensity{ 0.0f };
+
+//
+
+void pantheon::shake( float t_intensity ) {
+
+	if ( shakeIntensity < 0.0f ) {
+
+		shakeIntensity = 0.0f;
+	}
+	shakeIntensity += t_intensity;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // helper functions for generating the meshes
 ///////////////////////////////////////////////////////////////////////////////
@@ -266,59 +279,106 @@ class LineRenderer::LineRendererImpl {
 		delete[] m_vertexData;
 	}
 
-	void initialize() {
-
-		GlShader vertexShader{ GlShader::vertexShader() };
-		vertexShader.compileFromFile( "shaders/color_line_vs_120.glsl" );
-		GlShader fragmentShader{ GlShader::fragmentShader() };
-		fragmentShader.compileFromFile( "shaders/color_line_fs_120.glsl" );
-		m_program.attachShader( vertexShader );
-		m_program.attachShader( fragmentShader );
-		m_program.bindAttributeLocation( "attributePosition", 0 );
-		m_program.bindAttributeLocation( "attributeColor", 1 );
-		m_program.link();
+	void initShaderPrograms() {
 
 		try {
 
-			GlShader clearVertexShader{ GlShader::vertexShader() };
-			clearVertexShader.compileFromFile( "shaders/fsq_vs_330.glsl" );
-			GlShader clearGeometryShader{ GlShader::geometryShader() };
-			clearGeometryShader.compileFromFile( "shaders/fsq_gs_330.glsl" );
+			// load and create the rendering shader program
+
+			GlShader vertexShader{ GlShader::vertexShader() };
+			vertexShader.compileFromFile( "shaders/color_line_vs_120.glsl" );
+			GlShader fragmentShader{ GlShader::fragmentShader() };
+			fragmentShader.compileFromFile( "shaders/color_line_fs_120.glsl" );
+			m_program.attachShader( vertexShader );
+			m_program.attachShader( fragmentShader );
+			m_program.bindAttributeLocation( "attributePosition", 0 );
+			m_program.bindAttributeLocation( "attributeColor", 1 );
+			m_program.link();
+
+			// load and create the clear shader program
+
+			GlShader fsqVertexShader{ GlShader::vertexShader() };
+			fsqVertexShader.compileFromFile( "shaders/fsq_vs_330.glsl" );
+			GlShader fsqGeometryShader{ GlShader::geometryShader() };
+			fsqGeometryShader.compileFromFile( "shaders/fsq_gs_330.glsl" );
 			GlShader clearFragmentShader{ GlShader::fragmentShader() };
 			clearFragmentShader.compileFromFile( "shaders/clear_fs_330.glsl" );
-			m_clearProgram.attachShader( clearVertexShader );
-			m_clearProgram.attachShader( clearGeometryShader );
+			m_clearProgram.attachShader( fsqVertexShader );
+			m_clearProgram.attachShader( fsqGeometryShader );
 			m_clearProgram.attachShader( clearFragmentShader );
 			m_clearProgram.link();
+
+			// load and create the post processing shader program
+
+			GlShader gShader{ GlShader::fragmentShader() };
+			gShader.compileFromFile( "shaders/pp_fs_330.glsl" );
+			m_gProgram.attachShader( fsqVertexShader );
+			m_gProgram.attachShader( fsqGeometryShader );
+			m_gProgram.attachShader( gShader );
+			m_gProgram.link();
+
+			// load and create the post processing shader program
+
+			GlShader agShader{ GlShader::fragmentShader() };
+			agShader.compileFromFile( "shaders/awesome_pp_fs_330.glsl" );
+			m_agProgram.attachShader( fsqVertexShader );
+			m_agProgram.attachShader( fsqGeometryShader );
+			m_agProgram.attachShader( agShader );
+			m_agProgram.link();
 		}
 		catch ( const std::exception& e ) {
 
 			printf( e.what() );
 			std::rethrow_exception( std::current_exception() );
 		}
+	}
+	void initialize() {
+
+		initShaderPrograms();
+
 		GlVertexAttribute attributes[2] = {
 			GlVertexAttribute::floatAttribute( 3 ),
 			GlVertexAttribute::floatAttribute( 3 )
 		};
 
 		m_definition = new GlVertexDefinition{ attributes, attributes + 2 };
-
+		m_gBuffer = new GlFrameBuffer{ 1 };
+		
 		GlGuard guards[] = {
 			{ m_buffer },
 			{ *m_definition },
-			{ m_vertexArrayObject }
+			{ m_vertexArrayObject },
+			{ m_renderTexture },
+			{ *m_gBuffer }
 		};
 
 		m_vertexArrayObject.bind();
 		m_buffer.bindToArray();
 		m_definition->bind();
 
+		// set up render texture
+
+		m_renderTexture.bind( 0 );
+		m_renderTexture.setMinMagNear();
+		SDL_DisplayMode DM;
+		SDL_GetCurrentDisplayMode( 0, &DM );
+		std::vector<unsigned char> renderData;
+		renderData.resize( DM.w * DM.h * 4 );
+		m_renderTexture.fillUnsigned( 0, DM.w, DM.h, 0, renderData );
+		m_renderTexture.unbind();
+
+		// set up gbuffer
+
+		m_gBuffer->bind();
+		m_gBuffer->attachColourTarget( 0, m_renderTexture );
+		m_gBuffer->completeAttachment();
 		m_window = SDL_GL_GetCurrentWindow();
 	}
 
 	void finalize() {
 
 		delete m_definition;
+		delete m_gBuffer;
 	}
 
 	void updateVertexBuffer() {
@@ -392,9 +452,21 @@ class LineRenderer::LineRendererImpl {
 
 	void render() {
 
+		// set render area
+
 		int windowWidth{ 1280 };
 		int windowHeight{ 720 };
 		SDL_GetWindowSize( m_window, &windowWidth, &windowHeight );
+
+		// partially clear screen
+
+		m_gBuffer->bind();
+		m_gBuffer->completeAttachment();
+		if ( !m_gBuffer->isComplete() ) {
+
+			printf( m_gBuffer->getStatus().c_str() );
+			throw 0;
+		}
 
 		glEnable( GL_BLEND );
 		glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -402,35 +474,63 @@ class LineRenderer::LineRendererImpl {
 		m_clearProgram.getUniform( "uniformColour" ).setValue( std::vector<float>{ 0.0f, 0.0f, 0.0f, 0.5f } );
 		glDrawArrays( GL_POINTS, 0, 1 );
 
-		glDisable( GL_DEPTH_TEST );
-		glDisable( GL_CULL_FACE );
-		glBlendFunc( GL_ONE, GL_ONE );
-		glViewport( 0, 0, windowWidth, windowHeight );
-		m_definition->enable();
+		// setup states for render to texture
 
-		updateVertexBuffer();
+		{
+			glDisable( GL_DEPTH_TEST );
+			glDisable( GL_CULL_FACE );
+			glBlendFunc( GL_ONE, GL_ONE );
+			glViewport( 0, 0, windowWidth, windowHeight );
+			m_definition->enable();
 
-		GlGuard guards[] = {
-			{ *m_definition },
-			{ m_program },
-			{ m_vertexArrayObject }
-		};
-		m_program.bind();
+			updateVertexBuffer();
 
-		setupViewMatrix();
-		setupProjectionMatrix();
+			GlGuard guards[] = {
+				{ *m_definition },
+				{ *m_gBuffer },
+				{ m_program },
+				{ m_vertexArrayObject }
+			};
+			m_program.bind();
 
-		m_vertexArrayObject.bind();
+			setupViewMatrix();
+			setupProjectionMatrix();
 
-		try {
+			m_vertexArrayObject.bind();
 
+			// render to texture
+			
 			glDrawArrays( GL_TRIANGLE_STRIP, 0, m_dataLength / 6 );
 		}
-		catch ( const std::exception& e ) {
 
-			printf( e.what() );
+		// render to sceen
+
+		glEnable( GL_BLEND );
+		glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+		float frameAlpha = getTimeAlpha();
+		float frameDelta = frameAlpha - lastFrameAlpha;
+		lastFrameAlpha = frameAlpha;
+		shakeIntensity -= frameDelta + shakeIntensity * frameDelta;
+
+		m_renderTexture.bind( 0 );
+		if ( m_isAwesome ) {
+
+			m_agProgram.bind();
+			m_agProgram.getUniform( "uniformSampler" ).setValue( 0 );
+			m_agProgram.getUniform( "uniformShakeFactor" ).setValue( shakeIntensity < 0.0f ? 0.0f : (shakeIntensity / 5.0f) );
+			m_agProgram.getUniform( "uniformTimer" ).setValue( getTimeAlpha() * 8.0f );
 		}
+		else {
+			m_gProgram.bind();
+			m_gProgram.getUniform( "uniformSampler" ).setValue( 0 );
+			m_gProgram.getUniform( "uniformShakeFactor" ).setValue( shakeIntensity < 0.0f ? 0.0f : (shakeIntensity / 5.0f) );
+			m_gProgram.getUniform( "uniformTimer" ).setValue( getTimeAlpha() * 8.0f );
+		}
+		glDrawArrays( GL_POINTS, 0, 1 );
 	}
+
+	float lastFrameAlpha{ 0.0f };
 
 	void queueDraw( std::vector<LineRendererVertex>& t_vertices, glm::mat3& t_matrix ) {
 
@@ -481,7 +581,15 @@ class LineRenderer::LineRendererImpl {
 	GlVAObject m_vertexArrayObject;
 	GlProgram m_program;
 	GlProgram m_clearProgram;
+	GlProgram m_gProgram;
+	GlProgram m_agProgram;
 	GlVertexDefinition* m_definition;
+	GlTexture2D m_renderTexture;
+	GlFrameBuffer* m_gBuffer;
+
+	bool m_isAwesome{ false };
+
+	float m_shakeStartTime{ 0.0f };
 
 	float* m_vertexData;
 	unsigned int m_dataLength{ 0 };
@@ -522,3 +630,11 @@ IGameRenderer* LineRenderer::createInstance( ConstructRendererPermit& t_permit )
 	return new LineRenderer( t_permit );
 }
 
+void LineRenderer::enableAwesome() {
+
+	m_lineRenderer->m_isAwesome = true;
+}
+void LineRenderer::disableAwesome() {
+
+	m_lineRenderer->m_isAwesome = false;
+}

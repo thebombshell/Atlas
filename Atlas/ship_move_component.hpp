@@ -50,10 +50,10 @@ namespace atlas {
 			m_angularVelocity = 0.0f;
 		}
 
-		float angularAccelSpeed{ 8.0f };
+		float angularAccelSpeed{ 12.0f };
 		float angularDeccelFactor{ 2.0f };
 
-		float accelerationSpeed{ 80.0f };
+		float accelerationSpeed{ 100.0f };
 		float deccelerationFactor{ 0.5f };
 
 	private:

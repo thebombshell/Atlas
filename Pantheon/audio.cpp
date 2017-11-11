@@ -47,7 +47,6 @@ class Audio::AudioImpl {
 		assert( isSuccess && "Audio device could not be finalized." );
 	}
 
-
 	void loadSound( std::string t_path ) {
 		
 		assert( !hasSound( t_path ) && "Sound already exists." );
@@ -221,4 +220,14 @@ bool Source::isStopped() const {
 	int state;
 	alGetSourcei( state, AL_SOURCE_STATE, &state );
 	return state == AL_STOPPED || state == AL_INITIAL;
+}
+
+void Source::setGain( float t_value ) {
+
+	alSourcef( m_id, AL_GAIN, t_value );
+}
+
+void Source::setPitch( float t_value ) {
+
+	alSourcef( m_id, AL_PITCH, t_value );
 }
