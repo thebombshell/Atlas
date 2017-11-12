@@ -159,6 +159,7 @@
     <ClCompile Include="bullet.cpp" />
     <ClCompile Include="default_level.cpp" />
     <ClCompile Include="explode_component.cpp" />
+    <ClCompile Include="force_pad_prefab.cpp" />
     <ClCompile Include="game_state_prefab.cpp" />
     <ClCompile Include="health_component.cpp" />
     <ClCompile Include="line_text_helpers.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="bullet.hpp" />
     <ClInclude Include="default_level.hpp" />
     <ClInclude Include="explode_component.hpp" />
+    <ClInclude Include="force_pad_prefab.hpp" />
     <ClInclude Include="game_state_prefab.hpp" />
     <ClInclude Include="health_component.hpp" />
     <ClInclude Include="line_text_helpers.hpp" />

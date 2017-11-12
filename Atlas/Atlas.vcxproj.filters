@@ -42,6 +42,9 @@
     <ClCompile Include="health_component.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="force_pad_prefab.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.hpp">
@@ -75,6 +78,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="health_component.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="force_pad_prefab.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

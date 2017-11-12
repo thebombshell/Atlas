@@ -5,6 +5,7 @@
 
 #include "main.hpp"
 
+#include "force_pad_prefab.hpp"
 #include "game_state_prefab.hpp"
 #include "default_level.hpp"
 #include "player.hpp"
@@ -43,6 +44,7 @@ int main() {
 			pantheon::Game::GetScene().createPrefab<Player>( PlayerInfo( 3 ) );
 		}
 		pantheon::Game::GetScene().createPrefab<DefaultLevel>();
+
 	} );
 	
 	return 0;

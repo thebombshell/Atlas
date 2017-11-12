@@ -1,4 +1,2 @@
-﻿  boss_prefab.cpp
-c:\users\bombshell\documents\github\atlas\atlas\boss_prefab.cpp(22): warning C4189: 'physics': local variable is initialized but not referenced
-c:\users\bombshell\documents\github\atlas\atlas\boss_prefab.cpp(21): warning C4189: 'collision': local variable is initialized but not referenced
+﻿  player.cpp
   Atlas.vcxproj -> C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Atlas.exe

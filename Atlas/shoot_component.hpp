@@ -24,10 +24,6 @@ namespace atlas {
 			: IActorComponent{ t_permit , t_owner } {
 
 			pantheon::Audio& audio = pantheon::Game::GetAudio();
-			if ( !audio.hasSound( "shoot" ) ) {
-
-				audio.loadSound( "audio/shoot.wav", "shoot" );
-			}
 			m_source = audio.createSource( "shoot" );
 		}
 

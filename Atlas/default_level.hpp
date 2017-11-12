@@ -23,8 +23,7 @@ namespace atlas {
 
 	private:
 
-		pantheon::Transform m_transform{ };
-		float m_colourTimer{ 0.0f };
+		pthn::Source* m_zapSource;
 	};
 }
 

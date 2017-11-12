@@ -30,11 +30,11 @@ namespace pantheon {
 
 	// returns the logic threads time delta
 	
-	float getTimeDelta();
+	float PANTHEON_API getTimeDelta();
 
 	// returns the logic threads time alpha
 
-	float getTimeAlpha();
+	float PANTHEON_API getTimeAlpha();
 
 	// interface for a renderer
 

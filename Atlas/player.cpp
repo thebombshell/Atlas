@@ -11,6 +11,7 @@
 #include "line_text_helpers.hpp"
 #include "ship_move_component.hpp"
 #include "shoot_component.hpp"
+#include "game_state_prefab.hpp"
 
 #include <collision_2d.hpp>
 #include <physics_component.hpp>
@@ -270,6 +271,7 @@ void Player::update( float t_delta ) {
 
 		if ( getOwner().getComponent<ShootComponent>().shoot( cols[m_index], 1 << m_index ) ) {
 
+			physics.velocity += glm::vec2( transform.findDown() ) * (isCheatActive( CHEAT_WHEELCHAIR ) ? 64.0f : 4.0f);
 			shake( 0.1f );
 		}
 	}
@@ -350,8 +352,8 @@ void Player::onEventMessage( IActorEventMessage* const t_message ) {
 			
 			if ( isKillable() ) {
 
-				healthComponent.health = healthComponent.health < 0 ? 0 : healthComponent.health;
 				kill();
+				healthComponent.health = healthComponent.health < 0 ? 0 : healthComponent.health;
 				getOwner().getTransform().scale = glm::vec3( 1.0f, 1.0f, 1.0f )
 					* (1.0f + healthComponent.health * 0.33f);
 			}

@@ -22,8 +22,8 @@ Bullet::Bullet( ConstructComponentPermit& t_permit, pantheon::Actor& t_owner
 	t_owner.createComponent<Collision2DComponent>();
 	Collision2DComponent& collision = t_owner.getComponent<Collision2DComponent>();
 	collision.addCollider( &m_collider );
-	collision.setCollisionFlags(1 << 5);
-	collision.setCollideWithFlags( (1 | 2 | 4 | 8) & ~t_info.flag );
+	collision.setCollisionFlags( 512 );
+	collision.setCollideWithFlags( 511 & ~t_info.flag );
 	t_owner.getTransform().position = glm::vec3( t_info.position, 0.5f );
 }
 

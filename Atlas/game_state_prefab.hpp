@@ -9,8 +9,10 @@
 namespace atlas {
 
 	const int CHEAT_AWESOME{ 1 };
-	const int CHEAT_MEOW{ 2 };
-	const int CHEAT_STRONK{ 4 };
+	const int CHEAT_BOSS{ 2 };
+	const int CHEAT_ESCAPE{ 4 };
+	const int CHEAT_GTFO{ 8 };
+	const int CHEAT_WHEELCHAIR{ 16 };
 
 	bool isCheatActive( int t_cheatName );
 
