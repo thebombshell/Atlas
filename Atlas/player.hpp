@@ -103,14 +103,26 @@ namespace atlas {
 
 		bool isKillable();
 
+		void makeJuggernaught();
+
+		void takeJuggernaught();
+
+		bool isJuggernaught();
+
+		void findSize();
+
+		static void reset();
+
+		static void beginJuggernaught();
+
 	private:
 
 		void setupColliders();
-		void setupVertices();
 		void setupPhysics();
 		void setupSounds();
 
 		int m_index{ 0 };
+		bool m_isJuggernaught{ false };
 		PlayerInputProfile m_input{ };
 
 		glm::vec3 m_vertices[4];

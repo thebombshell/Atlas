@@ -7,6 +7,7 @@
 #define ATLAS_SHOOT_COMPONENT_HPP
 
 #include "bullet.hpp"
+#include "player.hpp"
 
 #include <pantheon.hpp>
 
@@ -46,11 +47,26 @@ namespace atlas {
 				pantheon::Actor& owner = getOwner();
 				pantheon::Transform& transform = owner.getTransform();
 				glm::vec3 up = transform.findUp();
-				pantheon::Game::GetScene().createPrefab<Bullet>(
-					BulletInfo( owner
+				if ( owner.getComponent<Player>().isJuggernaught() ) {
+
+					pthn::Game::GetScene().createPrefab<Bullet>( BulletInfo( owner
+						, transform.position + up * transform.scale * 5.0f
+						, glm::normalize( transform.findUp() * 2.0f + transform.findLeft() ) * 120.0f, t_colour, t_flag ) );
+					pthn::Game::GetScene().createPrefab<Bullet>( BulletInfo( owner
+						, transform.position + up * transform.scale * 5.0f
+						, transform.findUp() * 120.0f, t_colour, t_flag ) );
+					pthn::Game::GetScene().createPrefab<Bullet>( BulletInfo( owner
+						, transform.position + up * transform.scale * 5.0f
+						, glm::normalize( transform.findUp() * 2.0f + transform.findRight() ) * 120.0f, t_colour, t_flag ) );
+					m_shootTimer = cooldown * 0.66f;
+				}
+				else {
+
+					pthn::Game::GetScene().createPrefab<Bullet>( BulletInfo( owner
 						, transform.position + up * transform.scale * 5.0f
 						, transform.findUp() * 160.0f, t_colour, t_flag ) );
-				m_shootTimer = cooldown;
+					m_shootTimer = cooldown;
+				}
 				m_source->play();
 				return true;
 			}

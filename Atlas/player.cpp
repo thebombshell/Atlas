@@ -28,116 +28,120 @@ using namespace pantheon;
 
 const float PI2 = float( M_PI ) * 2;
 
-glm::vec3 cols[4] = 
+glm::vec3 g_colors[4] = 
 	{ { 1.0f, 1.0f, 0.0f }
 	, { 0.0f, 1.0f, 1.0f }
 	, { 1.0f, 0.0f, 1.0f }
 	, { 0.0f, 1.0f, 0.0f } };
-glm::vec2 spawns[4] =
+glm::vec2 g_spawns[4] =
 	{ { -200.0f, 50.0f }
 	, { 200.0f, 50.0f }
 	, { -200.0f, -50.0f }
 	, { 200.0f, -50.0f } };
-float spawnRotations[4] =
+float g_spawnRotations[4] =
 	{ PI2 * 0.75f
 	, PI2 * 0.25f
 	, PI2 * 0.75f
 	, PI2 * 0.25f };
-glm::vec3 vertices[4] =
+glm::vec3 g_vertices[4] =
 { glm::vec3( -sin( PI2 * 0.0f ) * 5.0f, cos( PI2 * 0.0f ) * 5.0f, 0.0f )
 , glm::vec3( -sin( PI2 * 0.33f ) * 5.0f, cos( PI2 * 0.33f ) * 5.0f, 0.0f )
 , glm::vec3( 0.0f, 0.0f, 0.0f )
 , glm::vec3( -sin( PI2 * 0.66f ) * 5.0f, cos( PI2 * 0.66f ) * 5.0f, 0.0f ) };
 
-std::vector<LineRendererVertex> players[4] = {
-	{ LineRendererVertex( vertices[0][0], vertices[0][1], vertices[0][2]
-		, cols[0][0], cols[0][1], cols[0][2] )
-	, LineRendererVertex( vertices[1][0], vertices[1][1], vertices[1][2]
-		, cols[0][0], cols[0][1], cols[0][2] )
-	, LineRendererVertex( vertices[2][0], vertices[2][1], vertices[2][2]
-		, cols[0][0], cols[0][1], cols[0][2] )
-	, LineRendererVertex( vertices[3][0], vertices[3][1], vertices[3][2]
-		, cols[0][0], cols[0][1], cols[0][2] )
+std::vector<LineRendererVertex> g_playerIcons[4] = {
+	{ LineRendererVertex( g_vertices[0][0], g_vertices[0][1], g_vertices[0][2]
+		, g_colors[0][0], g_colors[0][1], g_colors[0][2] )
+	, LineRendererVertex( g_vertices[1][0], g_vertices[1][1], g_vertices[1][2]
+		, g_colors[0][0], g_colors[0][1], g_colors[0][2] )
+	, LineRendererVertex( g_vertices[2][0], g_vertices[2][1], g_vertices[2][2]
+		, g_colors[0][0], g_colors[0][1], g_colors[0][2] )
+	, LineRendererVertex( g_vertices[3][0], g_vertices[3][1], g_vertices[3][2]
+		, g_colors[0][0], g_colors[0][1], g_colors[0][2] )
 	, LineRendererVertex::separator()
 	, LineRendererVertex::separator()
 	, LineRendererVertex( -sin( PI2 * 0.47f ) * 4.0f, cos( PI2 * 0.47f ) * 4.0f, 0.0f
-		, cols[0][0], cols[0][1], cols[0][2] )
+		, g_colors[0][0], g_colors[0][1], g_colors[0][2] )
 	, LineRendererVertex( -sin( PI2 * 0.53f ) * 4.0f, cos( PI2 * 0.53f ) * 4.0f, 0.0f
-		, cols[0][0], cols[0][1], cols[0][2] )
+		, g_colors[0][0], g_colors[0][1], g_colors[0][2] )
 	, LineRendererVertex::separator()
 	, LineRendererVertex( -sin( PI2 * 0.47f ) * 6.0f, cos( PI2 * 0.47f ) * 6.0f, 0.0f
-		, cols[0][0], cols[0][1], cols[0][2] )
+		, g_colors[0][0], g_colors[0][1], g_colors[0][2] )
 	, LineRendererVertex( -sin( PI2 * 0.53f ) * 6.0f, cos( PI2 * 0.53f ) * 6.0f, 0.0f
-		, cols[0][0], cols[0][1], cols[0][2] )
+		, g_colors[0][0], g_colors[0][1], g_colors[0][2] )
 	, LineRendererVertex::separator() }
 	,
-	{ LineRendererVertex( vertices[0][0], vertices[0][1], vertices[0][2]
-		, cols[1][0], cols[1][1], cols[1][2] )
-	, LineRendererVertex( vertices[1][0], vertices[1][1], vertices[1][2]
-		, cols[1][0], cols[1][1], cols[1][2] )
-	, LineRendererVertex( vertices[2][0], vertices[2][1], vertices[2][2]
-		, cols[1][0], cols[1][1], cols[1][2] )
-	, LineRendererVertex( vertices[3][0], vertices[3][1], vertices[3][2]
-		, cols[1][0], cols[1][1], cols[1][2] )
+	{ LineRendererVertex( g_vertices[0][0], g_vertices[0][1], g_vertices[0][2]
+		, g_colors[1][0], g_colors[1][1], g_colors[1][2] )
+	, LineRendererVertex( g_vertices[1][0], g_vertices[1][1], g_vertices[1][2]
+		, g_colors[1][0], g_colors[1][1], g_colors[1][2] )
+	, LineRendererVertex( g_vertices[2][0], g_vertices[2][1], g_vertices[2][2]
+		, g_colors[1][0], g_colors[1][1], g_colors[1][2] )
+	, LineRendererVertex( g_vertices[3][0], g_vertices[3][1], g_vertices[3][2]
+		, g_colors[1][0], g_colors[1][1], g_colors[1][2] )
 	, LineRendererVertex::separator()
 	, LineRendererVertex::separator()
 	, LineRendererVertex( -sin( PI2 * 0.47f ) * 5.0f, cos( PI2 * 0.47f ) * 5.0f, 0.0f
-		, cols[1][0], cols[1][1], cols[1][2] )
+		, g_colors[1][0], g_colors[1][1], g_colors[1][2] )
 	, LineRendererVertex( -sin( PI2 * 0.53f ) * 5.0f, cos( PI2 * 0.53f ) * 5.0f, 0.0f
-		, cols[1][0], cols[1][1], cols[1][2] )
+		, g_colors[1][0], g_colors[1][1], g_colors[1][2] )
 	, LineRendererVertex::separator()
 	, LineRendererVertex( -sin( PI2 * 0.5f ) * 4.0f, cos( PI2 * 0.5f ) * 4.0f, 0.0f
-		, cols[1][0], cols[1][1], cols[1][2] )
+		, g_colors[1][0], g_colors[1][1], g_colors[1][2] )
 	, LineRendererVertex( -sin( PI2 * 0.5f ) * 6.0f, cos( PI2 * 0.5f ) * 6.0f, 0.0f
-		, cols[1][0], cols[1][1], cols[1][2] )
+		, g_colors[1][0], g_colors[1][1], g_colors[1][2] )
 	, LineRendererVertex::separator() }
 	,
-	{ LineRendererVertex( vertices[0][0], vertices[0][1], vertices[0][2]
-		, cols[2][0], cols[2][1], cols[2][2] )
-	, LineRendererVertex( vertices[1][0], vertices[1][1], vertices[1][2]
-		, cols[2][0], cols[2][1], cols[2][2] )
-	, LineRendererVertex( vertices[2][0], vertices[2][1], vertices[2][2]
-		, cols[2][0], cols[2][1], cols[2][2] )
-	, LineRendererVertex( vertices[3][0], vertices[3][1], vertices[3][2]
-		, cols[2][0], cols[2][1], cols[2][2] )
+	{ LineRendererVertex( g_vertices[0][0], g_vertices[0][1], g_vertices[0][2]
+		, g_colors[2][0], g_colors[2][1], g_colors[2][2] )
+	, LineRendererVertex( g_vertices[1][0], g_vertices[1][1], g_vertices[1][2]
+		, g_colors[2][0], g_colors[2][1], g_colors[2][2] )
+	, LineRendererVertex( g_vertices[2][0], g_vertices[2][1], g_vertices[2][2]
+		, g_colors[2][0], g_colors[2][1], g_colors[2][2] )
+	, LineRendererVertex( g_vertices[3][0], g_vertices[3][1], g_vertices[3][2]
+		, g_colors[2][0], g_colors[2][1], g_colors[2][2] )
 	, LineRendererVertex::separator()
 	, LineRendererVertex::separator()
 	, LineRendererVertex( -sin( PI2 * 0.47f ) * 4.0f, cos( PI2 * 0.47f ) * 4.0f, 0.0f
-		, cols[2][0], cols[2][1], cols[2][2] )
+		, g_colors[2][0], g_colors[2][1], g_colors[2][2] )
 	, LineRendererVertex( -sin( PI2 * 0.47f ) * 6.0f, cos( PI2 * 0.47f ) * 6.0f, 0.0f
-		, cols[2][0], cols[2][1], cols[2][2] )
+		, g_colors[2][0], g_colors[2][1], g_colors[2][2] )
 	, LineRendererVertex::separator()
 	, LineRendererVertex( -sin( PI2 * 0.53f ) * 4.0f, cos( PI2 * 0.53f ) * 4.0f, 0.0f
-		, cols[2][0], cols[2][1], cols[2][2] )
+		, g_colors[2][0], g_colors[2][1], g_colors[2][2] )
 	, LineRendererVertex( -sin( PI2 * 0.53f ) * 6.0f, cos( PI2 * 0.53f ) * 6.0f, 0.0f
-		, cols[2][0], cols[2][1], cols[2][2] )
+		, g_colors[2][0], g_colors[2][1], g_colors[2][2] )
 	, LineRendererVertex::separator() }
 	,
-	{ LineRendererVertex( vertices[0][0], vertices[0][1], vertices[0][2]
-		, cols[3][0], cols[3][1], cols[3][2] )
-	, LineRendererVertex( vertices[1][0], vertices[1][1], vertices[1][2]
-		, cols[3][0], cols[3][1], cols[3][2] )
-	, LineRendererVertex( vertices[2][0], vertices[2][1], vertices[2][2]
-		, cols[3][0], cols[3][1], cols[3][2] )
-	, LineRendererVertex( vertices[3][0], vertices[3][1], vertices[3][2]
-		, cols[3][0], cols[3][1], cols[3][2] )
+	{ LineRendererVertex( g_vertices[0][0], g_vertices[0][1], g_vertices[0][2]
+		, g_colors[3][0], g_colors[3][1], g_colors[3][2] )
+	, LineRendererVertex( g_vertices[1][0], g_vertices[1][1], g_vertices[1][2]
+		, g_colors[3][0], g_colors[3][1], g_colors[3][2] )
+	, LineRendererVertex( g_vertices[2][0], g_vertices[2][1], g_vertices[2][2]
+		, g_colors[3][0], g_colors[3][1], g_colors[3][2] )
+	, LineRendererVertex( g_vertices[3][0], g_vertices[3][1], g_vertices[3][2]
+		, g_colors[3][0], g_colors[3][1], g_colors[3][2] )
 	, LineRendererVertex::separator()
 	, LineRendererVertex::separator()
 	, LineRendererVertex( -sin( PI2 * 0.47f ) * 6.0f, cos( PI2 * 0.47f ) * 4.0f, 0.0f
-		, cols[3][0], cols[3][1], cols[3][2] )
+		, g_colors[3][0], g_colors[3][1], g_colors[3][2] )
 	, LineRendererVertex( -sin( PI2 * 0.53f ) * 4.0f, cos( PI2 * 0.53f ) * 6.0f, 0.0f
-		, cols[3][0], cols[3][1], cols[3][2] )
+		, g_colors[3][0], g_colors[3][1], g_colors[3][2] )
 	, LineRendererVertex::separator()
 	, LineRendererVertex( -sin( PI2 * 0.53f ) * 6.0f, cos( PI2 * 0.53f ) * 4.0f, 0.0f
-		, cols[3][0], cols[3][1], cols[3][2] )
+		, g_colors[3][0], g_colors[3][1], g_colors[3][2] )
 	, LineRendererVertex( -sin( PI2 * 0.47f ) * 4.0f, cos( PI2 * 0.47f ) * 6.0f, 0.0f
-		, cols[3][0], cols[3][1], cols[3][2] )
+		, g_colors[3][0], g_colors[3][1], g_colors[3][2] )
 	, LineRendererVertex::separator() } };
+
+Player* g_players[4]{ nullptr, nullptr, nullptr, nullptr };
 
 Player::Player( pantheon::ConstructComponentPermit& t_permit, Actor& t_owner, const PlayerInfo& t_info )
 	: IActorComponent( t_permit, t_owner ), m_index{ t_info.index }
 	, m_input{ PlayerInputProfile::fromIndex( t_info.index ) }
 	, m_colliders{ { t_owner.getTransform() }, { t_owner.getTransform() } } {
+
+	g_players[t_info.index] = this;
 
 	t_owner.createComponent<Collision2DComponent>();
 	t_owner.createComponent<PhysicsComponent2D>();
@@ -146,16 +150,17 @@ Player::Player( pantheon::ConstructComponentPermit& t_permit, Actor& t_owner, co
 	t_owner.createComponent<HealthComponent>();
 
 	Transform& transform = t_owner.getTransform();
-	transform.position = glm::vec3{ spawns[t_info.index], 0.0f };
-	transform.rotation = glm::angleAxis( spawnRotations[m_index], glm::vec3( 0.0f, 0.0f, 1.0f ) );
+	transform.position = glm::vec3{ g_spawns[t_info.index], 0.0f };
+	transform.rotation = glm::angleAxis( g_spawnRotations[m_index], glm::vec3( 0.0f, 0.0f, 1.0f ) );
 
-	setupVertices();
 	setupColliders();
 	setupPhysics();
 	setupSounds();
 }
 
 Player::~Player() {
+
+	g_players[m_index] = nullptr;
 
 	Game::GetAudio().deleteSource( m_bonkSource );
 	Game::GetAudio().deleteSource( m_wooshSource );
@@ -165,13 +170,13 @@ void Player::setupColliders() {
 
 	// set up both triangles
 
-	m_colliders[0].points.push_back( vertices[0] );
-	m_colliders[0].points.push_back( vertices[1] );
-	m_colliders[0].points.push_back( vertices[2] );
+	m_colliders[0].points.push_back( g_vertices[0] );
+	m_colliders[0].points.push_back( g_vertices[1] );
+	m_colliders[0].points.push_back( g_vertices[2] );
 
-	m_colliders[1].points.push_back( vertices[2] );
-	m_colliders[1].points.push_back( vertices[3] );
-	m_colliders[1].points.push_back( vertices[0] );
+	m_colliders[1].points.push_back( g_vertices[2] );
+	m_colliders[1].points.push_back( g_vertices[3] );
+	m_colliders[1].points.push_back( g_vertices[0] );
 
 	// add them to the collider
 
@@ -182,10 +187,6 @@ void Player::setupColliders() {
 	unsigned int collisionFlags = 1 << m_index;
 	collisionComponent.setCollisionFlags( collisionFlags );
 	collisionComponent.setCollideWithFlags( 0xffffffff & ~collisionFlags );
-}
-
-void Player::setupVertices() {
-
 }
 
 void Player::setupPhysics() {
@@ -217,6 +218,12 @@ void Player::update( float t_delta ) {
 	const Input& input = Game::GetInput();
 	PhysicsComponent2D& physics = getOwner().getComponent<PhysicsComponent2D>();
 	Transform& transform = getOwner().getTransform();
+
+	if ( !isCheatActive( CHEAT_JUGGERNAUGHT ) && m_isJuggernaught ) {
+		
+		m_isJuggernaught = false;
+		findSize();
+	}
 
 	// handle death
 
@@ -269,10 +276,18 @@ void Player::update( float t_delta ) {
 
 	if ( input.isKeyDown( m_input.fire ) && m_shieldTimer <= 0.0f ) {
 
-		if ( getOwner().getComponent<ShootComponent>().shoot( cols[m_index], 1 << m_index ) ) {
+		if ( getOwner().getComponent<ShootComponent>().shoot( g_colors[m_index], 1 << m_index ) ) {
 
 			physics.velocity += glm::vec2( transform.findDown() ) * (isCheatActive( CHEAT_WHEELCHAIR ) ? 64.0f : 4.0f);
-			shake( 0.1f );
+
+			if ( isJuggernaught() ) {
+
+				shake( 0.33f );
+			}
+			else {
+
+				shake( 0.1f );
+			}
 		}
 	}
 
@@ -297,7 +312,7 @@ void Player::render() {
 
 	std::string scoreString = std::to_string( getOwner().getComponent<HealthComponent>().health );
 	LineRendererMessage messageB = stringToLines( scoreString
-		, glm::vec3( spawns[m_index], 0.0f ) + glm::vec3( scoreString.size() * -2.5f, -20.0f, 0.0f ), cols[m_index] );
+		, glm::vec3( g_spawns[m_index], 0.0f ) + glm::vec3( scoreString.size() * -2.5f, -20.0f, 0.0f ), g_colors[m_index] );
 	renderer->queueDraw( messageB );
 
 	// if dead don't render player
@@ -309,17 +324,17 @@ void Player::render() {
 
 	// handle colour
 
-	glm::vec3 colour = cols[m_index];
+	glm::vec3 colour = g_colors[m_index];
 
 	if ( m_shieldTimer > 0.0f ) {
 
-		colour = cols[m_index] * cos( m_shieldTimer * PI2 * 2.0f );
+		colour = g_colors[m_index] * cos( m_shieldTimer * PI2 * 2.0f );
 	}
 
 	// create render message and queue to draw
 
 	Transform2D transform = getOwner().getTransform2D();
-	LineRendererMessage message{ players[m_index].begin(), players[m_index].end(), transform.findMatrix() };
+	LineRendererMessage message{ g_playerIcons[m_index].begin(), g_playerIcons[m_index].end(), transform.findMatrix() };
 	renderer->queueDraw( message );
 }
 
@@ -339,9 +354,7 @@ void Player::onEventMessage( IActorEventMessage* const t_message ) {
 		HealMessage* healMessage = t_message->as<HealMessage>();
 		if ( healMessage != nullptr ) {
 
-			auto& healthComponent = getOwner().getComponent<HealthComponent>();
-			getOwner().getTransform().scale = glm::vec3( 1.0f, 1.0f, 1.0f )
-				* (1.0f + healthComponent.health * 0.33f);
+			findSize();
 		}
 	}
 	{
@@ -354,8 +367,7 @@ void Player::onEventMessage( IActorEventMessage* const t_message ) {
 
 				kill();
 				healthComponent.health = healthComponent.health < 0 ? 0 : healthComponent.health;
-				getOwner().getTransform().scale = glm::vec3( 1.0f, 1.0f, 1.0f )
-					* (1.0f + healthComponent.health * 0.33f);
+				findSize();
 			}
 			else {
 
@@ -376,8 +388,8 @@ bool Player::kill() {
 			, owner.getComponent<ShipMoveComponent>().getVelocity() );
 		Game::GetScene().createPrefab<ExplodeComponent>( info );
 		owner.getTransform().reset();
-		owner.getTransform().position = { spawns[m_index][0], spawns[m_index][1], 0.0f };
-		owner.getTransform().rotation = glm::angleAxis( spawnRotations[m_index], glm::vec3( 0.0f, 0.0f, 1.0f ) );
+		owner.getTransform().position = { g_spawns[m_index][0], g_spawns[m_index][1], 0.0f };
+		owner.getTransform().rotation = glm::angleAxis( g_spawnRotations[m_index], glm::vec3( 0.0f, 0.0f, 1.0f ) );
 		owner.getComponent<ShipMoveComponent>().reset();
 		owner.getComponent<Collision2DComponent>().disable();
 		owner.getComponent<HealthComponent>().disable();
@@ -390,4 +402,66 @@ bool Player::kill() {
 bool Player::isKillable() {
 
 	return m_shieldTimer <= 0.0f;
+}
+
+void Player::makeJuggernaught() {
+
+	m_isJuggernaught = true;
+}
+
+void Player::takeJuggernaught() {
+
+	m_isJuggernaught = false;
+}
+
+bool Player::isJuggernaught() {
+
+	return m_isJuggernaught;
+}
+
+void Player::findSize() {
+
+	auto& health = getOwner().getComponent<HealthComponent>();
+	if ( isJuggernaught() ) {
+
+		getOwner().getTransform().scale = glm::vec3( 1.0f, 1.0f, 1.0f )
+			* (2.0f + health.health * 0.66f);
+	}
+	else {
+
+		getOwner().getTransform().scale = glm::vec3( 1.0f, 1.0f, 1.0f )
+			* (1.0f + health.health * 0.33f);
+	}
+}
+
+void Player::beginJuggernaught() {
+
+	int index = rand() % 4;
+
+	if ( g_players[index] != nullptr ) {
+
+		g_players[index]->m_isJuggernaught = true;
+		g_players[index]->findSize();
+	}
+	else {
+
+		g_players[0]->m_isJuggernaught = true;
+		g_players[0]->findSize();
+	}
+}
+
+void Player::reset() {
+
+	for ( int i = 0; i < 4; ++i ) {
+
+		if ( g_players[i] != nullptr ) {
+
+			Player& player = *g_players[i];
+			auto& health = player.getOwner().getComponent<HealthComponent>();
+			health.damage( 999 );
+			health.health = 0;
+			player.findSize();
+
+		}
+	}
 }

@@ -19,6 +19,7 @@ void Scene::update() {
 
 		auto iter = std::find( m_actors.begin(), m_actors.end(), actor );
 		m_actors.erase( iter );
+		delete actor;
 	}
 	m_removeQueue.clear();
 }

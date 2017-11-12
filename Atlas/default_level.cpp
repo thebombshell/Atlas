@@ -10,6 +10,7 @@
 #include "health_component.hpp"
 
 #include <line_renderer.hpp>
+#include <physics_component.hpp>
 
 #define _USE_MATH_DEFINES
 
@@ -42,7 +43,7 @@ DefaultLevel::~DefaultLevel() {
 void DefaultLevel::update( float t_delta ) {
 
 	bool canKill = isCheatActive( CHEAT_ESCAPE ) && g_timer < PI2 * 0.5f;
-	Game::GetScene().forEach( [canKill](Actor* const t_actor) {
+	Game::GetScene().forEach( [&](Actor* const t_actor) {
 
 		glm::vec3& position = t_actor->getTransform().position;
 

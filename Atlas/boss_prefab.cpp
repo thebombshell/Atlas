@@ -36,6 +36,7 @@ BossPrefab::BossPrefab( ConstructComponentPermit& t_permit, Actor& t_owner )
 	physics.airResistance = 1.0f;
 	auto& health = t_owner.getComponent<HealthComponent>();
 	health.health = 20;
+	getOwner().getTransform().position = { 0.0f, 0.0f, 0.0f };
 	getOwner().getTransform().scale = glm::vec3( 1.0f, 1.0f, 1.0f )
 		* (1.0f + health.health * 0.33f);
 
@@ -91,22 +92,18 @@ void BossPrefab::shoot() {
 	Actor& owner = getOwner();
 	Transform2D transform = owner.getTransform();
 
-	pantheon::Game::GetScene().createPrefab<Bullet>(
-		BulletInfo( owner
-			, transform.position + transform.findUp() * transform.scale * 5.0f
-			, transform.findUp() * 160.0f, { 1.0f, 1.0f, 1.0f }, 16 ) );
-	pantheon::Game::GetScene().createPrefab<Bullet>(
-		BulletInfo( owner
-			, transform.position + transform.findDown() * transform.scale * 5.0f
-			, transform.findDown() * 160.0f, { 1.0f, 1.0f, 1.0f }, 16 ) );
-	pantheon::Game::GetScene().createPrefab<Bullet>(
-		BulletInfo( owner
-			, transform.position + transform.findRight() * transform.scale * 5.0f
-			, transform.findRight() * 160.0f, { 1.0f, 1.0f, 1.0f }, 16 ) );
-	pantheon::Game::GetScene().createPrefab<Bullet>(
-		BulletInfo( owner
-			, transform.position + transform.findLeft() * transform.scale * 5.0f
-			, transform.findLeft() * 160.0f, { 1.0f, 1.0f, 1.0f }, 16 ) );
+	Game::GetScene().createPrefab<Bullet>( BulletInfo( owner
+		, transform.position + transform.findUp() * transform.scale * 5.0f
+		, transform.findUp() * 160.0f, { 1.0f, 1.0f, 1.0f }, 16 ) );
+	Game::GetScene().createPrefab<Bullet>( BulletInfo( owner
+		, transform.position + transform.findDown() * transform.scale * 5.0f
+		, transform.findDown() * 160.0f, { 1.0f, 1.0f, 1.0f }, 16 ) );
+	Game::GetScene().createPrefab<Bullet>( BulletInfo( owner
+		, transform.position + transform.findRight() * transform.scale * 5.0f
+		, transform.findRight() * 160.0f, { 1.0f, 1.0f, 1.0f }, 16 ) );
+	Game::GetScene().createPrefab<Bullet>( BulletInfo( owner
+		, transform.position + transform.findLeft() * transform.scale * 5.0f
+		, transform.findLeft() * 160.0f, { 1.0f, 1.0f, 1.0f }, 16 ) );
 	m_shootSource->play();
 	shake( 0.5f );
 }

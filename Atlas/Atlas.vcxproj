@@ -155,24 +155,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="black_hole_prefab.cpp" />
     <ClCompile Include="boss_prefab.cpp" />
     <ClCompile Include="bullet.cpp" />
+    <ClCompile Include="cherry_prefab.cpp" />
     <ClCompile Include="default_level.cpp" />
     <ClCompile Include="explode_component.cpp" />
     <ClCompile Include="force_pad_prefab.cpp" />
     <ClCompile Include="game_state_prefab.cpp" />
+    <ClCompile Include="hammer_prefab.cpp" />
     <ClCompile Include="health_component.cpp" />
     <ClCompile Include="line_text_helpers.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="player.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="black_hole_prefab.hpp" />
     <ClInclude Include="boss_prefab.hpp" />
     <ClInclude Include="bullet.hpp" />
+    <ClInclude Include="cherry_prefab.hpp" />
     <ClInclude Include="default_level.hpp" />
     <ClInclude Include="explode_component.hpp" />
     <ClInclude Include="force_pad_prefab.hpp" />
     <ClInclude Include="game_state_prefab.hpp" />
+    <ClInclude Include="hammer_prefab.hpp" />
     <ClInclude Include="health_component.hpp" />
     <ClInclude Include="line_text_helpers.hpp" />
     <ClInclude Include="main.hpp" />

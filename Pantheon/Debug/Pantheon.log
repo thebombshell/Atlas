@@ -1,12 +1,2 @@
-﻿  actor.cpp
-  Generating Code...
-  Compiling...
-  sprite_renderer.cpp
-  physics_component.cpp
-  line_renderer.cpp
-  iactor_component.cpp
-  game.cpp
-  collision_2d.cpp
-  Generating Code...
-     Creating library C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Pantheon.lib and object C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Pantheon.exp
+﻿     Creating library C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Pantheon.lib and object C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Pantheon.exp
   Pantheon.vcxproj -> C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Pantheon.dll

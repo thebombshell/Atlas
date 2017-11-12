@@ -14,11 +14,19 @@ using namespace pantheon;
 void IActorComponent::disable() {
 
 	m_isActive = false;
+	onDisable();
 }
 
 void IActorComponent::enable() {
 
 	m_isActive = true;
+	onEnable();
+}
+
+void IActorComponent::onEnable() {
+}
+
+void IActorComponent::onDisable() {
 }
 
 bool IActorComponent::isActive() {

@@ -1,2 +1,3 @@
-﻿  player.cpp
+﻿  game_state_prefab.cpp
+c:\users\bombshell\documents\github\atlas\atlas\game_state_prefab.cpp(22): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
   Atlas.vcxproj -> C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Atlas.exe

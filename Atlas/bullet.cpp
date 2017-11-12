@@ -7,6 +7,7 @@
 
 #include "player.hpp"
 #include "health_component.hpp"
+#include "game_state_prefab.hpp"
 
 #include <collision_2d.hpp>
 #include <line_renderer.hpp>
@@ -14,17 +15,20 @@
 using namespace atlas;
 using namespace pantheon;
 
-Bullet::Bullet( ConstructComponentPermit& t_permit, pantheon::Actor& t_owner
-	, const BulletInfo& t_info ) : IActorComponent( t_permit, t_owner )
-	, m_firer{ t_info.firer }, m_velocity{ t_info.velocity }, m_colour{ t_info.colour }
-	, m_collider{ t_owner.getTransform(), 1.0f } {
+Bullet::Bullet( ConstructComponentPermit& t_permit, pantheon::Actor& t_owner, const BulletInfo& t_info )
+	: IActorComponent( t_permit, t_owner ), m_firer{ nullptr }, m_collider{ t_owner.getTransform(), 1.0f } {
 
 	t_owner.createComponent<Collision2DComponent>();
 	Collision2DComponent& collision = t_owner.getComponent<Collision2DComponent>();
 	collision.addCollider( &m_collider );
 	collision.setCollisionFlags( 512 );
 	collision.setCollideWithFlags( 511 & ~t_info.flag );
-	t_owner.getTransform().position = glm::vec3( t_info.position, 0.5f );
+	getOwner().getTransform().position = glm::vec3( t_info.position, 0.5f );
+
+	m_timer = 0.0f;
+	m_firer = &t_info.firer;
+	m_velocity = t_info.velocity;
+	m_colour = t_info.colour;
 }
 
 Bullet::~Bullet() {
@@ -36,7 +40,7 @@ void Bullet::update( float t_delta ) {
 	m_timer += t_delta;
 	if ( m_timer > 1.0f ) {
 
-		Game::GetScene().destroyActor( &getOwner() );
+		destroy();
 	}
 	getOwner().getTransform().position += glm::vec3( m_velocity, 0.0f ) * t_delta;
 }
@@ -69,20 +73,43 @@ void Bullet::onEventMessage( IActorEventMessage* const t_message ) {
 		auto collisionMessage = t_message->as<Collision2DMessage>();
 		if ( collisionMessage != nullptr ) {
 
-			if ( &collisionMessage->other != &m_firer
+			if ( &collisionMessage->other != m_firer
 				&& collisionMessage->other.hasComponent<HealthComponent>() ) {
 
 				HealthComponent& otherHealth = collisionMessage->other.getComponent<HealthComponent>();
+
 				if ( otherHealth.isActive() ) {
 
-					otherHealth.damage( 1 );
-					if ( m_firer.hasComponent<HealthComponent>() ) {
+					// handle juggernaught cheat
 
-						m_firer.getComponent<HealthComponent>().heal( 1 );
+					if ( isCheatActive( CHEAT_JUGGERNAUGHT )
+						&& m_firer->hasComponent<Player>()
+						&& collisionMessage->other.hasComponent<Player>() ) {
+
+						Player& player = m_firer->getComponent<Player>();
+						Player& otherPlayer = collisionMessage->other.getComponent<Player>();
+
+						if ( otherPlayer.isJuggernaught() ) {
+
+							player.makeJuggernaught();
+							otherPlayer.takeJuggernaught();
+						}
+
 					}
-					Game::GetScene().destroyActor( &getOwner() );
+
+					otherHealth.damage( 1 );
+					if ( m_firer->hasComponent<HealthComponent>() ) {
+
+						m_firer->getComponent<HealthComponent>().heal( 1 );
+					}
 				}
+				destroy();
 			}
 		}
 	}
+}
+
+void Bullet::destroy() {
+
+	Game::GetScene().destroyActor( &getOwner() );
 }

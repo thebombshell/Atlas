@@ -20,7 +20,7 @@ namespace atlas {
 
 		}
 
-		pantheon::Actor& firer;
+		pthn::Actor& firer;
 		glm::vec2 position;
 		glm::vec2 velocity;
 		glm::vec3 colour;
@@ -31,7 +31,7 @@ namespace atlas {
 
 	private:
 
-		pantheon::Actor& m_firer;
+		pthn::Actor* m_firer;
 		glm::vec2 m_velocity;
 		glm::vec3 m_colour;
 		float m_timer{ 0.0f };
@@ -39,7 +39,7 @@ namespace atlas {
 
 	public:
 
-		Bullet( pantheon::ConstructComponentPermit&, pantheon::Actor&, const BulletInfo& t_message );
+		Bullet( pantheon::ConstructComponentPermit&, pantheon::Actor&, const BulletInfo& t_info );
 		~Bullet();
 
 		void update( float ) override;
@@ -47,6 +47,8 @@ namespace atlas {
 		void render( void ) override;
 
 		void onEventMessage( pantheon::IActorEventMessage* const ) override;
+
+		void destroy();
 
 	};
 }

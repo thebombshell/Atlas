@@ -40,6 +40,8 @@ namespace pantheon {
 
 		void disable();
 		void enable();
+		virtual void onDisable();
+		virtual void onEnable();
 		bool isActive();
 		Actor& getOwner();
 	};

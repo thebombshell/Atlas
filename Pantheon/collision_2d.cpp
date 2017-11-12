@@ -12,24 +12,23 @@
 
 using namespace pantheon;
 
-Collision2DComponent::Collision2DComponent
-	( ConstructComponentPermit& t_permit, Actor& t_owner )
+///////////////////////////////////////////////////////////////////////////////
+// Collision2DComponent
+///////////////////////////////////////////////////////////////////////////////
+
+Collision2DComponent::Collision2DComponent( ConstructComponentPermit& t_permit, Actor& t_owner )
 	: IActorComponent( t_permit, t_owner ) {
 
-	Collision2DManager* const collision
-		= dynamic_cast<Collision2DManager*>(&Game::GetCollisionManager());
-	assert( collision != nullptr
-		&& "Collision2DComponent requires a Collision2D manager." );
+	Collision2DManager* const collision	= dynamic_cast<Collision2DManager*>(&Game::GetCollisionManager());
+	assert( collision != nullptr && "Collision2DComponent requires a Collision2D manager." );
 	Collision2DRegistryPermit registryPermit;
 	collision->registerComponent( registryPermit, this );
 }
 
 Collision2DComponent::~Collision2DComponent() {
 
-	Collision2DManager* const collision
-		= dynamic_cast<Collision2DManager*>(&Game::GetCollisionManager());
-	assert( collision != nullptr 
-		&& "Collision2DComponent requires a Collision2D manager." );
+	Collision2DManager* const collision = dynamic_cast<Collision2DManager*>(&Game::GetCollisionManager());
+	assert( collision != nullptr && "Collision2DComponent requires a Collision2D manager." );
 	Collision2DRegistryPermit registryPermit;
 	collision->unregisterComponent( registryPermit, this );
 }
@@ -135,6 +134,10 @@ glm::vec4 Collision2DComponent::getBounds() const {
 	return{ x[0], y[0], x[1], y[1] };
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Collision2DManager
+///////////////////////////////////////////////////////////////////////////////
+
 class Collision2DManager::CollisionImpl {
 
 	friend class Collision2DManager;
@@ -150,6 +153,7 @@ class Collision2DManager::CollisionImpl {
 	void registerComponent( Collision2DComponent* const t_component ) {
 
 		m_collidables.push_back( t_component );
+		m_map.add( t_component, { 0, 0 }, { 1, 1 } );
 	}
 
 	void unregisterComponent( Collision2DComponent* const t_component ) {
@@ -158,10 +162,7 @@ class Collision2DManager::CollisionImpl {
 			, t_component );
 		assert( iter != m_collidables.end() && "Collidable not registered." );
 		m_collidables.erase( iter );
-		if ( m_map.has( t_component ) ) {
-
-			m_map.remove( t_component );
-		}
+		m_map.remove( t_component );
 	}
 
 	bool findCollisionsBetweenActors
@@ -278,14 +279,7 @@ class Collision2DManager::CollisionImpl {
 
 				component->prepare();
 				glm::vec4 bounds = component->getBounds();
-				if ( m_map.has( component ) ) {
-
-					m_map.move( component, { bounds }, { bounds[2], bounds[3] } );
-				}
-				else {
-
-					m_map.add( component, { bounds }, { bounds[2], bounds[3] } );
-				}
+				m_map.move( component, { bounds }, { bounds[2], bounds[3] } );
 			}
 		}
 
