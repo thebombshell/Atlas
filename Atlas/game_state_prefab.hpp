@@ -21,8 +21,11 @@ namespace atlas {
 	const int CHEAT_360NOSCOPE{ 512 };
 	const int CHEAT_NOEP{ 1024 };
 	const int CHEAT_STARFOX{ 2048 };
+	const int CHEAT_DISNEY{ 4096 };
+	const int CHEAT_OHGODWHY{ 8192 };
+	const int CHEAT_BEWORTHY{ 16384 };
 
-	const int CHEAT_ZERO{ 4096 };
+	const int CHEAT_ZERO{ 32768 };
 
 	bool isCheatActive( int t_cheatName );
 

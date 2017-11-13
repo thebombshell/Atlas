@@ -18,13 +18,8 @@ using namespace pantheon;
 Bullet::Bullet( ConstructComponentPermit& t_permit, pantheon::Actor& t_owner, const BulletInfo& t_info )
 	: IActorComponent( t_permit, t_owner ), m_firer{ nullptr }, m_collider{ t_owner.getTransform(), 1.0f } {
 
-	t_owner.createComponent<Collision2DComponent>();
-	Collision2DComponent& collision = t_owner.getComponent<Collision2DComponent>();
-	collision.addCollider( &m_collider );
-	collision.setCollisionFlags( 512 );
-	collision.setCollideWithFlags( 511 & ~t_info.flag );
 	getOwner().getTransform().position = glm::vec3( t_info.position, 0.5f );
-
+	m_flag = t_info.flag;
 	m_timer = 0.0f;
 	m_firer = &t_info.firer;
 	m_velocity = t_info.velocity;
@@ -37,6 +32,14 @@ Bullet::~Bullet() {
 
 void Bullet::update( float t_delta ) {
 
+	if ( !getOwner().hasComponent<Collision2DComponent>() && m_timer > 0.016f ) {
+
+		getOwner().createComponent<Collision2DComponent>();
+		Collision2DComponent& collision = getOwner().getComponent<Collision2DComponent>();
+		collision.addCollider( &m_collider );
+		collision.setCollisionFlags( 512 );
+		collision.setCollideWithFlags( 511 & ~m_flag );
+	}
 	m_timer += t_delta;
 	if ( m_timer > 1.0f ) {
 

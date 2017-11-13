@@ -29,14 +29,6 @@ namespace atlas {
 
 	class Bullet : public pantheon::IUpdatable, pantheon::IRenderable {
 
-	private:
-
-		pthn::Actor* m_firer;
-		glm::vec2 m_velocity;
-		glm::vec3 m_colour;
-		float m_timer{ 0.0f };
-		pantheon::Circle m_collider;
-
 	public:
 
 		Bullet( pantheon::ConstructComponentPermit&, pantheon::Actor&, const BulletInfo& t_info );
@@ -50,6 +42,14 @@ namespace atlas {
 
 		void destroy();
 
+	private:
+
+		pthn::Actor* m_firer;
+		glm::vec2 m_velocity;
+		glm::vec3 m_colour;
+		float m_timer{ 0.0f };
+		pantheon::Circle m_collider;
+		int m_flag;
 	};
 }
 

@@ -266,7 +266,12 @@ void Player::update( float t_delta ) {
 	}
 	if ( input.getAxisValue( m_input.boost ) < 0.5f && m_boostTimer <= 0.0f ) {
 
-		physics.velocity += glm::vec2( transform.findUp() ) * ( m_shieldTimer > 0.0f ? 200.0f : 160.0f );
+		physics.velocity += glm::vec2( transform.findUp() ) * ( m_shieldTimer > 0.0f ? 200.0f : 160.0f )
+			* ( isCheatActive( CHEAT_NOEP ) ? -1.0f : 1.0f );
+		if ( isCheatActive( CHEAT_STARFOX ) ) {
+
+			physics.angularVelocity += 6.0f;
+		}
 		shake( 1.0f );
 		m_wooshSource->play();
 		m_boostTimer = 2.0f;
@@ -393,6 +398,8 @@ bool Player::kill() {
 		owner.getComponent<ShipMoveComponent>().reset();
 		owner.getComponent<Collision2DComponent>().disable();
 		owner.getComponent<HealthComponent>().disable();
+		owner.getComponent<PhysicsComponent2D>().velocity = glm::vec2( 0.0f, 0.0f );
+		owner.getComponent<PhysicsComponent2D>().angularVelocity = 0.0f;
 		shake( 2.5f );
 		return true;
 	}

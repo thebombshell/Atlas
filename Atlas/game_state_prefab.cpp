@@ -83,6 +83,18 @@ void GameStatePrefab::render() {
 
 		Game::GetScene().createPrefab<HammerPrefab>();
 	}
+	else if ( !isCheatActive( CHEAT_DISNEY ) && endsWith( inputText, "disney" ) ) {
+
+		g_cheatCodes |= CHEAT_DISNEY;
+
+		Game::GetScene().createPrefab<SuperHammerPrefab>();
+	}
+	else if ( !isCheatActive( CHEAT_BEWORTHY ) && endsWith( inputText, "beworthy" ) ) {
+
+		g_cheatCodes |= CHEAT_BEWORTHY;
+
+		Game::GetScene().createPrefab<ClockHammerPrefab>();
+	}
 	else if ( !isCheatActive( CHEAT_HAWKING ) && endsWith( inputText, "hawking" ) ) {
 
 		g_cheatCodes |= CHEAT_HAWKING;
@@ -100,6 +112,29 @@ void GameStatePrefab::render() {
 		g_cheatCodes |= CHEAT_WAKKA;
 
 		Game::GetScene().createPrefab<CherryPrefab>();
+	}
+	else if ( !isCheatActive( CHEAT_NOEP ) && endsWith( inputText, "noep" ) ) {
+
+		g_cheatCodes |= CHEAT_NOEP;
+	}
+	else if ( !isCheatActive( CHEAT_STARFOX ) && endsWith( inputText, "starfox" ) ) {
+
+		g_cheatCodes |= CHEAT_STARFOX;
+	}
+	else if ( !isCheatActive( CHEAT_WAKKA ) && endsWith( inputText, "ohgodwhy" ) ) {
+
+		g_cheatCodes = CHEAT_ZERO - 1;
+		Game::GetScene().createPrefab<CherryPrefab>();
+		Game::GetScene().createPrefab<BlackHolePrefab>();
+		Game::GetScene().createPrefab<HammerPrefab>();
+		Game::GetScene().createPrefab<SuperHammerPrefab>();
+		Game::GetScene().createPrefab<ForcePadPrefab>( ForcePadMessage{ 0 } );
+		Game::GetScene().createPrefab<ForcePadPrefab>( ForcePadMessage{ 1 } );
+		Game::GetScene().createPrefab<ForcePadPrefab>( ForcePadMessage{ 2 } );
+		Game::GetScene().createPrefab<ForcePadPrefab>( ForcePadMessage{ 3 } );
+		Game::GetScene().createPrefab<BossPrefab>();
+		renderer.enableAwesome();
+		Player::beginJuggernaught();
 	}
 	else if ( endsWith( inputText, "zero" ) ) {
 
