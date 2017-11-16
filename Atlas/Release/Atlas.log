@@ -1,9 +1,20 @@
-﻿  bullet.cpp
+﻿  black_hole_prefab.cpp
+  boss_prefab.cpp
+  bullet.cpp
+  cherry_prefab.cpp
   default_level.cpp
   explode_component.cpp
+  force_pad_prefab.cpp
+  game_state_prefab.cpp
+game_state_prefab.cpp(22): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
+  hammer_prefab.cpp
+  health_component.cpp
+  line_text_helpers.cpp
   main.cpp
   player.cpp
   Generating code
-  All 485 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  867 of 948 functions (91.5%) were compiled, the rest were copied from previous compilation.
+    480 functions were new in current compilation
+    40 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   Atlas.vcxproj -> C:\Users\Bombshell\Documents\GitHub\Atlas\Release\Atlas.exe

@@ -14,21 +14,11 @@
 
 namespace gaea {
 
-	class BlockMessage {
-
-	public:
-
-		BlockMessage( const glm::vec2& t_position, const glm::vec2& t_scale );
-
-		glm::vec2 position;
-		glm::vec2 scale;
-	};
-
 	class BlockPrefab : public pthn::IRenderable {
 
 	public:
 
-		BlockPrefab( pthn::ConstructComponentPermit& t_permit, pthn::Actor& t_owner, const BlockMessage& t_message );
+		BlockPrefab( pthn::ConstructComponentPermit& t_permit, pthn::Actor& t_owner, const glm::vec2& t_scale );
 		~BlockPrefab();
 
 		void render() override;
@@ -68,7 +58,7 @@ namespace gaea {
 
 	public:
 
-		HazardPrefab( pthn::ConstructComponentPermit& t_permit, pthn::Actor& t_owner, const BlockMessage& t_message );
+		HazardPrefab( pthn::ConstructComponentPermit& t_permit, pthn::Actor& t_owner, const glm::vec2& t_scale );
 		~HazardPrefab();
 
 		void render() override;

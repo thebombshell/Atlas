@@ -7,13 +7,18 @@
 using namespace gaea;
 using namespace pantheon;
 
+bool g_hadJumped{ false };
+float g_topHeight{ 0.0f };
+
 PlayerPrefab::PlayerPrefab( ConstructComponentPermit& t_permit, Actor& t_owner )
 	: IActorComponent{ t_permit, t_owner }, m_circle{ t_owner.getTransform(), 0.5f } {
 
 	t_owner.createComponent<Collision2DComponent>();
 	t_owner.createComponent<PhysicsComponent2D>();
-	auto& collisions = t_owner.getComponent<Collision2DComponent>();
-	collisions.addCollider( &m_circle );
+	auto& collision = t_owner.getComponent<Collision2DComponent>();
+	collision.setCollideWithFlags( 0xffff & ~(1) );
+	collision.setCollisionFlags( 1 );
+	collision.addCollider( &m_circle );
 	auto& physics = t_owner.getComponent<PhysicsComponent2D>();
 	physics.setDynamic();
 	physics.setSolid();
@@ -36,11 +41,6 @@ void PlayerPrefab::update( float t_delta ) {
 
 	// handle input
 	updateInput( t_delta );
-
-	// handle view postion
-
-	float alpha = t_delta * 10.0f;
-	m_viewPosition = glm::vec2( transform.position ) * alpha + m_viewPosition * (1.0f - alpha);
 
 	// handle animation
 
@@ -149,6 +149,19 @@ void PlayerPrefab::updateInput( float t_delta ) {
 
 		physics.velocity[1] = m_jumpingForce;
 		m_state |= PLAYER_STATE_IS_JUMPING;
+		m_isOnGround = false;
+		g_hadJumped = true;
+	}
+	if ( g_hadJumped ) {
+
+		float temp = getOwner().getTransform().position[1];
+		g_topHeight = temp > g_topHeight ? temp : g_topHeight;
+		if ( m_isOnGround ) {
+
+			printf( (std::to_string( g_topHeight ) + "\n").c_str() );
+			g_hadJumped = false;
+			g_topHeight = 0.0f;
+		}
 	}
 	if ( physics.velocity[1] < 0.0f ) {
 
@@ -204,9 +217,8 @@ void PlayerPrefab::render() {
 
 	SpriteRenderer* const renderer = Game::GetRendererAs<SpriteRenderer>();
 	Transform2D transform = getOwner().getTransform2D();
-	Transform2D transformb{ { 0.0f, 2.0f } };
+	Transform2D transformb{ { 0.0f, 4.0f } };
 
-	renderer->setViewPosition( m_viewPosition );
 	glm::vec2 source{ 0.0f, 0.0f };
 	if ( m_state & PLAYER_STATE_IS_JUMPING ) {
 

@@ -153,11 +153,13 @@
     <ClCompile Include="blocks.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="player_prefab.cpp" />
+    <ClCompile Include="procedural_level_generator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.hpp" />
     <ClInclude Include="player_prefab.hpp" />
     <ClInclude Include="blocks.hpp" />
+    <ClInclude Include="procedural_level_generator.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -7,25 +7,18 @@ using namespace gaea;
 using namespace pantheon;
 
 ///////////////////////////////////////////////////////////////////////////////
-// BlockMessage
-///////////////////////////////////////////////////////////////////////////////
-
-BlockMessage::BlockMessage( const glm::vec2& t_position, const glm::vec2& t_scale )
-	: position{ t_position }, scale{ t_scale } {
-
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // BlockPrefab
 ///////////////////////////////////////////////////////////////////////////////
 
 BlockPrefab::BlockPrefab( ConstructComponentPermit& t_permit, Actor& t_owner
-	, const BlockMessage& t_message )
+	, const glm::vec2& t_scale )
 	: IActorComponent{ t_permit, t_owner }, m_hull{ t_owner.getTransform() } {
 
 	t_owner.createComponent<Collision2DComponent>();
 	t_owner.createComponent<PhysicsComponent2D>();
-	auto& collisions = t_owner.getComponent<Collision2DComponent>();
+	auto& collision = t_owner.getComponent<Collision2DComponent>();
+	collision.setCollideWithFlags( 1 );
+	collision.setCollisionFlags( 2 );
 	glm::vec2 points[]{
 		{ -0.5f, -0.5f },
 		{ 0.5f, -0.5f },
@@ -33,7 +26,7 @@ BlockPrefab::BlockPrefab( ConstructComponentPermit& t_permit, Actor& t_owner
 		{ -0.5f, 0.5f }
 	};
 	m_hull.points.insert( m_hull.points.end(), points, points + 4 );
-	collisions.addCollider( &m_hull );
+	collision.addCollider( &m_hull );
 	auto& physics = t_owner.getComponent<PhysicsComponent2D>();
 	physics.setKinematic();
 	physics.setSolid();
@@ -41,8 +34,7 @@ BlockPrefab::BlockPrefab( ConstructComponentPermit& t_permit, Actor& t_owner
 	physics.friction = 0.02f;
 
 	Transform& transform = t_owner.getTransform();
-	transform.position = { t_message.position, 0.0f };
-	transform.scale = { t_message.scale, 1.0f };
+	transform.scale = { t_scale, 1.0f };
 }
 
 BlockPrefab::~BlockPrefab() {
@@ -80,7 +72,9 @@ MovingBlockPrefab::MovingBlockPrefab( ConstructComponentPermit& t_permit
 
 	t_owner.createComponent<Collision2DComponent>();
 	t_owner.createComponent<PhysicsComponent2D>();
-	auto& collisions = t_owner.getComponent<Collision2DComponent>();
+	auto& collision = t_owner.getComponent<Collision2DComponent>();
+	collision.setCollideWithFlags( 1 );
+	collision.setCollisionFlags( 2 );
 	glm::vec2 points[]{
 		{ -0.5f, -0.5f },
 		{ 0.5f, -0.5f },
@@ -88,7 +82,7 @@ MovingBlockPrefab::MovingBlockPrefab( ConstructComponentPermit& t_permit
 		{ -0.5f, 0.5f }
 	};
 	m_hull.points.insert( m_hull.points.end(), points, points + 4 );
-	collisions.addCollider( &m_hull );
+	collision.addCollider( &m_hull );
 	auto& physics = t_owner.getComponent<PhysicsComponent2D>();
 	physics.setKinematic();
 	physics.setSolid();
@@ -139,11 +133,13 @@ void MovingBlockPrefab::render() {
 ///////////////////////////////////////////////////////////////////////////////
 
 HazardPrefab::HazardPrefab( ConstructComponentPermit& t_permit, Actor& t_owner
-	, const BlockMessage& t_message )
+	, const glm::vec2& t_scale )
 	: IActorComponent{ t_permit, t_owner }, m_hull{ t_owner.getTransform() } {
 
 	t_owner.createComponent<Collision2DComponent>();
-	auto& collisions = t_owner.getComponent<Collision2DComponent>();
+	auto& collision = t_owner.getComponent<Collision2DComponent>();
+	collision.setCollideWithFlags( 1 );
+	collision.setCollisionFlags( 2 );
 	glm::vec2 points[]{
 		{ -0.5f, -0.5f },
 		{ 0.5f, -0.5f },
@@ -151,10 +147,9 @@ HazardPrefab::HazardPrefab( ConstructComponentPermit& t_permit, Actor& t_owner
 		{ -0.5f, 0.5f }
 	};
 	m_hull.points.insert( m_hull.points.end(), points, points + 4 );
-	collisions.addCollider( &m_hull );
+	collision.addCollider( &m_hull );
 	Transform& transform = t_owner.getTransform();
-	transform.position = { t_message.position, 0.0f };
-	transform.scale = { t_message.scale, 1.0f };
+	transform.scale = { t_scale, 1.0f };
 }
 
 HazardPrefab::~HazardPrefab() {

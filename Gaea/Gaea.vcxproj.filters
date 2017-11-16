@@ -24,6 +24,9 @@
     <ClCompile Include="blocks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="procedural_level_generator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.hpp">
@@ -33,6 +36,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="blocks.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="procedural_level_generator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
