@@ -15,6 +15,22 @@
 
 namespace pantheon {
 
+	// returns the logic threads time delta
+
+	float PANTHEON_API getTimeDelta();
+
+	// returns the logic threads time alpha
+
+	float PANTHEON_API getTimeAlpha();
+
+	// returns the size of the screen
+
+	glm::vec2 PANTHEON_API getScreenSize();
+
+	// returns the size of the window
+
+	glm::vec2 PANTHEON_API getWindowSize();
+
 	// permissions
 
 	class P_ConstructRenderer;
@@ -27,14 +43,6 @@ namespace pantheon {
 	typedef Permission<Game, P_CallUpdatables> CallUpdatablesPermit;
 	typedef Permission<Game, P_CallRenderables> CallRenderablesPermit;
 	typedef Permission<IGameRenderer, P_AccessGl> AccessGlPermit;
-
-	// returns the logic threads time delta
-	
-	float PANTHEON_API getTimeDelta();
-
-	// returns the logic threads time alpha
-
-	float PANTHEON_API getTimeAlpha();
 
 	// interface for a renderer
 
@@ -196,6 +204,49 @@ namespace pantheon {
 			return getInstance().getScene();
 		}
 
+		// returns the logic threads time delta
+
+		float getTimeDelta();
+
+		// returns the logic threads time alpha
+
+		float getTimeAlpha();
+
+		// returns the size of the screen
+
+		glm::vec2 getScreenSize();
+
+		// returns the size of the window
+
+		glm::vec2 getWindowSize();
+
+		// returns the logic threads time delta
+
+		static float GetTimeDelta() {
+
+			return getInstance().getTimeDelta();
+		}
+
+		// returns the logic threads time alpha
+
+		static float GetTimeAlpha() {
+
+			return getInstance().getTimeAlpha();
+		}
+
+		// returns the size of the screen
+
+		static glm::vec2 GetScreenSize() {
+
+			return getInstance().getScreenSize();
+		}
+
+		// returns the size of the window
+
+		static glm::vec2 GetWindowSize() {
+
+			return getInstance().getWindowSize();
+		}
 	};
 }
 

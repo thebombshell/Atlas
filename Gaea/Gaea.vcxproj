@@ -160,6 +160,7 @@
     <ClInclude Include="player_prefab.hpp" />
     <ClInclude Include="blocks.hpp" />
     <ClInclude Include="procedural_level_generator.hpp" />
+    <ClInclude Include="text_helper.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

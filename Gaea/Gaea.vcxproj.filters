@@ -41,5 +41,8 @@
     <ClInclude Include="procedural_level_generator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="text_helper.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

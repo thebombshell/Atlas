@@ -227,7 +227,7 @@ class SpriteRenderer::SpriteRendererImpl {
 
 	void setViewSize( float t_minViewDistance ) {
 
-		t_minViewDistance = m_minViewDistance;
+		m_minViewDistance = t_minViewDistance;
 	}
 
 	void queueLoadTexture( const std::string& t_path ) {

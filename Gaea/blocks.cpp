@@ -14,27 +14,78 @@ BlockPrefab::BlockPrefab( ConstructComponentPermit& t_permit, Actor& t_owner
 	, const glm::vec2& t_scale )
 	: IActorComponent{ t_permit, t_owner }, m_hull{ t_owner.getTransform() } {
 
-	t_owner.createComponent<Collision2DComponent>();
-	t_owner.createComponent<PhysicsComponent2D>();
-	auto& collision = t_owner.getComponent<Collision2DComponent>();
+	t_owner.getTransform().scale = { t_scale, 1.0f };
+	setupComponents();
+	m_autoSetupMessages = false;
+}
+
+void BlockPrefab::setupComponents() {
+
+	Actor& owner = getOwner();
+
+	owner.createComponent<Collision2DComponent>();
+	owner.createComponent<PhysicsComponent2D>();
+
+	// set up collisions
+
+	auto& collision = owner.getComponent<Collision2DComponent>();
 	collision.setCollideWithFlags( 1 );
 	collision.setCollisionFlags( 2 );
 	glm::vec2 points[]{
-		{ -0.5f, -0.5f },
-		{ 0.5f, -0.5f },
-		{ 0.5f, 0.5f },
-		{ -0.5f, 0.5f }
+		{ 0.0f, 0.0f },
+		{ 1.0f, 0.0f },
+		{ 1.0f, 1.0f },
+		{ 0.0f, 1.0f }
 	};
 	m_hull.points.insert( m_hull.points.end(), points, points + 4 );
 	collision.addCollider( &m_hull );
-	auto& physics = t_owner.getComponent<PhysicsComponent2D>();
+
+	// set up physics
+
+	auto& physics = owner.getComponent<PhysicsComponent2D>();
 	physics.setKinematic();
 	physics.setSolid();
 	physics.bounce = 0.5f;
 	physics.friction = 0.02f;
+}
 
-	Transform& transform = t_owner.getTransform();
-	transform.scale = { t_scale, 1.0f };
+void BlockPrefab::setupMessages() {
+
+	Transform& transform = getOwner().getTransform();
+
+	m_messages.clear();
+	for ( int x = 0; x < transform.scale[0]; ++x ) {
+
+		int edgeType = 2;
+		if ( x == 0 && (x + 1) < transform.scale[0] ) {
+
+			edgeType = 0;
+		}
+		else if ( (x + 1) < transform.scale[0] ) {
+
+			edgeType = 1;
+		}
+		else if ( x == 0 ) {
+
+			edgeType = 3;
+		}
+
+		for ( int y = 0; y < transform.scale[1]; ++y ) {
+
+			glm::vec2 source = { 80.0f, 16.0f };
+			switch ( y ) {
+
+				case 0:
+					source = { static_cast<float>(edgeType) * 16.0f, 16.0f };
+					break;
+				case 1:
+					source = { 64.0f, 16.0f };
+					break;
+			}
+			m_messages.push_back( { "sprites", -(glm::vec2( x, y ) + glm::vec2( transform.position )), source, glm::vec2( 16.0f, 16.0f )
+				, { 1.0f, 1.0f, 1.0f }, 0.5f, { } } );
+		}
+	}
 }
 
 BlockPrefab::~BlockPrefab() {
@@ -44,11 +95,17 @@ BlockPrefab::~BlockPrefab() {
 void BlockPrefab::render() {
 
 	SpriteRenderer* const renderer = Game::GetRendererAs<SpriteRenderer>();
-	Transform2D transform = getOwner().getTransform2D();
-	SpriteRendererMessage messageA{ "sprites", { 0.5f, 0.5f }, { 0, 224 }
-		, glm::vec2( 16, 16 ) * transform.scale, { 1.0f, 1.0f, 1.0f }, 0.5f
-		, transform.findMatrix() };
-	renderer->queueDraw( messageA );
+
+	if ( m_autoSetupMessages ) {
+
+		setupMessages();
+	}
+
+	for ( auto& message : m_messages ) {
+
+		renderer->queueDraw( message );
+	}
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -67,22 +124,11 @@ MovingBlockMessage::MovingBlockMessage( const glm::vec2& t_start
 
 MovingBlockPrefab::MovingBlockPrefab( ConstructComponentPermit& t_permit
 	, Actor& t_owner, const MovingBlockMessage& t_message )
-	: IActorComponent{ t_permit, t_owner }, m_hull{ t_owner.getTransform() }
-	, start{ t_message.start }, end{ t_message.end } {
+	: IActorComponent{ t_permit, t_owner }, start{ t_message.start }, end{ t_message.end } {
 
-	t_owner.createComponent<Collision2DComponent>();
-	t_owner.createComponent<PhysicsComponent2D>();
-	auto& collision = t_owner.getComponent<Collision2DComponent>();
-	collision.setCollideWithFlags( 1 );
-	collision.setCollisionFlags( 2 );
-	glm::vec2 points[]{
-		{ -0.5f, -0.5f },
-		{ 0.5f, -0.5f },
-		{ 0.5f, 0.5f },
-		{ -0.5f, 0.5f }
-	};
-	m_hull.points.insert( m_hull.points.end(), points, points + 4 );
-	collision.addCollider( &m_hull );
+	t_owner.createComponent<BlockPrefab>( t_message.scale );
+	t_owner.getComponent<BlockPrefab>().m_autoSetupMessages = true;
+
 	auto& physics = t_owner.getComponent<PhysicsComponent2D>();
 	physics.setKinematic();
 	physics.setSolid();
@@ -100,32 +146,10 @@ MovingBlockPrefab::~MovingBlockPrefab() {
 void MovingBlockPrefab::update( float t_delta ) {
 
 	auto& physics = getOwner().getComponent<PhysicsComponent2D>();
-	if ( isMovingToEnd ) {
-
-		physics.velocity = end - start;
-		if ( glm::dot( getOwner().getTransform2D().position, glm::normalize( physics.velocity ) )
-			>= glm::dot( end, glm::normalize( physics.velocity ) ) ) {
-			isMovingToEnd = false;
-		}
-	}
-	else {
-
-		physics.velocity = start - end;
-		if ( glm::dot( getOwner().getTransform2D().position, glm::normalize( physics.velocity ) )
-			>= glm::dot( start, glm::normalize( physics.velocity ) ) ) {
-			isMovingToEnd = true;
-		}
-	}
-}
-
-void MovingBlockPrefab::render() {
-
-	SpriteRenderer* const renderer = Game::GetRendererAs<SpriteRenderer>();
-	Transform2D transform = getOwner().getTransform2D();
-	SpriteRendererMessage messageA{ "sprites", { 0.5f, 0.5f }, { 0, 224 }
-		, glm::vec2( 16, 16 ) * transform.scale, { 1.0f, 1.0f, 1.0f }, 0.5f
-		, transform.findMatrix() };
-	renderer->queueDraw( messageA );
+	physics.velocity = { 0.0f, 0.0f };
+	auto& transform = getOwner().getTransform();
+	float alpha = cos( getTimeAlpha() ) * 0.5f + 0.5f;
+	transform.position = glm::vec3( start * alpha + end * (1.0f - alpha), 0.0f );
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -30,11 +30,22 @@ float timeAlpha{ 0.0f };
 
 float pantheon::getTimeDelta() {
 
-	return timeDelta;
+	return Game::GetTimeDelta();
 }
+
 float pantheon::getTimeAlpha() {
 
-	return timeAlpha;
+	return Game::GetTimeAlpha();
+}
+
+glm::vec2 pantheon::getScreenSize() {
+
+	return Game::GetScreenSize();
+}
+
+glm::vec2 pantheon::getWindowSize() {
+
+	return Game::GetWindowSize();
 }
 
 class Game::GameImpl {
@@ -336,6 +347,15 @@ class Game::GameImpl {
 				case SDL_JOYBUTTONUP:
 					m_input->updateJoystickButton( eventMessage.jbutton.which, eventMessage.jbutton.button );
 				break;
+				case SDL_MOUSEBUTTONDOWN:
+					m_input->updateMouseButton( eventMessage.button.button, true );
+				break;
+				case SDL_MOUSEBUTTONUP:
+					m_input->updateMouseButton( eventMessage.button.button, false );
+				break;
+				case SDL_MOUSEMOTION:
+					m_input->updateMousePosition( eventMessage.motion.x, eventMessage.motion.y );
+				break;
 				case SDL_QUIT:
 					SDL_Log( "A quit event has been recieved." );
 				return;
@@ -426,4 +446,27 @@ Scene& Game::getScene() {
 Audio& Game::getAudio() const {
 
 	return *m_game->m_audio;
+}
+
+float Game::getTimeDelta() {
+
+	return timeDelta;
+}
+
+float Game::getTimeAlpha() {
+
+	return timeAlpha;
+}
+
+glm::vec2 Game::getScreenSize() {
+
+	return{ 0.0f, 0.0f };
+}
+
+glm::vec2 Game::getWindowSize() {
+
+	int windowWidth;
+	int windowHeight;
+	SDL_GetWindowSize( m_game->m_window, &windowWidth, &windowHeight );
+	return{ static_cast<float>(windowWidth), static_cast<float>(windowHeight) };
 }

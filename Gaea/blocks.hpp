@@ -23,7 +23,16 @@ namespace gaea {
 
 		void render() override;
 
+		void setupComponents();
+
+		void setupMessages();
+
+		bool m_autoSetupMessages{ false };
+
+	private:
+
 		pthn::ConvexHull m_hull;
+		std::vector<pthn::SpriteRendererMessage> m_messages;
 	};
 
 	class MovingBlockMessage {
@@ -37,7 +46,7 @@ namespace gaea {
 		glm::vec2 scale;
 	};
 	
-	class MovingBlockPrefab : public pthn::IUpdatable, public pthn::IRenderable {
+	class MovingBlockPrefab : public pthn::IUpdatable {
 
 	public:
 
@@ -46,9 +55,6 @@ namespace gaea {
 
 		void update( float t_delta ) override;
 
-		void render() override;
-
-		pthn::ConvexHull m_hull;
 		glm::vec2 start;
 		glm::vec2 end;
 		bool isMovingToEnd{ true };

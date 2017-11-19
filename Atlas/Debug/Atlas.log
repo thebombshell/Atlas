@@ -1,1 +1,19 @@
-﻿  Atlas.vcxproj -> C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Atlas.exe
+﻿  black_hole_prefab.cpp
+  Generating Code...
+  Compiling...
+  player.cpp
+  main.cpp
+  line_text_helpers.cpp
+  health_component.cpp
+  hammer_prefab.cpp
+  game_state_prefab.cpp
+c:\users\bombshell\documents\github\atlas\atlas\game_state_prefab.cpp(22): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
+  force_pad_prefab.cpp
+  explode_component.cpp
+c:\users\bombshell\documents\github\atlas\atlas\explode_component.cpp(39): warning C4189: 'iTimer': local variable is initialized but not referenced
+  default_level.cpp
+  cherry_prefab.cpp
+  bullet.cpp
+  boss_prefab.cpp
+  Generating Code...
+  Atlas.vcxproj -> C:\Users\Bombshell\Documents\GitHub\Atlas\Debug\Atlas.exe
