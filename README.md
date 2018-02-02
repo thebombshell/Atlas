@@ -11,12 +11,7 @@ Currently Pantheon uses SDL, OpenGl (via glew), OpenAl (via OpenAl Soft and Alur
 ## Atlas
 Atlas is a player vs player asteroids, it has a number of design goals, but for the time being the goal is to have it play and control well, with no significant bugs and acceptable support and convinience of use.
 
-## Gaea
-Gaea is a demonstration of procedural level generation in a sidescrolling platformer, to be used as supporting material for my dissertation.
-
 ## Current Status
-Pantheon is far from complete and in need of some better idiomatic comformity.
+Currently pantheon is in need of a dependancy cleanup and by extension so is atlas, the projects do not run properly on machines without the correct development libraries and do not build at all in release targets.
 
-Atlas is at its bare minimum functioning state, it is in need of bolstered game feel.
-
-Gaea is awaiting feature implementation in pantheon, namely sprite renderer and physics component, and is currently non-functional.
+This project was enlightening in the sense of using my programming skills practically and creating projects I would need to share in place of the typical single machine graphical demo, I have learned many lessons from this and expect to have more success on revisiting.
